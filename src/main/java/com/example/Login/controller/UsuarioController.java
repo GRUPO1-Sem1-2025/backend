@@ -2,7 +2,9 @@ package com.example.Login.controller;
 
 import com.example.Login.model.Usuario;
 import com.example.Login.service.UsuarioService;
-import com.example.Login.configuration.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,9 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+//@RequestMapping("/usuarios")
 @RequestMapping("/usuarios")
+@Tag(name = "Usuarios", description = "API para gestionar usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -25,16 +29,15 @@ public class UsuarioController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtener todos los usuarios", description = "Retorna una lista de usuarios")
+    
     public List<Usuario> obtenerUsuarios() {
         return usuarioService.obtenerUsuarios();
     }
 
-	/*
-	 * @PostMapping public Usuario crearUsuario(@RequestBody Usuario usuario) {
-	 * return usuarioService.guardarUsuario(usuario); }
-	 */
-    
+
     @PostMapping
+    @Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
     public ResponseEntity<Map<String,String>> crearUsuario(@RequestBody Usuario usuario) {
     	
     	Optional<Usuario> user = usuarioService.buscarPorEmail(usuario.getEmail());
@@ -51,7 +54,9 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
     }
     
+    //@GetMapping("/email/{email}")
     @GetMapping("/email/{email}")
+    @Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
     public ResponseEntity<Usuario> obtenerPorEmail(@PathVariable String email) {
         Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
         return usuario.map(ResponseEntity::ok) // Si el usuario existe, devolver 200 OK
@@ -60,7 +65,9 @@ public class UsuarioController {
     
     
     // 🔹 Recibe email y password en el cuerpo de la petición (POST)
+    //@PostMapping("/login")
     @PostMapping("/login")
+    @Operation(summary = "Login de un usuario", description = "Permite el inicio de sesión de un usuario con email y contraseña")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> loginRequest) {
         String email = loginRequest.get("email");
         String password = loginRequest.get("password");
@@ -85,7 +92,9 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     } 
     
+    //@DeleteMapping("/{email}")
     @DeleteMapping("/{email}")
+    @Operation(summary = "Borrar un usuario por email", description = "Elimina un usuario de la base de datos por su email")
     public ResponseEntity<Map<String, String>> borrarUsuario(@PathVariable String email) {
     	
     	Optional<Usuario> user = usuarioService.buscarPorEmail(email);
