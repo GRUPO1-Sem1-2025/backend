@@ -1,3 +1,1 @@
 # poc-backend
-
-prueba
