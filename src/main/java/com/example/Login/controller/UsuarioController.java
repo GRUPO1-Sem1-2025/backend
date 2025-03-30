@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.HashMap;
@@ -107,5 +108,22 @@ public class UsuarioController {
     	}
     	response.put("mensaje", "No existe el usuario");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }    
+    }
+    
+    @PostMapping("/upload")  // Ruta de prueba
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+   	 if (file.isEmpty()) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
+          }
+
+   	 try {
+   		 UsuarioService fileConversionService=null;
+			 // Llamamos al servicio para convertir el archivo a JSON
+            String json = fileConversionService.convertCsvToJson(file);
+            return ResponseEntity.ok(json);
+            }
+   	 catch (Exception e) {
+   		 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing file");
+   		 }
+  }
 }
