@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>Login</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>Login</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -77,6 +77,10 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.4.4</version>
+				<configuration>
+					<mainClass>com.example.Login.LoginApplication</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
