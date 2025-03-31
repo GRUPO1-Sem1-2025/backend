@@ -26,3 +26,7 @@ replay_pid*
 target/m2e-wtp/web-resources/META-INF/maven/com.example/Login/pom.properties
 
 .settings/org.eclipse.core.resources.prefs
+
+.settings/
+.vscode/
+target/
