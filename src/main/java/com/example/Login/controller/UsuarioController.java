@@ -114,10 +114,10 @@ public class UsuarioController {
     @Autowired
     private UsuarioService fileConversionService;
 
-    @PostMapping("/upload")
+    @PostMapping("/crearUsuariosMasivos")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
         }
 
         try {
@@ -125,24 +125,7 @@ public class UsuarioController {
             String json = fileConversionService.convertCsvToJson(file);
             return ResponseEntity.ok(json);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing file: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el archivo: " + e.getMessage());
         }
     }
-    
-//    @PostMapping("/upload")  // Ruta de prueba
-//    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-//   	 if (file.isEmpty()) {
-//          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
-//          }
-//
-//   	 try {
-//   		 UsuarioService fileConversionService=null;
-//			 // Llamamos al servicio para convertir el archivo a JSON
-//            String json = fileConversionService.convertCsvToJson(file);
-//            return ResponseEntity.ok(json);
-//            }
-//   	 catch (Exception e) {
-//   		 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing file");
-//   		 }
-//  }
 }
