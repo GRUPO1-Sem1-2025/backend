@@ -6,10 +6,12 @@ import com.example.Login.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.HashMap;
@@ -107,5 +109,23 @@ public class UsuarioController {
     	}
     	response.put("mensaje", "No existe el usuario");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }    
+    }
+    
+    @Autowired
+    private UsuarioService fileConversionService;
+
+    @PostMapping("/crearUsuariosMasivos")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
+        }
+
+        try {
+            // Llamamos al servicio para convertir el archivo a JSON
+            String json = fileConversionService.convertCsvToJson(file);
+            return ResponseEntity.ok(json);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el archivo: " + e.getMessage());
+        }
+    }
 }
