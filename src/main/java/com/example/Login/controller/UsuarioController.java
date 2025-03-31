@@ -6,6 +6,7 @@ import com.example.Login.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.password.PasswordEncoder;
@@ -110,20 +111,38 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
     
-    @PostMapping("/upload")  // Ruta de prueba
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-   	 if (file.isEmpty()) {
-          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
-          }
+    @Autowired
+    private UsuarioService fileConversionService;
 
-   	 try {
-   		 UsuarioService fileConversionService=null;
-			 // Llamamos al servicio para convertir el archivo a JSON
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
+        }
+
+        try {
+            // Llamamos al servicio para convertir el archivo a JSON
             String json = fileConversionService.convertCsvToJson(file);
             return ResponseEntity.ok(json);
-            }
-   	 catch (Exception e) {
-   		 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing file");
-   		 }
-  }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing file: " + e.getMessage());
+        }
+    }
+    
+//    @PostMapping("/upload")  // Ruta de prueba
+//    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+//   	 if (file.isEmpty()) {
+//          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
+//          }
+//
+//   	 try {
+//   		 UsuarioService fileConversionService=null;
+//			 // Llamamos al servicio para convertir el archivo a JSON
+//            String json = fileConversionService.convertCsvToJson(file);
+//            return ResponseEntity.ok(json);
+//            }
+//   	 catch (Exception e) {
+//   		 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing file");
+//   		 }
+//  }
 }
