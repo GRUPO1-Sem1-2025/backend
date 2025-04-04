@@ -73,6 +73,9 @@ public class UsuarioController {
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> loginRequest) {
         String email = loginRequest.get("email");
         String password = loginRequest.get("password");
+        String token = usuarioService.authenticate(email, password);
+        System.out.println("Token: "+ token);
+        System.out.println("password primero: " + password);
 		/*
 		 * @GetMapping("/login/{email}/{password}") public ResponseEntity<Map<String,
 		 * String>> login(@PathVariable String email, @PathVariable String password) {
@@ -83,11 +86,24 @@ public class UsuarioController {
         if (usuario.isPresent()) {
             Usuario usuarioEncontrado = usuario.get();
             
+//            if (token != null) {
+//                return ResponseEntity.ok(Map.of("token", token));
+//            } else {
+//                return ResponseEntity.status(401).body("Credenciales inválidas");
+//            }
+//            
             // 🔹 Compara la contraseña ingresada encriptada con la almacenada en la BD
-            if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) { 
-                response.put("mensaje", "Inicio de sesión exitoso");
-                return ResponseEntity.ok(response);
-            }
+			if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
+				System.out.println("las contraseñas coinciden en controller");
+				if (token != null) {
+					return ResponseEntity.ok(Map.of("token", token));
+				} //else 
+//				{
+//					return ResponseEntity.ok("Credenciales inválidas");
+//				}
+//                response.put("mensaje", "Inicio de sesión exitoso");
+//                return ResponseEntity.ok(response);
+			}
         }
 
         response.put("mensaje", "Credenciales incorrectas");

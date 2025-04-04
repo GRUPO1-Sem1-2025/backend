@@ -8,8 +8,10 @@ import java.util.Optional;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.Login.model.Usuario;
@@ -30,7 +32,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+	private final UsuarioRepository usuarioRepository;
+    
+    @Autowired
+    private JwtService jwtService;
+    
+    //private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
 
     // Inyección de dependencias
@@ -175,7 +183,19 @@ public class UsuarioService {
     	    } finally {
     	        reader.close();  // Cerramos el BufferedReader
     	    }
-    	}     
+    	}
+     
+     public String authenticate(String email, String password) {
+         Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+         System.out.println("encontró usuario en service ");
+         //if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {}
+         if (usuario.isPresent() && encriptarSHA256(password).equals(usuario.get().getPassword())) {
+        	 System.out.println("Las contraseñas coinciden");
+        	 return jwtService.generateToken(email);
+         }else {
+        	 System.out.println("retorna null");
+        	 return null;}
+     }
     
     
      
