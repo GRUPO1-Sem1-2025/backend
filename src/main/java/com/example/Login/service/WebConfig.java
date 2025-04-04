@@ -14,7 +14,10 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Aplica a todas las rutas
-                        .allowedOrigins("http://localhost:5173") // Permitir origen de tu app React
+                        .allowedOrigins(
+                        		"http://localhost:5173", // Permitir origen de tu app React
+                        		"http://localhost:8081" // Permitir origen de tu app ReactNative
+                        		) // Permitir origen de tu app React
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
                         .allowedHeaders("*");
             }
