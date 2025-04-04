@@ -81,57 +81,7 @@ public class UsuarioService {
     	 usuarioRepository.delete(u);
 		return u;
          
-     }
-     
-//     public String convertCsvToJson(MultipartFile file) throws Exception {
-//         Usuario user = new Usuario();
-//    	 BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-//         String line;
-//         List<Map<String, String>> dataList = new ArrayList<>();
-//         String[] headers = null;
-//
-//         try {
-//             // Leer línea por línea el archivo CSV
-//             while ((line = reader.readLine()) != null) {
-//                 String[] values = line.split(":");  // Suponiendo que el delimitador es ":"
-//                 
-//                 // Si la primera línea contiene los encabezados
-//                 if (headers == null) {
-//                     headers = values;
-//                     continue;  // Saltamos a la siguiente línea si es la de encabezados
-//                 }
-//
-//                 // Procesamos las filas posteriores como datos
-//                 if (values.length != headers.length) {
-//                     throw new Exception("La cantidad de columnas no coincide con los encabezados.");
-//                 }
-//
-//                 Map<String, String> row = new HashMap<>();
-//                 for (int i = 0; i < values.length; i++) {
-//                     row.put(headers[i], values[i]);
-//                     //probando lectura de linea
-//                     user.setNombre(values[i]);
-//                     user.setEmail(values[i]);
-//                     user.setPassword(values[i]);
-//                     System.out.println("nombre" + user.getNombre());
-//                     System.out.println("email" +user.getEmail());
-//                     System.out.println("password" + user.getPassword());
-//                     //fin
-//                 }
-//                 dataList.add(row);
-//             }
-//
-//             // Convertir la lista a formato JSON
-//             ObjectMapper objectMapper = new ObjectMapper();
-//             return objectMapper.writeValueAsString(dataList);
-//
-//         } catch (Exception e) {
-//             throw new Exception("Error procesando el archivo CSV: " + e.getMessage());
-//         } finally {
-//             reader.close();  // Cerramos el BufferedReader
-//         }
-//     }
-//     
+     }   
      
      public String convertCsvToJson(MultipartFile file) throws Exception {
     	 	BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
