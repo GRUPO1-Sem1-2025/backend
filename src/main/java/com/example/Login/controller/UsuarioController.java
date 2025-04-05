@@ -57,7 +57,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
     }
     
-    //@GetMapping("/email/{email}")
     @GetMapping("/email/{email}")
     @Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
     public ResponseEntity<Usuario> obtenerPorEmail(@PathVariable String email) {
@@ -68,7 +67,6 @@ public class UsuarioController {
     
     
     // 🔹 Recibe email y password en el cuerpo de la petición (POST)
-    //@PostMapping("/login")
     @PostMapping("/login")
     @Operation(summary = "Login de un usuario", description = "Permite el inicio de sesión de un usuario con email y contraseña")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> loginRequest) {
@@ -130,4 +128,12 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el archivo: " + e.getMessage());
         }
     }
+    
+    @GetMapping("/contar")
+    @Operation(summary = "Obtener cantidad de usuarios", description = "Retorna la cantidad de usuarios del sistema")
+    
+    public long verCantidadUsuarios() {
+        return usuarioService.verCantidadUsuarios();
+    }    
+    
 }
