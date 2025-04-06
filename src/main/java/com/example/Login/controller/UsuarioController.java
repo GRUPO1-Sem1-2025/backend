@@ -1,6 +1,8 @@
 package com.example.Login.controller;
 
 import com.example.Login.model.Usuario;
+import com.example.Login.service.EmailService;
+import com.example.Login.service.GenerarContraseniaService;
 import com.example.Login.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -134,6 +136,54 @@ public class UsuarioController {
     
     public long verCantidadUsuarios() {
         return usuarioService.verCantidadUsuarios();
-    }    
+    }
     
+	@Autowired
+	private EmailService emailService;
+
+	@PostMapping("/cambiarcontrasenia")
+	public String cambiarContraseña(@RequestParam String para) {
+		String asunto = "Nueva contraseña temporal";
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(para);
+
+		if (usuario.isPresent()) {
+
+			// Nueva contraseña aleatoria
+			String contrasenia = GenerarContraseniaService.generarContraseniaAleatoria();
+
+			String mensaje = "Su nueva contraseñia temporal es la siguiente: " + contrasenia;
+
+			// Setear nueva contraseña encriptada
+			usuario.get().setPassword(usuarioService.encriptarSHA256(contrasenia));
+			usuarioService.actualizar(usuario.get());
+
+			emailService.enviarCorreo(para, asunto, mensaje);
+
+			return "Correo enviado!";
+		} else {
+			return "No existe el usuario ingresado";
+		}
+	}
+		
+		
+//		// Nueva contraseña aleatoria
+//		String contrasenia = GenerarContraseniaService.generarContraseniaAleatoria();
+//		String cuerpo = "Su nueva contraseñia temporal es la siguiente: "
+//				+ contrasenia;
+//		
+//		// Nueva contraseña encriptada
+//		//String contrasenia = usuarioService.encriptarSHA256(GenerarContraseniaService.generarContraseniaAleatoria()); 
+//		System.out.println(contrasenia);
+//		
+//		// busca el usuario si existe
+//		Optional<Usuario> usuario = usuarioService.buscarPorEmail(para); 
+//
+//		if (usuario.isPresent()) {
+//			usuario.get().setPassword(contrasenia); // le cambia la contraseña
+//			emailService.enviarCorreo(para, asunto, cuerpo);
+//			return "Correo enviado!";
+//		} else {
+//			return "No existe el usuario ingresado";
+//		}
+//	}      
 }

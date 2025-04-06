@@ -65,6 +65,10 @@ public class UsuarioService {
     public Optional<Usuario> buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
+    
+    public void actualizar(Usuario usuario) {
+        usuarioRepository.save(usuario); // esto hace un UPDATE si el usuario existe
+    }
 
      public List<Usuario> obtenerUsuarios() {
      return usuarioRepository.findAll();
