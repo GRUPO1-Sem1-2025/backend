@@ -65,6 +65,10 @@ public class UsuarioService {
     public Optional<Usuario> buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
+    
+    public void actualizar(Usuario usuario) {
+        usuarioRepository.save(usuario); // esto hace un UPDATE si el usuario existe
+    }
 
      public List<Usuario> obtenerUsuarios() {
      return usuarioRepository.findAll();
@@ -95,9 +99,9 @@ public class UsuarioService {
 					Optional<Usuario> usuarioNoEncontrado;// = usuarioService.buscarPorEmail(email);
 					String[] values = line.split(":"); // Suponiendo que el delimitador es ":"
 
-					// Validamos que haya exactamente 4 valores por línea
-					if (values.length != 4) {
-						throw new Exception("Formato incorrecto en el CSV. Cada fila debe tener 4 valores.");
+					// Validamos que haya exactamente 5 valores por línea
+					if (values.length != 5) {
+						throw new Exception("Formato incorrecto en el CSV. Cada fila debe tener 5 valores.");
 					}
 
 					// Construimos el JSON correctamente
@@ -107,6 +111,8 @@ public class UsuarioService {
 					row.put("email", values[1]);
 					row.put("password", values[2]);
 					row.put("activo", values[3]);
+					row.put("rol", values[4]);
+					
 
 					user.setNombre(values[0]);
 					user.setEmail(values[1]);
@@ -116,6 +122,15 @@ public class UsuarioService {
 						user.setActivo(true);// values[3].toString());
 					} else {
 						user.setActivo(false);
+					}
+					if(values[4].equals("User")) {
+						user.setRol(100);						
+					}else if(values[4].equals("Vendedor")) {
+						user.setRol(200);
+					}else if(values[4].equals("Admin")) {
+						user.setRol(300);
+					}else {
+						System.out.print("No existe el Rol");
 					}
 
 					dataList.add(row);
