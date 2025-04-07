@@ -13,20 +13,25 @@ private String nombre;
 private String email;
 private String password;
 private boolean activo;
+private int rol;
 
 // Getters y Setters
 public Usuario() {
 	
 }
-public Usuario(String nombre, String email, String password, boolean activo) {
+public Usuario(String nombre, String email, String password, boolean activo, int rol) {
 	this.nombre = nombre;
 	this.email = email;
 	this.password = password;
 	this.activo = activo;
+	this.rol = rol;
 }
 
 public int getId() { return id; }
 public void setId(int id) { this.id = id; }
+
+public int getRol() { return rol; }
+public void setRol(int rol) { this.rol = rol; }
 
 public String getNombre() { return nombre; }
 public void setNombre(String nombre) { this.nombre = nombre; }
