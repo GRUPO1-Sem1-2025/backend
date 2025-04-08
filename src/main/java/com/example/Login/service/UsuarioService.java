@@ -161,7 +161,8 @@ public class UsuarioService {
 		
 			if (usuario.isPresent() && encriptarSHA256(password).equals(usuario.get().getPassword())) {
 				System.out.println("Las contraseñas coinciden");
-				return jwtService.generateToken(email);
+				int rol = usuario.get().getRol();
+				return jwtService.generateToken(email,rol);
 			} else {
 				System.out.println("retorna null");
 				return null;

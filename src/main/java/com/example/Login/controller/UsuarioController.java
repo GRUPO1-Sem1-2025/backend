@@ -141,8 +141,8 @@ public class UsuarioController {
 	@Autowired
 	private EmailService emailService;
 
-	@PostMapping("/cambiarcontrasenia")
-	public String cambiarContraseña(@RequestParam String para) {
+	@PostMapping("/resetearcontrasenia")
+	public String resetearContraseña(@RequestParam String para) {
 		String asunto = "Nueva contraseña temporal";
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(para);
 
@@ -164,26 +164,55 @@ public class UsuarioController {
 			return "No existe el usuario ingresado";
 		}
 	}
+	
+	@PostMapping("/cambiarcontrasenia")
+	public String cambiarContraseña(@RequestParam String mail, @RequestParam String old_pass,
+			@RequestParam String new_pass, @RequestParam String new_pass1) {
 		
-		
-//		// Nueva contraseña aleatoria
-//		String contrasenia = GenerarContraseniaService.generarContraseniaAleatoria();
-//		String cuerpo = "Su nueva contraseñia temporal es la siguiente: "
-//				+ contrasenia;
-//		
-//		// Nueva contraseña encriptada
-//		//String contrasenia = usuarioService.encriptarSHA256(GenerarContraseniaService.generarContraseniaAleatoria()); 
-//		System.out.println(contrasenia);
-//		
-//		// busca el usuario si existe
-//		Optional<Usuario> usuario = usuarioService.buscarPorEmail(para); 
-//
-//		if (usuario.isPresent()) {
-//			usuario.get().setPassword(contrasenia); // le cambia la contraseña
-//			emailService.enviarCorreo(para, asunto, cuerpo);
-//			return "Correo enviado!";
-//		} else {
-//			return "No existe el usuario ingresado";
-//		}
-//	}      
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(mail);
+
+		if (usuario.isPresent()) {
+
+			// Nueva contraseña aleatoria
+			String contrasenia = usuario.get().getPassword();// GenerarContraseniaService.generarContraseniaAleatoria();
+			if (usuarioService.encriptarSHA256(old_pass).equals(contrasenia)) {
+				if (new_pass.equals(new_pass1)) {
+					String nuevaContrasenia = usuarioService.encriptarSHA256(new_pass);// new_pass;
+					usuario.get().setPassword(nuevaContrasenia);
+					usuarioService.actualizar(usuario.get());
+					return "Contraseña cambiada";
+				} else {
+					return "Las nuevas contraseñas no coinciden";
+				}
+			} else {
+				return "la contraseña ingresada no coincide con la registrada en el sistema";
+			}
+		} else {
+			return "No existe el usuario ingresado";
+		}
+	}
+
+	@PostMapping("/cambiarrol")
+	public String cambiarRol(@RequestParam String mail, @RequestParam String rol) {
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(mail);
+
+		if (usuario.isPresent()) {
+			System.out.print("Rol actual: " + usuario.get().getRol());
+			if (rol.equals("User")) {
+				usuario.get().setRol(100);
+			} else if (rol.equals("Vendedor")) {
+				usuario.get().setRol(200);
+			} else if (rol.equals("Admin")) {
+				usuario.get().setRol(300);
+			} else {
+				System.out.print("No existe el Rol ingresado");
+				return "no existe el rol ingresado";
+			}
+			usuarioService.actualizar(usuario.get());
+			System.out.print("Nuevo rol: " + usuario.get().getRol());
+			return "Rol modificado";
+		}
+		return "El correo ingresado no existe registrado en el sistema";// + nuevoRol;
+	}		
+     
 }
