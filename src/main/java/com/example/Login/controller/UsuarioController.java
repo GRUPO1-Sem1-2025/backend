@@ -141,7 +141,7 @@ public class UsuarioController {
 	@Autowired
 	private EmailService emailService;
 
-	@PostMapping("/cambiarcontrasenia")
+	@PostMapping("/resetearcontrasenia")
 	public String cambiarContraseña(@RequestParam String para) {
 		String asunto = "Nueva contraseña temporal";
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(para);
@@ -160,6 +160,44 @@ public class UsuarioController {
 			emailService.enviarCorreo(para, asunto, mensaje);
 
 			return "Correo enviado!";
+		} else {
+			return "No existe el usuario ingresado";
+		}
+	}
+	
+	@PostMapping("/cambiarcontrasenia")
+	public String cambiarContraseña(@RequestParam String mail, @RequestParam String old_pass, @RequestParam String new_pass, @RequestParam String new_pass1) {
+		//String asunto = "Nueva contraseña temporal";
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(mail);
+
+		if (usuario.isPresent()) {
+
+			// Nueva contraseña aleatoria
+			String contrasenia = usuario.get().getPassword();// GenerarContraseniaService.generarContraseniaAleatoria();
+			if (usuarioService.encriptarSHA256(old_pass).equals(contrasenia)) {
+				if(new_pass.equals(new_pass1)){
+					String nuevaContrasenia = usuarioService.encriptarSHA256(new_pass);// new_pass;
+					usuario.get().setPassword(nuevaContrasenia);
+					usuarioService.actualizar(usuario.get());
+					return "Contraseña cambiada";
+				}
+				else {
+					return "Las nuevas contraseñas no coinciden";
+				}
+				}
+			else {
+				return "la contraseña ingresada no coincide con la registrada en el sistema";
+			}
+			
+//			String mensaje = "Su nueva contraseñia temporal es la siguiente: " + contrasenia;
+//
+//			// Setear nueva contraseña encriptada
+//			usuario.get().setPassword(usuarioService.encriptarSHA256(contrasenia));
+//			usuarioService.actualizar(usuario.get());
+//
+//			emailService.enviarCorreo(para, asunto, mensaje);
+//
+//			return "Correo enviado!";
 		} else {
 			return "No existe el usuario ingresado";
 		}
