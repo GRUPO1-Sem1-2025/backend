@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-//@RequestMapping("/usuarios")
 @RequestMapping("/usuarios")
 @Tag(name = "Usuarios", description = "API para gestionar usuarios")
 
