@@ -83,7 +83,7 @@ public class AsientoService {
 			    String estadoAsiento = values[1];
 
 			    // Buscamos si ya existe un asiento con ese 'nro'
-			    Asiento asiento = asientoRepository.findByNro(nroAsiento).orElse(new Asiento());
+			    Asiento asiento = asientoRepository.findById(nroAsiento).orElse(new Asiento());
 			    asiento.setNro(nroAsiento);
 
 			    if (estadoAsiento.equals("libre")) {
@@ -116,6 +116,10 @@ public class AsientoService {
 		} finally {
 			reader.close(); // Cerramos el BufferedReader
 		}
+	}
+	
+	public long asientosTotales() {
+		return asientoRepository.count();
 	}
 	
 

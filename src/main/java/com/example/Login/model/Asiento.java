@@ -2,6 +2,7 @@ package com.example.Login.model;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ public class Asiento {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private boolean estado;
+	@Column(unique = true)
 	private int nro;
 	@ManyToMany(mappedBy = "listaAsientos")
     private List<Bus> buses;// = null;

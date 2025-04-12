@@ -1,4 +1,5 @@
 package com.example.Login.service;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ public class UsuarioService {
      return usuarioRepository.findAll();
     }
          
-     // 🔹 Guardar usuario con contraseña encriptada
+     // Guardar usuario con contraseña encriptada
      public Usuario guardarUsuario(Usuario usuario) {
     	 usuario.setPassword(encriptarSHA256(usuario.getPassword()));
          return usuarioRepository.save(usuario);
