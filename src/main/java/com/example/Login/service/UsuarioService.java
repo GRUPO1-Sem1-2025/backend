@@ -78,6 +78,8 @@ public class UsuarioService {
      // Guardar usuario con contraseña encriptada
      public Usuario guardarUsuario(Usuario usuario) {
     	 usuario.setPassword(encriptarSHA256(usuario.getPassword()));
+    	 usuario.setRol(100);
+    	 usuario.setActivo(true);
          return usuarioRepository.save(usuario);
          
      }
