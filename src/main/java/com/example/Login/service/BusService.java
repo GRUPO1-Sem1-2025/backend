@@ -1,7 +1,7 @@
 package com.example.Login.service;
 
 import com.example.Login.model.Asiento;
-import com.example.Login.model.Bus;
+import com.example.Login.model.Omnibus;
 
 import java.util.List;
 
@@ -28,11 +28,11 @@ public class BusService {
 	}
 	
 	// Guardar bus
-	public Bus guardarBus(Bus bus) {
+	public Omnibus crearOmnibus(Omnibus bus) {
 		return busRepository.save(bus);
 	}
 	
-	public Bus agregarAsientoABus(Bus bus,Asiento asiento) {
+	public Omnibus agregarAsientoABus(Omnibus bus,Asiento asiento) {
 		List<Asiento> listaAsientos = bus.getListaAsientos();
 		listaAsientos.add(asiento);		
 		return bus;

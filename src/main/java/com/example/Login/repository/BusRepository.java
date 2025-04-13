@@ -2,8 +2,8 @@ package com.example.Login.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.example.Login.model.Bus;
+import com.example.Login.model.Omnibus;
 
 
-@Repository public interface BusRepository extends JpaRepository<Bus,
+@Repository public interface BusRepository extends JpaRepository<Omnibus,
 Integer>{ }

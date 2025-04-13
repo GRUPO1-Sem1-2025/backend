@@ -1,7 +1,7 @@
 package com.example.Login.controller;
 
 import com.example.Login.model.Asiento;
-import com.example.Login.model.Bus;
+import com.example.Login.model.Omnibus;
 import com.example.Login.service.AsientoService;
 
 import java.util.HashMap;
@@ -28,16 +28,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/buses")
 @Tag(name = "Buses", description = "API para gestionar buses")
-public class BusController {
+public class OmnibusController {
 
-//	@Autowired
-//    private AsientoRepository asientoRepository;
-//
-//	private final BusService busService;
-//	
-//	@Autowired
-//    private AsientoService asientoService;
-	
 	@Autowired
 	private AsientoRepository asientoRepository;
 
@@ -48,14 +40,14 @@ public class BusController {
 	private BusService busService;
 	
 
-	public BusController(BusService busService, AsientoRepository asientoRepository) {
+	public OmnibusController(BusService busService, AsientoRepository asientoRepository) {
 		this.busService = busService;
 		this.asientoRepository = asientoRepository;
 	}
 	
 	@PostMapping
     @Operation(summary = "Crear un bus", description = "Agrega un bus")
-    public ResponseEntity<Map<String,String>> crearBus(@RequestBody Bus bus) {
+    public ResponseEntity<Map<String,String>> crearOmnibus(@RequestBody Omnibus bus) {
 		
 		Map<String, String> response = new HashMap<>();
 		int totalAsientos = bus.getCant_asientos();
@@ -85,7 +77,7 @@ public class BusController {
 				e.printStackTrace();
 			}
 		}	
-		busService.guardarBus(bus);
+		busService.crearOmnibus(bus);
 		response.put("mensaje", "Bus registrado exitosamente");
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // 201 - Creado		
 	}	

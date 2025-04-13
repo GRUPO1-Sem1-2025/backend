@@ -15,7 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "buses")
-public class Bus {
+public class Omnibus {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -31,11 +31,11 @@ public class Bus {
 	private int cant_asientos;
 	
 	// constructor
-	public Bus() {
+	public Omnibus() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Bus(int id, String marca, boolean activo, List<Asiento> listaAsientos, int cant_asientos) {
+	public Omnibus(int id, String marca, boolean activo, List<Asiento> listaAsientos, int cant_asientos) {
 		super();
 		this.id = id;
 		this.marca = marca;

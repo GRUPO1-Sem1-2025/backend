@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Login.model.Asiento;
-import com.example.Login.model.Bus;
+import com.example.Login.model.Omnibus;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.AsientoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -20,13 +20,13 @@ public class Asiento {
 	@Column(unique = true)
 	private int nro;
 	@ManyToMany(mappedBy = "listaAsientos")
-    private List<Bus> buses;// = null;
+    private List<Omnibus> buses;// = null;
 
    	// constructor
 	public Asiento() {	
 	}
 	
-	public Asiento(int id, boolean estado, int nro, List<Bus> buses) {
+	public Asiento(int id, boolean estado, int nro, List<Omnibus> buses) {
 		super();
 		this.id = id;
 		this.estado = estado;
@@ -40,11 +40,11 @@ public class Asiento {
 		return id;
 	}
 
-	public List<Bus> getBuses() {
+	public List<Omnibus> getBuses() {
 		return buses;
 	}
 
-	public void setBuses(List<Bus> buses) {
+	public void setBuses(List<Omnibus> buses) {
 		this.buses = buses;
 	}
 
