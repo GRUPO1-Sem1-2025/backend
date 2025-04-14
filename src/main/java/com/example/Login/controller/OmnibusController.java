@@ -54,49 +54,67 @@ public class OmnibusController {
 	}
 	
 	@PostMapping
-    @Operation(summary = "Crear un bus", description = "Agrega un bus")
-    public ResponseEntity<Map<String,String>> crearOmnibus(@RequestBody Omnibus bus) {
-		omnibusService.crearOmnibus(bus);
+	@Operation(summary = "Crear un bus", description = "Agrega un bus")
+	public ResponseEntity<Map<String, String>> crearOmnibus(@RequestBody Omnibus bus) {
+		
 		Map<String, String> response = new HashMap<>();
-		int totalAsientos = bus.getCant_asientos();
-		System.out.println("cantidad de asientos " + totalAsientos );
+		long totalAsientos = bus.getCant_asientos();
+		long asientosDisponibles = asientoRepository.count();
 		boolean estadoAsiento = true;
 		int i;
-		
-		for (i = 1; i <= totalAsientos; i++) {
-			System.out.println("valor de i " + i);
-		
 
-			try {
-				Optional<Asiento> a = asientoRepository.findByNro(i);
-				if (a != null && a.isPresent()) {
-					Asiento asiento = a.get();
-					System.out.println("Asiento encontrado con nro: " + i + " (id=" + a.get().getId() + ")");
-					omnibusService.asignarAsientoAOmnibus(bus, asiento, estadoAsiento);
-					System.out.println("Asiento agregado correctamente");
-					response.put("mensaje", "Asiento agregado correctamente");
-				} else {
-					System.out.println("Asiento no encontrado");
-					response.put("mensaje", "Asiento no encontrado");
+		if (totalAsientos < asientosDisponibles) {
+			omnibusService.crearOmnibus(bus);
+			for (i = 1; i <= totalAsientos; i++) {
+				System.out.println("valor de i " + i);
+
+				try {
+					Optional<Asiento> a = asientoRepository.findByNro(i);
+					if (a != null && a.isPresent()) {
+						Asiento asiento = a.get();
+						System.out.println("Asiento encontrado con nro: " + i + " (id=" + a.get().getId() + ")");
+						omnibusService.asignarAsientoAOmnibus(bus, asiento, estadoAsiento);
+						System.out.println("Asiento agregado correctamente");
+						response.put("mensaje", "Asiento agregado correctamente");
+					} else {
+						System.out.println("Asiento no encontrado");
+						response.put("mensaje", "Asiento no encontrado");
+					}
+				} catch (Exception e) {
+					System.out.println("Error en iteración i=" + i + ": " + e.getMessage());
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				System.out.println("Error en iteración i=" + i + ": " + e.getMessage());
-				e.printStackTrace();
 			}
-		}	
-		response.put("mensaje", "Bus registrado exitosamente");
-        return ResponseEntity.status(HttpStatus.CREATED).body(response); // 201 - Creado		
-	}	
-	
+			response.put("mensaje", "Bus registrado exitosamente");
+			return ResponseEntity.status(HttpStatus.CREATED).body(response); // 201 - Creado
+		} else {
+			response.put("mensaje", "El Bus no se puede crear con esa candidad de asientos, debe de tener menos de "
+					+ asientosDisponibles + " asientos");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+		}
+	}
+
 	@GetMapping ("/asientoslibres")
 	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")	
 	public ResponseEntity<Map<String,String>> mostrarAsientosLibres(@RequestParam int id){
 		Map<String, String> response = new HashMap<>();
 		List<Integer> asientosLibres = omnibusService.mostrarAsientosLibres(id);
-		int cantidadAsientoLibres = asientosLibres.size();
+		
 		response.put("mensaje", "El omnibus tiene los asientos " + asientosLibres + " libres");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+	
+	@PostMapping ("/cambiarestadoasiento")
+	@Operation(summary = "Cambiar estado de asiento", description = "cambiar estado de asiento")
+	public ResponseEntity<Map<String,String>> cambiarEstadoAsiento(@RequestParam int bus_id, @RequestParam int nro_asiento) {
+		Map<String, String> response = new HashMap<>();
+		
+		omnibusService.cambiarEstadoAsiento(bus_id, nro_asiento);
+		response.put("mensaje", "Se le cambió el estado al asiento nro " + nro_asiento);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	
 	
 
 

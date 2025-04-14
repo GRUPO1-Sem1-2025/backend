@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 //import com.example.Login.model.Usuario;
 import com.example.Login.repository.OmnibusRepository;
 //import com.example.Login.repository.UsuarioRepository;
-import com.example.Login.repository.UsuarioRepository;
+
 
 @Service
 public class OmnibusService {
@@ -75,5 +75,32 @@ public class OmnibusService {
 			}
 		}
 		return asientosLibres;
+	}
+	
+	public void cambiarEstadoAsiento(int bus_id, int nro_asiento) {
+		Optional<Omnibus> omnibus = omnibusRepository.findById(bus_id);
+		Omnibus bus = omnibus.get();
+		System.out.println("Encontre el bus");
+			
+		List<OmnibusAsiento> listaOmnibusAsiento = bus.getOmnibusAsientos();
+	
+		
+		for (OmnibusAsiento oa : listaOmnibusAsiento) {
+			int numeroAsiento = oa.getAsiento().getNro();// estado = oa.isEstado();
+			System.out.println("Estado del asiento: " + numeroAsiento);
+			
+			if (nro_asiento == numeroAsiento) {
+				System.out.println("El asiento buscado (" + oa.getAsiento().getNro() + ") fue encontrado en el bus");
+				if (oa.isEstado() == true) {
+					oa.setEstado(false);
+				}else {
+					oa.setEstado(true);
+				}
+				omnibusasientoRepository.save(oa);
+			}
+			else {
+				System.out.println("El asiento " + oa.getAsiento().getNro() + " no esta disponible en el bus");
+			}
+		}
 	}
 }
