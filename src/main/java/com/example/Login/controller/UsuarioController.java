@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-//@RequestMapping("/usuarios")
 @RequestMapping("/usuarios")
 @Tag(name = "Usuarios", description = "API para gestionar usuarios")
 
@@ -44,6 +43,7 @@ public class UsuarioController {
     @PostMapping
     @Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
     public ResponseEntity<Map<String,String>> crearUsuario(@RequestBody Usuario usuario) {
+    	System.out.println("Entre al usuario controller");
     	
     	Optional<Usuario> user = usuarioService.buscarPorEmail(usuario.getEmail());
     	Map<String, String> response = new HashMap<>();
@@ -53,7 +53,7 @@ public class UsuarioController {
     		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     	}
     	
-    	usuarioService.guardarUsuario(usuario);
+    	usuarioService.crearUsuario(usuario);
     	// 🔹 Prepara la respuesta exitosa
         response.put("mensaje", "Usuario registrado exitosamente");
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
@@ -61,7 +61,7 @@ public class UsuarioController {
     
     @GetMapping("/email/{email}")
     @Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
-    public ResponseEntity<Usuario> obtenerPorEmail(@PathVariable String email) {
+    public ResponseEntity<Usuario> buscarPorEmail(@PathVariable String email) {
         Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
         return usuario.map(ResponseEntity::ok) // Si el usuario existe, devolver 200 OK
                       .orElseGet(() -> ResponseEntity.notFound().build()); // Si no existe, devolver 404
@@ -96,7 +96,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     } 
     
-    //@DeleteMapping("/{email}")
     @DeleteMapping("/{email}")
     @Operation(summary = "Borrar un usuario por email", description = "Elimina un usuario de la base de datos por su email")
     public ResponseEntity<Map<String, String>> borrarUsuario(@PathVariable String email) {
@@ -117,7 +116,7 @@ public class UsuarioController {
     private UsuarioService fileConversionService;
 
     @PostMapping("/crearUsuariosMasivos")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> crearUsuariosMasivos(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
         }
@@ -142,7 +141,7 @@ public class UsuarioController {
 	private EmailService emailService;
 
 	@PostMapping("/resetearcontrasenia")
-	public String resetearContraseña(@RequestParam String para) {
+	public String resetearContrasenia(@RequestParam String para) {
 		String asunto = "Nueva contraseña temporal";
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(para);
 
@@ -166,7 +165,7 @@ public class UsuarioController {
 	}
 	
 	@PostMapping("/cambiarcontrasenia")
-	public String cambiarContraseña(@RequestParam String mail, @RequestParam String old_pass,
+	public String cambiarContrasenia(@RequestParam String mail, @RequestParam String old_pass,
 			@RequestParam String new_pass, @RequestParam String new_pass1) {
 		
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(mail);

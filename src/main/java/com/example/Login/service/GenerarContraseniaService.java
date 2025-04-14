@@ -21,11 +21,3 @@ public class GenerarContraseniaService {
 		System.out.println("String generado: " + contrasenia);
 	}
 }
-
-//	
-//
-//	public GenerarContraseniaService() {
-//		// TODO Auto-generated constructor stub
-//	}
-//
-//}

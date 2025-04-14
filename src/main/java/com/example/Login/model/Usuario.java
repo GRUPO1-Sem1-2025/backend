@@ -1,5 +1,10 @@
 package com.example.Login.model;
 
+import java.sql.Date;
+import java.time.LocalDate;
+
+import javax.xml.crypto.Data;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -10,23 +15,71 @@ public class Usuario {
 private int id;
 
 private String nombre;
+//Agregados por el mer
+private String apellido;
+private Date fechaNac;
 private String email;
+private String categoria;
+private String ci;
+private LocalDate fechaCreacion;
+//hasta aca
 private String password;
 private boolean activo;
 private int rol;
 
-// Getters y Setters
+
+
 public Usuario() {
 	
 }
-public Usuario(String nombre, String email, String password, boolean activo, int rol) {
+
+public Usuario(int id, String nombre, String apellido, Date fechaNac, String email, String categoria, String ci,
+		LocalDate fechaCreacion, String password, boolean activo, int rol) {
+	super();
+	this.id = id;
 	this.nombre = nombre;
+	this.apellido = apellido;
+	this.fechaNac = fechaNac;
 	this.email = email;
+	this.categoria = categoria;
+	this.ci = ci;
+	this.fechaCreacion = fechaCreacion;
 	this.password = password;
 	this.activo = activo;
 	this.rol = rol;
 }
 
+//Getters y Setters
+public String getApellido() {
+	return apellido;
+}
+public void setApellido(String apellido) {
+	this.apellido = apellido;
+}
+public Date getFechaNac() {
+	return fechaNac;
+}
+public void setFechaNac(Date fechaNacimiento) {
+	this.fechaNac = fechaNacimiento;
+}
+public String getCategoria() {
+	return categoria;
+}
+public void setCategoria(String categoria) {
+	this.categoria = categoria;
+}
+public String getCi() {
+	return ci;
+}
+public void setCi(String ci) {
+	this.ci = ci;
+}
+public LocalDate getFechaCreacion() {
+	return fechaCreacion;
+}
+public void setFechaCreacion(LocalDate fechaCreacion) {
+	this.fechaCreacion = fechaCreacion;
+}
 public int getId() { return id; }
 public void setId(int id) { this.id = id; }
 
