@@ -153,20 +153,6 @@ public class UsuarioService {
 
 					// Conversión segura:
 					java.sql.Date sqlFechaNacimiento = new java.sql.Date(fechaNacimiento.getTime());
-
-					user.setFechaNac(sqlFechaNacimiento);
-									
-//					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//					Date fechaNacimiento = sdf.parse(values[8]);
-//					
-//					// Conversión segura:					
-//					java.sql.Date sqlFechaNacimiento = new java.sql.Date(fechaNacimiento.getTime());
-//					user.setFechaNac((java.sql.Date) fechaNacimiento);
-					
-//					user.setFechaCreacion(new java.util.Date());
-					//user.setFechaCreacion(LocalDate.now());
-					
-					//user.set ((java.sql.Date) fechaCreacion);
 					
 					dataList.add(row);
 					

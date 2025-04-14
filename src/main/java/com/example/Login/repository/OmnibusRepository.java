@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import com.example.Login.model.Omnibus;
 
 
-@Repository public interface BusRepository extends JpaRepository<Omnibus,
+@Repository public interface OmnibusRepository extends JpaRepository<Omnibus,
 Integer>{ }

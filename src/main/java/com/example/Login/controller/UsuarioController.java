@@ -96,7 +96,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     } 
     
-    //@DeleteMapping("/{email}")
     @DeleteMapping("/{email}")
     @Operation(summary = "Borrar un usuario por email", description = "Elimina un usuario de la base de datos por su email")
     public ResponseEntity<Map<String, String>> borrarUsuario(@PathVariable String email) {

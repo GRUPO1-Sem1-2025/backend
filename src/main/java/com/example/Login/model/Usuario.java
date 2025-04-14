@@ -29,9 +29,6 @@ private int rol;
 
 
 
-
-
-// Getters y Setters
 public Usuario() {
 	
 }
@@ -51,6 +48,8 @@ public Usuario(int id, String nombre, String apellido, Date fechaNac, String ema
 	this.activo = activo;
 	this.rol = rol;
 }
+
+//Getters y Setters
 public String getApellido() {
 	return apellido;
 }
@@ -98,10 +97,5 @@ public void setPassword(String password) { this.password = password; }
 
 public boolean getActivo() { return activo; }
 public void setActivo(boolean activo) { this.activo = activo; }
-
-//public void setFechaNac(java.util.Date fechaNacimiento) {
-//	// TODO Auto-generated method stub
-//	
-//}
 
 }

@@ -3,6 +3,7 @@ package com.example.Login.controller;
 import com.example.Login.model.Asiento;
 import com.example.Login.model.Omnibus;
 import com.example.Login.service.AsientoService;
+import com.example.Login.service.OmnibusService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Login.model.Usuario;
 import com.example.Login.service.AsientoService;
 import com.example.Login.repository.AsientoRepository;
-import com.example.Login.service.BusService;
+import com.example.Login.service.OmnibusService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +31,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Buses", description = "API para gestionar buses")
 public class OmnibusController {
 
+    //private final controller.UsuarioController usuarioController;
+
 	@Autowired
 	private AsientoRepository asientoRepository;
 
@@ -37,35 +40,35 @@ public class OmnibusController {
 	private AsientoService asientoService;
 
 	@Autowired
-	private BusService busService;
+	private OmnibusService omnibusService;
 	
 
-	public OmnibusController(BusService busService, AsientoRepository asientoRepository) {
-		this.busService = busService;
+	public OmnibusController(OmnibusService omnibusService, AsientoRepository asientoRepository){
+		this.omnibusService = omnibusService;
 		this.asientoRepository = asientoRepository;
+		//this.usuarioController = usuarioController;
 	}
 	
 	@PostMapping
     @Operation(summary = "Crear un bus", description = "Agrega un bus")
     public ResponseEntity<Map<String,String>> crearOmnibus(@RequestBody Omnibus bus) {
-		
+		omnibusService.crearOmnibus(bus);
 		Map<String, String> response = new HashMap<>();
 		int totalAsientos = bus.getCant_asientos();
 		System.out.println("cantidad de asientos " + totalAsientos );
-		
-		//(int)asientoService.asientosTotales();
-		//Asiento asiento = new Asiento();
+		boolean estadoAsiento = true;
 		int i;
+		
 		for (i = 1; i <= totalAsientos; i++) {
 			System.out.println("valor de i " + i);
-			int nro = i;
+		
 
 			try {
 				Optional<Asiento> a = asientoRepository.findByNro(i);
 				if (a != null && a.isPresent()) {
-					System.out.println("✅ Asiento encontrado con nro: " + i + " (id=" + a.get().getId() + ")");
-					System.out.println("Id de Asiento " + a.get().getId());
-					busService.agregarAsientoABus(bus, a.get());
+					Asiento asiento = a.get();
+					System.out.println("Asiento encontrado con nro: " + i + " (id=" + a.get().getId() + ")");
+					omnibusService.asignarAsientoAOmnibus(bus, asiento, estadoAsiento);
 					System.out.println("Asiento agregado correctamente");
 					response.put("mensaje", "Asiento agregado correctamente");
 				} else {
@@ -77,7 +80,6 @@ public class OmnibusController {
 				e.printStackTrace();
 			}
 		}	
-		busService.crearOmnibus(bus);
 		response.put("mensaje", "Bus registrado exitosamente");
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // 201 - Creado		
 	}	

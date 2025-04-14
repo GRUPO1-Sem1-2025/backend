@@ -1,51 +1,49 @@
 package com.example.Login.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "asientos")
 public class Asiento {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
-	private boolean estado;
-	@Column(unique = true)
-	private int nro;
-	@ManyToMany(mappedBy = "listaAsientos")
-    private List<Omnibus> buses;// = null;
+	 @Id
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	    private int id;
+
+	    //private boolean estado;
+
+	    @Column(unique = true)
+	    private int nro;
+
+	    @OneToMany(mappedBy = "asiento", cascade = CascadeType.ALL, orphanRemoval = true)
+	    private List<OmnibusAsiento> omnibusAsientos = new ArrayList<>();
+
 
    	// constructor
 	public Asiento() {	
 	}
 	
-	public Asiento(int id, boolean estado, int nro, List<Omnibus> buses) {
+	public Asiento(int id, int nro, List<OmnibusAsiento> omnibusAsientos) {
 		super();
 		this.id = id;
-		this.estado = estado;
 		this.nro = nro;
-		this.buses = buses;
+		this.omnibusAsientos = omnibusAsientos;
 	}
-	
+
 	// set and get
 
 	public int getId() {
 		return id;
-	}
-
-	public List<Omnibus> getBuses() {
-		return buses;
-	}
-
-	public void setBuses(List<Omnibus> buses) {
-		this.buses = buses;
 	}
 
 	public void setId(int id) {
@@ -60,11 +58,13 @@ public class Asiento {
 		this.nro = nro;
 	}
 
-	public boolean getEstado() {
-		return estado;
+	public List<OmnibusAsiento> getOmnibusAsientos() {
+		return omnibusAsientos;
 	}
 
-	public void setEstado(boolean estado) {
-		this.estado = estado;
+	public void setOmnibusAsientos(List<OmnibusAsiento> omnibusAsientos) {
+		this.omnibusAsientos = omnibusAsientos;
 	}
+
+	
 }
