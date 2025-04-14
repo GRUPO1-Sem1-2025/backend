@@ -6,6 +6,7 @@ import com.example.Login.service.AsientoService;
 import com.example.Login.service.OmnibusService;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,14 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Login.model.Usuario;
 import com.example.Login.service.AsientoService;
 import com.example.Login.repository.AsientoRepository;
+import com.example.Login.repository.OmnibusRepository;
 import com.example.Login.service.OmnibusService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -83,5 +87,17 @@ public class OmnibusController {
 		response.put("mensaje", "Bus registrado exitosamente");
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // 201 - Creado		
 	}	
+	
+	@GetMapping ("/asientoslibres")
+	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")	
+	public ResponseEntity<Map<String,String>> mostrarAsientosLibres(@RequestParam int id){
+		Map<String, String> response = new HashMap<>();
+		List<Integer> asientosLibres = omnibusService.mostrarAsientosLibres(id);
+		int cantidadAsientoLibres = asientosLibres.size();
+		response.put("mensaje", "El omnibus tiene los asientos " + asientosLibres + " libres");
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+
 
 }

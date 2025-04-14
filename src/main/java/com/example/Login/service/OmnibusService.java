@@ -5,7 +5,9 @@ import com.example.Login.model.Omnibus;
 import com.example.Login.model.OmnibusAsiento;
 import com.example.Login.repository.OmnibusAsientoRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,5 +53,27 @@ public class OmnibusService {
 		    omnibusasientoRepository.save(relacion);
 	}
 	
-
+	public List<Integer> mostrarAsientosLibres(int bus_id) {
+		Optional<Omnibus> omnibus = omnibusRepository.findById(bus_id);
+		Omnibus bus = omnibus.get();
+		System.out.println("Encontre el bus");
+		
+		List<Integer> asientosLibres = new ArrayList<>();	
+		List<OmnibusAsiento> listaOmnibusAsiento = bus.getOmnibusAsientos();
+	
+		
+		for (OmnibusAsiento oa : listaOmnibusAsiento) {
+			boolean estado = oa.isEstado();
+			System.out.println("Estado del asiento: " + estado);
+			
+			if (estado == true) {
+				System.out.println("El asiento " + oa.getAsiento().getNro() + " esta libre");
+				asientosLibres.add(oa.getAsiento().getNro());
+			}
+			else {
+				System.out.println("El asiento " + oa.getAsiento().getNro() + " esta ocupado");
+			}
+		}
+		return asientosLibres;
+	}
 }
