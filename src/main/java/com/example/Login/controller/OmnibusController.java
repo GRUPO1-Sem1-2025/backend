@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Buses", description = "API para gestionar buses")
 public class OmnibusController {
 
-    //private final controller.UsuarioController usuarioController;
+	// private final controller.UsuarioController usuarioController;
 
 	@Autowired
 	private AsientoRepository asientoRepository;
@@ -46,18 +46,20 @@ public class OmnibusController {
 
 	@Autowired
 	private OmnibusService omnibusService;
-	
 
-	public OmnibusController(OmnibusService omnibusService, AsientoRepository asientoRepository){
+	@Autowired
+	private OmnibusRepository omnibusrepository;
+
+	public OmnibusController(OmnibusService omnibusService, AsientoRepository asientoRepository) {
 		this.omnibusService = omnibusService;
 		this.asientoRepository = asientoRepository;
-		//this.usuarioController = usuarioController;
+		// this.usuarioController = usuarioController;
 	}
-	
+
 	@PostMapping
 	@Operation(summary = "Crear un bus", description = "Agrega un bus")
 	public ResponseEntity<Map<String, String>> crearOmnibus(@RequestBody Omnibus bus) {
-		
+
 		Map<String, String> response = new HashMap<>();
 		long totalAsientos = bus.getCant_asientos();
 		long asientosDisponibles = asientoRepository.count();
@@ -95,16 +97,16 @@ public class OmnibusController {
 		}
 	}
 
-	@GetMapping ("/asientosLibres")
-	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")	
-	public ResponseEntity<Map<String,String>> mostrarAsientosLibres(@RequestParam int id){
+	@GetMapping("/asientosLibres")
+	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")
+	public ResponseEntity<Map<String, String>> mostrarAsientosLibres(@RequestParam int id) {
 		Map<String, String> response = new HashMap<>();
 		List<Integer> asientosLibres = omnibusService.mostrarAsientosLibres(id);
-		
+
 		response.put("mensaje", "El omnibus tiene los asientos " + asientosLibres + " libres");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-	
+
 	@PostMapping("/cambiarEstadoAsiento")
 	@Operation(summary = "Cambiar estado de asiento", description = "cambiar estado de asiento")
 	public ResponseEntity<Map<String, String>> cambiarEstadoAsiento(@RequestParam int bus_id,
@@ -122,16 +124,39 @@ public class OmnibusController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
-	
-	@GetMapping("/obtenerOmnibusActivos")
-    @Operation(summary = "Obtener omnibus activos", description = "Retorna los omnibus activos")    
-    public List<Omnibus> obtenerOmnibusActivos () {
-        return omnibusService.obtenerOmnibusActivos();
-        }
-	
-	
-	
-	
 
+	@GetMapping("/obtenerOmnibusActivos")
+	@Operation(summary = "Obtener omnibus activos", description = "Retorna los omnibus activos")
+	public List<Omnibus> obtenerOmnibusActivos() {
+		return omnibusService.obtenerOmnibusActivos();
+	}
+
+	@PostMapping("/asignarLocalidad")
+	@Operation(summary = "Asigna localidad a un omnibus", description = "Agrega una localidad a un bus")
+	public ResponseEntity<Map<String, String>> asignarLocalidadAOmnibus(int id_bus, String nombreLocalidad) {
+		int retornoServicio;
+		Map<String, String> response = new HashMap<>();
+		Optional<Omnibus> omnibus = omnibusrepository.findById(id_bus);
+
+		if (omnibus.isPresent()) {
+			retornoServicio = omnibusService.asignarLocalidadAOmnibus(omnibus.get(), nombreLocalidad);
+			switch (retornoServicio) {
+			case 0:
+				response.put("mensaje", "Se modifico la localidad en la cual se encuentra el omnibus actualmente");
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			case 1:
+				response.put("mensaje", "No esta permitido hacer viajes a " + nombreLocalidad);
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			case 2:
+				response.put("mensaje", "No existe una localidad llamada " + nombreLocalidad + " en el sistema");
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			}
+		} else {
+			response.put("mensaje", "No existe un omnibus que contenga ese ID");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+		}
+		response.put("mensaje", "Error desconocido");
+		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+	}		
 
 }

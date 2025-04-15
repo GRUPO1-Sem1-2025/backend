@@ -28,6 +28,10 @@ public class ViajeService {
 	            System.out.println("La ciudad de origen y destino no pueden ser las mismas");
 	            return false;
 	        }
+	    	if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
+	    		System.out.println("Una de las ciudades no se encuentra disponible");
+	    		return false;
+	    	}
 
 	        Localidad localidadOrigen = locOri.get();
 	        Localidad localidadDestino = locDest.get();
