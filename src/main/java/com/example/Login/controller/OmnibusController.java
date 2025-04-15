@@ -105,7 +105,7 @@ public class OmnibusController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
-	@PostMapping("/cambiarestadoasiento")
+	@PostMapping("/cambiarEstadoAsiento")
 	@Operation(summary = "Cambiar estado de asiento", description = "cambiar estado de asiento")
 	public ResponseEntity<Map<String, String>> cambiarEstadoAsiento(@RequestParam int bus_id,
 			@RequestParam int nro_asiento) {
