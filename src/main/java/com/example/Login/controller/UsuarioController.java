@@ -40,7 +40,7 @@ public class UsuarioController {
     }
 
 
-    @PostMapping
+    @PostMapping("/registrarse")
     @Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
     public ResponseEntity<Map<String,String>> crearUsuario(@RequestBody Usuario usuario) {
     	System.out.println("Entre al usuario controller");
@@ -58,6 +58,26 @@ public class UsuarioController {
         response.put("mensaje", "Usuario registrado exitosamente");
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
     }
+    
+    @PostMapping("/crearcuenta")
+    @Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
+    public ResponseEntity<Map<String,String>> registrarNuevoUsuario(@RequestBody Usuario usuario) {
+    	System.out.println("Entre al usuario controller");
+    	
+    	Optional<Usuario> user = usuarioService.buscarPorEmail(usuario.getEmail());
+    	Map<String, String> response = new HashMap<>();
+    	
+    	if (user.isPresent()) {
+    		response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
+    		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    	}
+    	
+    	usuarioService.registrarNuevoUsuario(usuario);
+    	// 🔹 Prepara la respuesta exitosa
+        response.put("mensaje", "Usuario registrado exitosamente");
+        return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
+    }
+    
     
     @GetMapping("/email/{email}")
     @Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")

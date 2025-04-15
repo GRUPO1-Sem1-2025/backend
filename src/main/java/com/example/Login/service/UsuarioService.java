@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.internal.function.text.Concatenate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -43,6 +44,9 @@ public class UsuarioService {
     
     @Autowired
     private JwtService jwtService;
+    
+    @Autowired
+	private EmailService emailService;
     
     //private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
@@ -87,7 +91,29 @@ public class UsuarioService {
     	 usuario.setActivo(true);
 		 usuario.setFechaCreacion(LocalDate.now());
          return usuarioRepository.save(usuario);
+         //emailService.enviarCorreo(para, asunto, mensaje);
          
+     }
+     
+  // Guardar usuario con contraseña encriptada
+     public Usuario registrarNuevoUsuario(Usuario usuario) {
+    	 //String contrasenia = encriptarSHA256(usuario.getApellido() + usuario.getNombre());
+    	 System.out.println("Entre al usuario service");
+    	 //usuario.setPassword(encriptarSHA256(contrasenia));
+    	 usuario.setRol(100);
+    	 usuario.setActivo(true);
+		 usuario.setFechaCreacion(LocalDate.now());
+		 
+		 String password = usuario.getApellido()+usuario.getNombre()+"_2025";		
+		 usuario.setPassword(encriptarSHA256(password));
+		 
+		 String para = usuario.getEmail();
+		 String asunto = "Contrasenia de inicio de sesion";
+		 String mensaje = "Bienvenido " + usuario.getNombre() + " usted ha sido dado de alta en nuestro sistema."
+		 		+ " La contraseña temporal para acceder es " + password + " no se olvide de cambiarla una vez que haya ingresado";        
+         
+		 emailService.enviarCorreo(para, asunto, mensaje);
+         return usuarioRepository.save(usuario);
      }
      
      public Usuario borrarUsuario(Optional<Usuario> user) {
