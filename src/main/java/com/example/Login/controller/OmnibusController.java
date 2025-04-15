@@ -1,6 +1,7 @@
 package com.example.Login.controller;
 
 import com.example.Login.model.Asiento;
+import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
 import com.example.Login.service.AsientoService;
 import com.example.Login.service.OmnibusService;
@@ -94,7 +95,7 @@ public class OmnibusController {
 		}
 	}
 
-	@GetMapping ("/asientoslibres")
+	@GetMapping ("/asientosLibres")
 	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")	
 	public ResponseEntity<Map<String,String>> mostrarAsientosLibres(@RequestParam int id){
 		Map<String, String> response = new HashMap<>();
@@ -121,6 +122,14 @@ public class OmnibusController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
+	
+	@GetMapping("/obtenerOmnibusActivos")
+    @Operation(summary = "Obtener omnibus activos", description = "Retorna los omnibus activos")    
+    public List<Omnibus> obtenerOmnibusActivos () {
+        return omnibusService.obtenerOmnibusActivos();
+        }
+	
+	
 	
 	
 

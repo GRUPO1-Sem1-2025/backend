@@ -1,6 +1,7 @@
 package com.example.Login.service;
 
 import com.example.Login.model.Asiento;
+import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.OmnibusAsiento;
 import com.example.Login.repository.OmnibusAsientoRepository;
@@ -108,5 +109,18 @@ public class OmnibusService {
 			return false;
 		}
 		return false;
+	}
+	
+	public List<Omnibus> obtenerOmnibusActivos(){
+		List<Omnibus> omnibusActivos = new ArrayList<>();
+		List<Omnibus> omnibusTotales = omnibusRepository.findAll();
+		System.out.println("Cantidad totales: " + omnibusTotales.size());
+		
+		for (Omnibus omnibus : omnibusTotales) {
+			if (omnibus.isActivo()){
+				omnibusActivos.add(omnibus);
+			}
+		}		
+		return omnibusActivos;
 	}
 }

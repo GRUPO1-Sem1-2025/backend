@@ -1,23 +1,17 @@
 package com.example.Login.service;
+import com.example.Login.model.Localidad;
+import com.example.Login.repository.LocalidadRepository;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.example.Login.model.Localidad;
-import com.example.Login.model.Usuario;
-import com.example.Login.repository.LocalidadRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -41,7 +35,7 @@ public class LocalidadService {
 		return localidadRepository.findByNombre(nombre);
 	}
 	
-	public String convertCsvToJson(MultipartFile file) throws Exception {
+	public String crearLocalidadesMasivas(MultipartFile file) throws Exception {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
 		String line;
 		List<Map<String, String>> dataList = new ArrayList<>();
@@ -60,17 +54,20 @@ public class LocalidadService {
 
 				// Construimos el JSON correctamente
 				Map<String, String> row = new HashMap<>();
-
+				String estado  = values[2].toLowerCase();
+				
 				row.put("nombre", values[0]);
 				row.put("departamento", values[1]);
 				row.put("activo", values[2]);
 								
-				if (values[5].equals("true")) {
+				if (estado.equals("true")) {
 					localidad.setActivo(true);// values[3].toString());
 				} else {
 					localidad.setActivo(false);
 				}
-								
+				localidad.setDepartamento(values[1]);
+				localidad.setNombre(values[0]);				
+				
 				dataList.add(row);
 				localidadNoEncontrado = buscarPorNombre(values[0]);
 				if (localidadNoEncontrado.isEmpty()) {
@@ -91,6 +88,18 @@ public class LocalidadService {
 		} finally {
 			reader.close(); // Cerramos el BufferedReader
 		}
+	}
+	
+	public List<Localidad> obtenerLocalidadesActivas(){
+		List<Localidad> localidadesActivas = new ArrayList<>();
+		List<Localidad> localidadesTotales = localidadRepository.findAll();
+		
+		for (Localidad localidad : localidadesTotales) {
+			if (localidad.isActivo()){
+				localidadesActivas.add(localidad);
+			}
+		}		
+		return localidadesActivas;
 	}
 
 }

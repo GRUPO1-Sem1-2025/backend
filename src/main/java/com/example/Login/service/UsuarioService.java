@@ -141,7 +141,7 @@ public class UsuarioService {
 
 					// Construimos el JSON correctamente
 					Map<String, String> row = new HashMap<>();
-
+					String estado  = values[5].toLowerCase();
 					row.put("nombre", values[0]);
 					row.put("Apellido", values[1]);
 					row.put("email", values[2]);	
