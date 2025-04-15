@@ -1,7 +1,11 @@
 package com.example.Login.model;
 
+import com.example.Login.dto.EstadoViaje;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +29,7 @@ public class OmnibusAsientoViaje {
     @JoinColumn(name = "viaje_id")
     private Viaje viaje;
 
-    @Column(name = "estado") 
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_viaje")
+    private EstadoViaje estadoViaje;
 }
