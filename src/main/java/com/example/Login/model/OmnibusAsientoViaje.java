@@ -16,8 +16,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "bus_asiento_viaje")
 public class OmnibusAsientoViaje {
-
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -32,4 +31,51 @@ public class OmnibusAsientoViaje {
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_viaje")
     private EstadoViaje estadoViaje;
+    
+    // Constructor
+    public OmnibusAsientoViaje() {
+    	
+    }
+
+    public OmnibusAsientoViaje(int id, OmnibusAsiento omnibusAsiento, Viaje viaje, EstadoViaje estadoViaje) {
+		super();
+		this.id = id;
+		this.omnibusAsiento = omnibusAsiento;
+		this.viaje = viaje;
+		this.estadoViaje = estadoViaje;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public OmnibusAsiento getOmnibusAsiento() {
+		return omnibusAsiento;
+	}
+
+	public void setOmnibusAsiento(OmnibusAsiento omnibusAsiento) {
+		this.omnibusAsiento = omnibusAsiento;
+	}
+
+	public Viaje getViaje() {
+		return viaje;
+	}
+
+	public void setViaje(Viaje viaje) {
+		this.viaje = viaje;
+	}
+
+	public EstadoViaje getEstadoViaje() {
+		return estadoViaje;
+	}
+
+	public void setEstadoViaje(EstadoViaje estadoViaje) {
+		this.estadoViaje = estadoViaje;
+	}    
+    
 }
+
