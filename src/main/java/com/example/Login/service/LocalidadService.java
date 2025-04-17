@@ -1,4 +1,5 @@
 package com.example.Login.service;
+import com.example.Login.dto.DtoLocalidad;
 import com.example.Login.model.Localidad;
 import com.example.Login.repository.LocalidadRepository;
 
@@ -25,8 +26,13 @@ public class LocalidadService {
 	}
 
 	// Guardar localidad
-	public Localidad crearLocalidad(Localidad localidad) {
-		return localidadRepository.save(localidad);
+	public DtoLocalidad crearLocalidad(DtoLocalidad dtoLocalidad) {
+		Localidad localidad = new Localidad();
+		localidad.setActivo(dtoLocalidad.isActivo());
+		localidad.setDepartamento(dtoLocalidad.getDepartamento());
+		localidad.setNombre(dtoLocalidad.getNombre());
+		localidadRepository.save(localidad);
+		return dtoLocalidad;
 
 	}
 

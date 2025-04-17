@@ -6,6 +6,7 @@ import com.example.Login.repository.ViajeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.Localidad;
@@ -30,47 +31,51 @@ public class ViajeService {
 	@Autowired
 	private OmnibusRepository omnibusRepository;
 
-	@Autowired
-	private OmnibusAsientoRepository omnibusAsientoRepository;
+//	@Autowired
+//	private OmnibusAsientoRepository omnibusAsientoRepository;
 
-	@Autowired
-	private OmnibusAsientoViajeRepository omnibusAsientoViajeRepository;
+//	@Autowired
+//	private OmnibusAsientoViajeRepository omnibusAsientoViajeRepository;
 
-	public boolean crearViaje(Viaje viaje) {
+	public int crearViaje(DtoViaje dtoViaje) {
 		Viaje nuevoViaje = new Viaje();
-		Optional<Localidad> locOri = localidadRepository.findById(viaje.getLocalidadOrigen().getId());
-		Optional<Localidad> locDest = localidadRepository.findById(viaje.getLocalidadDestino().getId());
+		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
+		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
+		Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());// getIdLocalidadOrigen().getId());
+		Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());//.getId());
 
 		if (locOri.isPresent() && locDest.isPresent()) {
 			if (locOri.get().getId() == locDest.get().getId()) {
 				System.out.println("La ciudad de origen y destino no pueden ser las mismas");
-				return false;
+				return 1;
 			}
 			if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
+				System.out.println("estado origen: " + locOri.get().isActivo());
+				System.out.println("estado destino: " + locDest.get().isActivo());
 				System.out.println("Una de las ciudades no se encuentra disponible");
-				return false;
+				return 2;
 			}
 
 			Localidad localidadOrigen = locOri.get();
 			Localidad localidadDestino = locDest.get();
 
-			nuevoViaje.setFechaFin(viaje.getFechaFin());
-			nuevoViaje.setFechaInicio(viaje.getFechaInicio());
-			nuevoViaje.setHoraInicio(viaje.getHoraInicio());
-			nuevoViaje.setHoraFin(viaje.getHoraFin());
+			nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
+			nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
+			nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
+			nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
 			nuevoViaje.setLocalidadOrigen(localidadOrigen);
 			nuevoViaje.setLocalidadDestino(localidadDestino);
-			nuevoViaje.setPrecio(viaje.getPrecio());
+			nuevoViaje.setPrecio(dtoViaje.getPrecio());
 			nuevoViaje.setOmnibus(null);
 			nuevoViaje.setAsientosPorViaje(null);
 			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
 			
 
 			viajeRepository.save(nuevoViaje);
-			return true;
+			return 3;
 		}
 		System.out.println("Una de las ciudads ingresadas no existe en el sistema");
-		return false;
+		return 4;
 	}
 
 	public int asignarOmnibusAViaje_vieja(Omnibus omnibus, Viaje viaje) {

@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
+import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -89,9 +90,13 @@ public class UsuarioService {
 	}
 
 	// Guardar usuario con contraseña encriptada
-	public Usuario crearUsuario(Usuario usuario) {
+	public Usuario crearUsuario(DtoRegistrarse registrarse) {
 		System.out.println("Entre al usuario service");
-		usuario.setPassword(encriptarSHA256(usuario.getPassword()));
+		Usuario usuario = new Usuario();
+		usuario.setNombre(registrarse.getNombre());
+		usuario.setApellido(registrarse.getApellido());
+		usuario.setEmail(registrarse.getEmail());
+		usuario.setPassword(encriptarSHA256(registrarse.getPassword()));
 		usuario.setRol(100);
 		usuario.setActivo(true);
 		usuario.setFechaCreacion(LocalDate.now());
@@ -106,7 +111,10 @@ public class UsuarioService {
 		// usuario.getNombre());
 		System.out.println("Entre al usuario service");
 		// usuario.setPassword(encriptarSHA256(contrasenia));
-		usuario.setRol(100);
+		int rol = 100;
+		usuario.setRol(rol);
+		System.out.print("Rol del usuario agregado = " + rol);
+		
 		usuario.setActivo(true);
 		usuario.setFechaCreacion(LocalDate.now());
 
@@ -125,9 +133,9 @@ public class UsuarioService {
 
 	public Usuario borrarUsuario(Optional<Usuario> user) {
 		Usuario u = user.get();
-		usuarioRepository.delete(u);
+		u.setActivo(false);
+		usuarioRepository.save(u);
 		return u;
-
 	}
 
 	public String convertCsvToJson(MultipartFile file) throws Exception {
@@ -160,6 +168,7 @@ public class UsuarioService {
 				row.put("fechaNac", values[8]);
 
 				user.setNombre(values[0]);
+				user.setApellido(values[1]);
 				user.setEmail(values[2]);
 				user.setPassword(values[3]);
 				user.setPassword(encriptarSHA256(user.getPassword()));
@@ -180,6 +189,7 @@ public class UsuarioService {
 				}
 				user.setCategoria(values[6]);
 				user.setCi(values[7]);
+				user.setFechaCreacion(LocalDate.now());
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				Date fechaNacimiento = sdf.parse(values[8]);

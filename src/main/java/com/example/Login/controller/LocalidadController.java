@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.Login.dto.DtoLocalidad;
 import com.example.Login.model.Localidad;
 import com.example.Login.service.LocalidadService;
 
@@ -38,17 +39,17 @@ public class LocalidadController {
     
     @PostMapping("/agregarlocalidad")
     @Operation(summary = "Crear una localidad", description = "Agrega una nueva localidad")
-    public ResponseEntity<Map<String,String>> crearLocalidad(@RequestBody Localidad localidad) {
+    public ResponseEntity<Map<String,String>> crearLocalidad(@RequestBody DtoLocalidad dtoLocalidad) {
     	
-    	Optional<Localidad> loc = localidadService.buscarPorNombre(localidad.getNombre());
+    	Optional<Localidad> loc = localidadService.buscarPorNombre(dtoLocalidad.getNombre());
     	Map<String, String> response = new HashMap<>();
     	
     	if (loc.isPresent()) {
-    		response.put("mensaje", "Ya existe una Localidad con el nombre  " + localidad.getNombre());
+    		response.put("mensaje", "Ya existe una Localidad con el nombre  " + dtoLocalidad.getNombre());
     		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     	}
     	
-    	localidadService.crearLocalidad(localidad);
+    	localidadService.crearLocalidad(dtoLocalidad);
     	// 🔹 Prepara la respuesta exitosa
         response.put("mensaje", "Localidad registrada exitosamente");
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado

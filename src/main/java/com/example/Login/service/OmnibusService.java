@@ -1,5 +1,6 @@
 package com.example.Login.service;
 
+import com.example.Login.dto.DtoBus;
 import com.example.Login.model.Asiento;
 import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
@@ -112,14 +113,18 @@ public class OmnibusService {
 //		return false;
 //	}
 
-	public List<Omnibus> obtenerOmnibusActivos() {
-		List<Omnibus> omnibusActivos = new ArrayList<>();
+	public List<DtoBus> obtenerOmnibusActivos() {
+		List<DtoBus> omnibusActivos = new ArrayList<>();
 		List<Omnibus> omnibusTotales = omnibusRepository.findAll();
 		System.out.println("Cantidad totales: " + omnibusTotales.size());
 
 		for (Omnibus omnibus : omnibusTotales) {
 			if (omnibus.isActivo()) {
-				omnibusActivos.add(omnibus);
+				DtoBus bus = new DtoBus();
+				bus.setActivo(true);
+				bus.setCant_asientos(omnibus.getCant_asientos());
+				bus.setMarca(omnibus.getMarca());
+				omnibusActivos.add(bus);
 			}
 		}
 		return omnibusActivos;

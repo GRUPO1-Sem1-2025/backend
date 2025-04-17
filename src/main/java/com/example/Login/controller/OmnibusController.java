@@ -1,5 +1,7 @@
 package com.example.Login.controller;
 
+import com.example.Login.dto.DtoBus;
+import com.example.Login.dto.DtoCargarLocalidad;
 import com.example.Login.model.Asiento;
 import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
@@ -56,10 +58,14 @@ public class OmnibusController {
 		// this.usuarioController = usuarioController;
 	}
 
-	@PostMapping
+	@PostMapping("/crearOmnibus")
 	@Operation(summary = "Crear un bus", description = "Agrega un bus")
-	public ResponseEntity<Map<String, String>> crearOmnibus(@RequestBody Omnibus bus) {
-
+	public ResponseEntity<Map<String, String>> crearOmnibus(@RequestBody DtoBus dtoBus) {
+		Omnibus bus = new Omnibus();
+		bus.setCant_asientos(dtoBus.getCant_asientos());
+		bus.setMarca(dtoBus.getMarca());
+		bus.setActivo(dtoBus.isActivo());
+		
 		Map<String, String> response = new HashMap<>();
 		long totalAsientos = bus.getCant_asientos();
 		long asientosDisponibles = asientoRepository.count();
@@ -127,28 +133,29 @@ public class OmnibusController {
 
 	@GetMapping("/obtenerOmnibusActivos")
 	@Operation(summary = "Obtener omnibus activos", description = "Retorna los omnibus activos")
-	public List<Omnibus> obtenerOmnibusActivos() {
+	public List<DtoBus> obtenerOmnibusActivos() {
 		return omnibusService.obtenerOmnibusActivos();
 	}
 
 	@PostMapping("/asignarLocalidad")
 	@Operation(summary = "Asigna localidad a un omnibus", description = "Agrega una localidad a un bus")
-	public ResponseEntity<Map<String, String>> asignarLocalidadAOmnibus(int id_bus, String nombreLocalidad) {
+	public ResponseEntity<Map<String, String>> asignarLocalidadAOmnibus(@RequestBody DtoCargarLocalidad cargarLocalidad) {
 		int retornoServicio;
 		Map<String, String> response = new HashMap<>();
-		Optional<Omnibus> omnibus = omnibusrepository.findById(id_bus);
+		Optional<Omnibus> omnibus = omnibusrepository.findById(cargarLocalidad.getId_bus());
+		System.out.println("idBus: " + cargarLocalidad.getId_bus());
 
 		if (omnibus.isPresent()) {
-			retornoServicio = omnibusService.asignarLocalidadAOmnibus(omnibus.get(), nombreLocalidad);
+			retornoServicio = omnibusService.asignarLocalidadAOmnibus(omnibus.get(), cargarLocalidad.getNombreLocalidad());
 			switch (retornoServicio) {
 			case 0:
 				response.put("mensaje", "Se modifico la localidad en la cual se encuentra el omnibus actualmente");
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			case 1:
-				response.put("mensaje", "No esta permitido hacer viajes a " + nombreLocalidad);
+				response.put("mensaje", "No esta permitido hacer viajes a " + cargarLocalidad.getNombreLocalidad());
 				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 			case 2:
-				response.put("mensaje", "No existe una localidad llamada " + nombreLocalidad + " en el sistema");
+				response.put("mensaje", "No existe una localidad llamada " + cargarLocalidad.getNombreLocalidad() + " en el sistema");
 				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 			}
 		} else {

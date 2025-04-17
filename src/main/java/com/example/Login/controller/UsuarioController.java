@@ -1,5 +1,7 @@
 package com.example.Login.controller;
 
+import com.example.Login.dto.DtoCambiarContrasenia;
+import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.model.Usuario;
 import com.example.Login.service.EmailService;
 import com.example.Login.service.GenerarContraseniaService;
@@ -32,7 +34,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping
+    @GetMapping("/listarTodos")
     @Operation(summary = "Obtener todos los usuarios", description = "Retorna una lista de usuarios")
     
     public List<Usuario> obtenerUsuarios() {
@@ -42,18 +44,25 @@ public class UsuarioController {
 
     @PostMapping("/registrarse")
     @Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
-    public ResponseEntity<Map<String,String>> crearUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<Map<String,String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
     	System.out.println("Entre al usuario controller");
     	
-    	Optional<Usuario> user = usuarioService.buscarPorEmail(usuario.getEmail());
+    	Optional<Usuario> user = usuarioService.buscarPorEmail(registrarse.getEmail());
     	Map<String, String> response = new HashMap<>();
     	
     	if (user.isPresent()) {
     		response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
     		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     	}
-    	
-    	usuarioService.crearUsuario(usuario);
+//    	Usuario usuario = new Usuario();
+//    	usuario.setNombre(registrarse.getNombre());
+//    	usuario.setApellido(registrarse.getApellido());
+//    	usuario.setEmail(registrarse.getEmail());
+//    	usuario.setPassword(registrarse.getPassword());
+//    	
+//    	usuarioService.crearUsuario(usuario);
+    	usuarioService.crearUsuario(registrarse);
+
     	// 🔹 Prepara la respuesta exitosa
         response.put("mensaje", "Usuario registrado exitosamente");
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
@@ -127,9 +136,9 @@ public class UsuarioController {
     		return ResponseEntity.ok(Map.of("token", mensaje));
     	}
     }
-    @DeleteMapping("/{email}")
+    @PostMapping("/borrarUsuario")
     @Operation(summary = "Borrar un usuario por email", description = "Elimina un usuario de la base de datos por su email")
-    public ResponseEntity<Map<String, String>> borrarUsuario(@PathVariable String email) {
+    public ResponseEntity<Map<String, String>> borrarUsuario(@RequestParam String email) {
     	
     	Optional<Usuario> user = usuarioService.buscarPorEmail(email);
     	Map<String, String> response = new HashMap<>();
@@ -161,7 +170,7 @@ public class UsuarioController {
         }
     }
     
-    @GetMapping("/contar")
+    @GetMapping("/contarUsuarios")
     @Operation(summary = "Obtener cantidad de usuarios", description = "Retorna la cantidad de usuarios del sistema")
     
     public long verCantidadUsuarios() {
@@ -195,19 +204,19 @@ public class UsuarioController {
 		}
 	}
 	
-	@PostMapping("/cambiarcontrasenia")
-	public String cambiarContrasenia(@RequestParam String mail, @RequestParam String old_pass,
-			@RequestParam String new_pass, @RequestParam String new_pass1) {
+	@PostMapping("/cambiarContrasenia")
+	public String cambiarContrasenia(@RequestBody DtoCambiarContrasenia cambiarContrasenia) {
 		
-		Optional<Usuario> usuario = usuarioService.buscarPorEmail(mail);
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(cambiarContrasenia.getEmail());
+		System.out.println("email: " + cambiarContrasenia.getEmail());//  usuario.get().getEmail());
 
 		if (usuario.isPresent()) {
 
 			// Nueva contraseña aleatoria
 			String contrasenia = usuario.get().getPassword();// GenerarContraseniaService.generarContraseniaAleatoria();
-			if (usuarioService.encriptarSHA256(old_pass).equals(contrasenia)) {
-				if (new_pass.equals(new_pass1)) {
-					String nuevaContrasenia = usuarioService.encriptarSHA256(new_pass);// new_pass;
+			if (usuarioService.encriptarSHA256(cambiarContrasenia.getOld_pass()).equals(contrasenia)) {
+				if (cambiarContrasenia.getNew_pass().equals(cambiarContrasenia.getNew_pass1())) {
+					String nuevaContrasenia = usuarioService.encriptarSHA256(cambiarContrasenia.getNew_pass());// new_pass;
 					usuario.get().setPassword(nuevaContrasenia);
 					usuarioService.actualizar(usuario.get());
 					return "Contraseña cambiada";

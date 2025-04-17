@@ -1,5 +1,6 @@
 package com.example.Login.controller;
 
+import com.example.Login.dto.DtoViaje;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.Viaje;
 import com.example.Login.repository.OmnibusRepository;
@@ -42,21 +43,34 @@ public class ViajeController {
 
 	@PostMapping("/crearViaje")
 	@Operation(summary = "Crear un viaje", description = "Agrega un nuevo viaje")
-	public ResponseEntity<Map<String, String>> crearViaje(@RequestBody Viaje viaje) {
-
+	public ResponseEntity<Map<String, String>> crearViaje(@RequestBody DtoViaje dtoViaje) {
+		
+		int respuesta = viajeService.crearViaje(dtoViaje);
 		Map<String, String> response = new HashMap<>();
 
-		if (viajeService.crearViaje(viaje)) {
-			// 🔹 Prepara la respuesta exitosa
+		switch(respuesta) {
+		case 1:
+			response.put("mensaje",
+					"La ciudad de origen y destino no pueden ser las mismas");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); 
+		case 2:
+			response.put("mensaje",
+					"Una de las ciudades no se encuentra disponible");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+		case 3:
 			response.put("mensaje", "Viaje registrado exitosamente");
 			return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
-		} else {
+		case 4:
 			response.put("mensaje",
-					"La localidad de origen/destino eran iguales, o una de ellas no se encontraba en el sistemae");
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); // ✅ 201 - Creado
+					"Una de las ciudads ingresadas no existe en el sistema");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
 		}
+		response.put("mensaje",
+				"Error Desconcido");
+		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); // 
+	}
 
-	}@PostMapping("/agregarBusAViaje")
+	@PostMapping("/agregarBusAViaje")
 	@Operation(summary = "Asignar bus a viaje", description = "Agrega un bus a un viaje")
 	public ResponseEntity<Map<String, String>> asignarOmnibusAViaje(@RequestParam int id_viaje, @RequestParam int id_bus) {
 	    Map<String, String> response = new HashMap<>();
