@@ -50,67 +50,67 @@ public class OmnibusService {
 		OmnibusAsiento relacion = new OmnibusAsiento();
 		relacion.setOmnibus(omnibus);
 		relacion.setAsiento(asiento);
-		relacion.setEstado(estado);
+//		relacion.setEstado(estado);
 		omnibus.getOmnibusAsientos().add(relacion);
 		asiento.getOmnibusAsientos().add(relacion);
 		// OmnibusRepository.save(omnibus);
 		omnibusasientoRepository.save(relacion);
 	}
 
-	public List<Integer> mostrarAsientosLibres(int bus_id) {
-		Optional<Omnibus> omnibus = omnibusRepository.findById(bus_id);
-		Omnibus bus = omnibus.get();
-		System.out.println("Encontre el bus");
+//	public List<Integer> mostrarAsientosLibres(int bus_id) {
+//		Optional<Omnibus> omnibus = omnibusRepository.findById(bus_id);
+//		Omnibus bus = omnibus.get();
+//		System.out.println("Encontre el bus");
+//
+//		List<Integer> asientosLibres = new ArrayList<>();
+//		List<OmnibusAsiento> listaOmnibusAsiento = bus.getOmnibusAsientos();
+//
+//		for (OmnibusAsiento oa : listaOmnibusAsiento) {
+//			boolean estado = oa.isEstado();
+//			System.out.println("Estado del asiento: " + estado);
+//
+//			if (estado == true) {
+//				System.out.println("El asiento " + oa.getAsiento().getNro() + " esta libre");
+//				asientosLibres.add(oa.getAsiento().getNro());
+//			} else {
+//				System.out.println("El asiento " + oa.getAsiento().getNro() + " esta ocupado");
+//			}
+//		}
+//		return asientosLibres;
+//	}
 
-		List<Integer> asientosLibres = new ArrayList<>();
-		List<OmnibusAsiento> listaOmnibusAsiento = bus.getOmnibusAsientos();
-
-		for (OmnibusAsiento oa : listaOmnibusAsiento) {
-			boolean estado = oa.isEstado();
-			System.out.println("Estado del asiento: " + estado);
-
-			if (estado == true) {
-				System.out.println("El asiento " + oa.getAsiento().getNro() + " esta libre");
-				asientosLibres.add(oa.getAsiento().getNro());
-			} else {
-				System.out.println("El asiento " + oa.getAsiento().getNro() + " esta ocupado");
-			}
-		}
-		return asientosLibres;
-	}
-
-	public boolean cambiarEstadoAsiento(int bus_id, int nro_asiento) {
-		Optional<Omnibus> omnibus = omnibusRepository.findById(bus_id);
-		Omnibus bus = omnibus.get();
-		System.out.println("Encontre el bus");
-
-		if (bus.isActivo()) {
-			List<OmnibusAsiento> listaOmnibusAsiento = bus.getOmnibusAsientos();
-
-			for (OmnibusAsiento oa : listaOmnibusAsiento) {
-				int numeroAsiento = oa.getAsiento().getNro();
-				System.out.println("Estado del asiento: " + numeroAsiento);
-
-				if (nro_asiento == numeroAsiento) {
-					System.out
-							.println("El asiento buscado (" + oa.getAsiento().getNro() + ") fue encontrado en el bus");
-					if (oa.isEstado() == true) {
-						oa.setEstado(false);
-					} else {
-						oa.setEstado(true);
-					}
-					omnibusasientoRepository.save(oa);
-					return true;
-				} else {
-					System.out.println("El asiento " + oa.getAsiento().getNro() + " no esta disponible en el bus");
-				}
-			}
-		} else {
-			System.out.println("El bus se encuenta en mantenimiento");
-			return false;
-		}
-		return false;
-	}
+//	public boolean cambiarEstadoAsiento(int bus_id, int nro_asiento) {
+//		Optional<Omnibus> omnibus = omnibusRepository.findById(bus_id);
+//		Omnibus bus = omnibus.get();
+//		System.out.println("Encontre el bus");
+//
+//		if (bus.isActivo()) {
+//			List<OmnibusAsiento> listaOmnibusAsiento = bus.getOmnibusAsientos();
+//
+//			for (OmnibusAsiento oa : listaOmnibusAsiento) {
+//				int numeroAsiento = oa.getAsiento().getNro();
+//				System.out.println("Estado del asiento: " + numeroAsiento);
+//
+//				if (nro_asiento == numeroAsiento) {
+//					System.out
+//							.println("El asiento buscado (" + oa.getAsiento().getNro() + ") fue encontrado en el bus");
+//					if (oa.isEstado() == true) {
+//						oa.setEstado(false);
+//					} else {
+//						oa.setEstado(true);
+//					}
+//					omnibusasientoRepository.save(oa);
+//					return true;
+//				} else {
+//					System.out.println("El asiento " + oa.getAsiento().getNro() + " no esta disponible en el bus");
+//				}
+//			}
+//		} else {
+//			System.out.println("El bus se encuenta en mantenimiento");
+//			return false;
+//		}
+//		return false;
+//	}
 
 	public List<Omnibus> obtenerOmnibusActivos() {
 		List<Omnibus> omnibusActivos = new ArrayList<>();

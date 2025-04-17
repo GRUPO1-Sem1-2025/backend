@@ -50,6 +50,11 @@ public class Omnibus {
 	}
 
 	// set and get
+	
+	public List<OmnibusAsiento> getAsientos() {
+	    return omnibusAsientos;
+	}
+	
 	public String getLocalidad() {
 		return localidadActual;
 	}

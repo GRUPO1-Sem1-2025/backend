@@ -97,33 +97,33 @@ public class OmnibusController {
 		}
 	}
 
-	@GetMapping("/asientosLibres")
-	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")
-	public ResponseEntity<Map<String, String>> mostrarAsientosLibres(@RequestParam int id) {
-		Map<String, String> response = new HashMap<>();
-		List<Integer> asientosLibres = omnibusService.mostrarAsientosLibres(id);
-
-		response.put("mensaje", "El omnibus tiene los asientos " + asientosLibres + " libres");
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-	}
-
-	@PostMapping("/cambiarEstadoAsiento")
-	@Operation(summary = "Cambiar estado de asiento", description = "cambiar estado de asiento")
-	public ResponseEntity<Map<String, String>> cambiarEstadoAsiento(@RequestParam int bus_id,
-			@RequestParam int nro_asiento) {
-		Map<String, String> response = new HashMap<>();
-
-		boolean modificado = omnibusService.cambiarEstadoAsiento(bus_id, nro_asiento);
-
-		if (modificado) {
-			response.put("mensaje", "Se le cambió el estado al asiento nro " + nro_asiento);
-			return ResponseEntity.status(HttpStatus.OK).body(response);
-		} else {
-			response.put("mensaje",
-					"No se pudo cambiar el estado del asiento. Verifique si el bus está activo y si el asiento existe.");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		}
-	}
+//	@GetMapping("/asientosLibres")
+//	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")
+//	public ResponseEntity<Map<String, String>> mostrarAsientosLibres(@RequestParam int id) {
+//		Map<String, String> response = new HashMap<>();
+//		List<Integer> asientosLibres = omnibusService.mostrarAsientosLibres(id);
+//
+//		response.put("mensaje", "El omnibus tiene los asientos " + asientosLibres + " libres");
+//		return ResponseEntity.status(HttpStatus.OK).body(response);
+//	}
+//
+//	@PostMapping("/cambiarEstadoAsiento")
+//	@Operation(summary = "Cambiar estado de asiento", description = "cambiar estado de asiento")
+//	public ResponseEntity<Map<String, String>> cambiarEstadoAsiento(@RequestParam int bus_id,
+//			@RequestParam int nro_asiento) {
+//		Map<String, String> response = new HashMap<>();
+//
+//		boolean modificado = omnibusService.cambiarEstadoAsiento(bus_id, nro_asiento);
+//
+//		if (modificado) {
+//			response.put("mensaje", "Se le cambió el estado al asiento nro " + nro_asiento);
+//			return ResponseEntity.status(HttpStatus.OK).body(response);
+//		} else {
+//			response.put("mensaje",
+//					"No se pudo cambiar el estado del asiento. Verifique si el bus está activo y si el asiento existe.");
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//		}
+//	}
 
 	@GetMapping("/obtenerOmnibusActivos")
 	@Operation(summary = "Obtener omnibus activos", description = "Retorna los omnibus activos")

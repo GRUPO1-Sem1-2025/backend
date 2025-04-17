@@ -95,9 +95,9 @@ public class UsuarioController {
         String email = loginRequest.get("email");
         String password = loginRequest.get("password");
         String token = usuarioService.authenticate(email, password);
-        System.out.println("Token: "+ token);
+        //System.out.println("Token: "+ token);
         System.out.println("password primero: " + password);
-		
+		String ok = "Login correcto";
         Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
         Map<String, String> response = new HashMap<>();
 
@@ -106,16 +106,27 @@ public class UsuarioController {
             // 🔹 Compara la contraseña ingresada encriptada con la almacenada en la BD
 			if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
 				System.out.println("las contraseñas coinciden en controller");
-				if (token != null) {
-					return ResponseEntity.ok(Map.of("token", token));
-				} 
+				//if (token != null) {
+				//	return ResponseEntity.ok(Map.of("token", token));
+				return ResponseEntity.ok(Map.of("token", ok));
 			}
         }
-
         response.put("mensaje", "Credenciales incorrectas");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     } 
-    
+    @PostMapping("/verificarCodigo")
+    @Operation(summary = "Login de un usuario con codigo", description = "Permite verificar el codigo enviado a la hora de hacer login")
+    public ResponseEntity<Map<String, String>> verificarCodigo(@RequestParam String email, @RequestParam int codigo) {
+    	String token = usuarioService.verificarCodigo(email, codigo);
+    	if (token != null) {
+    		usuarioService.vaciarCodigo(email);
+		return ResponseEntity.ok(Map.of("token", token));
+    	}
+    	else {
+    		String mensaje = "El codigo ingresado no conicide con el enviado por email";
+    		return ResponseEntity.ok(Map.of("token", mensaje));
+    	}
+    }
     @DeleteMapping("/{email}")
     @Operation(summary = "Borrar un usuario por email", description = "Elimina un usuario de la base de datos por su email")
     public ResponseEntity<Map<String, String>> borrarUsuario(@PathVariable String email) {

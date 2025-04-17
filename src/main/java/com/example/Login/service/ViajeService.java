@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.EstadoViaje;
+import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.OmnibusAsiento;
@@ -59,6 +60,11 @@ public class ViajeService {
 			nuevoViaje.setHoraFin(viaje.getHoraFin());
 			nuevoViaje.setLocalidadOrigen(localidadOrigen);
 			nuevoViaje.setLocalidadDestino(localidadDestino);
+			nuevoViaje.setPrecio(viaje.getPrecio());
+			nuevoViaje.setOmnibus(null);
+			nuevoViaje.setAsientosPorViaje(null);
+			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
+			
 
 			viajeRepository.save(nuevoViaje);
 			return true;
@@ -66,33 +72,125 @@ public class ViajeService {
 		System.out.println("Una de las ciudads ingresadas no existe en el sistema");
 		return false;
 	}
+
+	public int asignarOmnibusAViaje_vieja(Omnibus omnibus, Viaje viaje) {
+		int resultado = 0;
+		Localidad localidadOrigen = viaje.getLocalidadOrigen();
+		Optional<Localidad> loc = localidadRepository.findByNombre(localidadOrigen.getNombre());
+		OmnibusAsientoViaje oav = new OmnibusAsientoViaje();
+//
+//		// Crear relación asiento/viaje
+//		for (OmnibusAsiento asiento : bus.getAsientos()) {
+//		    AsientoPorViaje apv = new AsientoPorViaje();
+//		    apv.setOmnibusAsiento(asiento);
+//		    apv.setViaje(viaje);
+//		    apv.setReservado(false); // al inicio, todos libres
+//		    viaje.getAsientosPorViaje().add(apv);
+//		}
+		try {
+			Optional<Omnibus> busOpt = omnibusRepository.findById(omnibus.getId());
+
+			if (busOpt.isPresent()) {
+				Omnibus bus = busOpt.get();
+				System.out.println(" Omnibus localidad: " + bus.getLocalidad());
+				System.out.println(" Localidad localidad: " + loc.get().getNombre());
+
+//	            if (bus.getLocalidad() != null && viaje.getLocalidadOrigen() != null &&
+//	                bus.getLocalidad().equals(viaje.getLocalidadOrigen().getId())) {
+
+				// if (bus.getLocalidad() != null && loc.get() != null &&
+				// bus.getLocalidad().equals(loc.get())) {
+
+				if (bus.getLocalidad() != null && loc.isPresent() && bus.getLocalidad().equals(loc.get().getNombre())) {
+
+					viaje.setOmnibus(bus);
+					// Crear relación asiento/viaje
+					for (OmnibusAsiento asiento : bus.getAsientos()) {
+						AsientoPorViaje apv = new AsientoPorViaje();
+						apv.setOmnibusAsiento(asiento);
+						apv.setViaje(viaje);
+						apv.setReservado(false); // al inicio, todos libres
+						viaje.getAsientosPorViaje().add(apv);
+					}					
+					//oav.setOmnibusAsiento(bus.getAsientos());
+					//oav.setViaje(viaje);
+					//omnibusAsientoViajeRepository.save(oav);
+//
+//	                int idBus = bus.getId();
+//	                System.out.println("ID del bus: " + idBus);
+//
+//	                List<OmnibusAsiento> omnibusAsientos = omnibusAsientoRepository.buscarPorBus(idBus);
+//
+//	                for (OmnibusAsiento oa : omnibusAsientos) {
+//	                    OmnibusAsientoViaje oav = new OmnibusAsientoViaje();
+//	                    oav.setOmnibusAsiento(oa);
+//	                    oav.setViaje(viaje);
+//	                    oav.setEstadoViaje(EstadoViaje.NUEVO);
+//	                    omnibusAsientoViajeRepository.save(oav);
+//	                }
+					viajeRepository.save(viaje);
+
+					resultado = 1; // éxito
+				} else {
+					System.out.println(
+							"No se puede asignar el viaje porque el bus no se encuentra en la localidad origen del viaje.");
+					resultado = 4;
+				}
+			} else {
+				System.out.println("No se encontró el ómnibus.");
+				resultado = 2;
+			}
+
+		} // fin del try
+		catch (Exception e) {
+			e.printStackTrace();
+			resultado = 3;
+		}
+
+		return resultado;
+	}
+	
 	
 	public int asignarOmnibusAViaje(Omnibus omnibus, Viaje viaje) {
 	    int resultado = 0;
+	    Localidad localidadOrigen = viaje.getLocalidadOrigen();
+	    Optional<Localidad> loc = localidadRepository.findByNombre(localidadOrigen.getNombre());
 
 	    try {
 	        Optional<Omnibus> busOpt = omnibusRepository.findById(omnibus.getId());
 
 	        if (busOpt.isPresent()) {
 	            Omnibus bus = busOpt.get();
+	            System.out.println(" Omnibus localidad: " + bus.getLocalidad());
+	            System.out.println(" Localidad localidad: " + loc.get().getNombre());
 
-	            if (bus.getLocalidad() != null && viaje.getLocalidadOrigen() != null &&
-	                bus.getLocalidad().equals(viaje.getLocalidadOrigen())) {
+	            if (bus.getLocalidad() != null && loc.isPresent() && bus.getLocalidad().equals(loc.get().getNombre())) {
 
-	                int idBus = bus.getId();
-	                System.out.println("ID del bus: " + idBus);
+	                // Asignar el ómnibus al viaje
+	                viaje.setOmnibus(bus);
+	                
 
-	                List<OmnibusAsiento> omnibusAsientos = omnibusAsientoRepository.buscarPorBus(idBus);
-
-	                for (OmnibusAsiento oa : omnibusAsientos) {
-	                    OmnibusAsientoViaje oav = new OmnibusAsientoViaje();
-	                    oav.setOmnibusAsiento(oa);
-	                    oav.setViaje(viaje);
-	                    oav.setEstadoViaje(EstadoViaje.NUEVO);
-	                    omnibusAsientoViajeRepository.save(oav);
+	                // Crear relación asiento/viaje (modelo AsientoPorViaje, si estás usando ambos modelos)
+	                for (OmnibusAsiento asiento : bus.getAsientos()) {
+	                    AsientoPorViaje apv = new AsientoPorViaje();
+	                    apv.setOmnibusAsiento(asiento);
+	                    apv.setViaje(viaje);
+	                    apv.setReservado(false); // al inicio, todos libres
+	                    viaje.getAsientosPorViaje().add(apv);	                    
 	                }
 
+//	                // Crear relación OmnibusAsientoViaje (uno por cada asiento)
+//	                for (OmnibusAsiento asiento : bus.getAsientos()) {
+//	                    OmnibusAsientoViaje oav = new OmnibusAsientoViaje();
+//	                    oav.setOmnibusAsiento(asiento);
+//	                    oav.setViaje(viaje);
+//	                    oav.setEstadoViaje(EstadoViaje.NUEVO);
+//	                    omnibusAsientoViajeRepository.save(oav);
+//	                }
+
+	                viajeRepository.save(viaje);
 	                resultado = 1; // éxito
+
 	            } else {
 	                System.out.println("No se puede asignar el viaje porque el bus no se encuentra en la localidad origen del viaje.");
 	                resultado = 4;
@@ -109,6 +207,7 @@ public class ViajeService {
 
 	    return resultado;
 	}
+
 
 //	public int asignarOmnibusAViaje(Omnibus omnibus, Viaje viaje) {
 //		int resultado = 0;
