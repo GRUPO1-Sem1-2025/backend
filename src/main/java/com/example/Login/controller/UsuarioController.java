@@ -1,9 +1,11 @@
 package com.example.Login.controller;
 
 import com.example.Login.dto.DtoCambiarContrasenia;
+import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.model.Usuario;
+import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.service.EmailService;
 import com.example.Login.service.GenerarContraseniaService;
 import com.example.Login.service.UsuarioService;
@@ -40,6 +42,9 @@ public class UsuarioController {
     public List<Usuario> obtenerUsuarios() {
         return usuarioService.obtenerUsuarios();
     }
+    
+    @Autowired
+    private UsuarioRepository usuariorepository;
 
 
     @PostMapping("/registrarse")
@@ -61,12 +66,12 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
     }
     
-    @PostMapping("/crearcuenta")
+    @PostMapping("/crearCuenta")
     @Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
-    public ResponseEntity<Map<String,String>> registrarNuevoUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<Map<String,String>> crearCuenta(@RequestBody DtoCrearCuenta dtocrearCuenta) {
     	System.out.println("Entre al usuario controller");
     	
-    	Optional<Usuario> user = usuarioService.buscarPorEmail(usuario.getEmail());
+    	Optional<Usuario> user = usuarioService.buscarPorEmail(dtocrearCuenta.getEmail());
     	Map<String, String> response = new HashMap<>();
     	
     	if (user.isPresent()) {
@@ -74,7 +79,7 @@ public class UsuarioController {
     		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     	}
     	
-    	usuarioService.registrarNuevoUsuario(usuario);
+    	usuarioService.crearCuenta(dtocrearCuenta);
     	// 🔹 Prepara la respuesta exitosa
         response.put("mensaje", "Usuario registrado exitosamente");
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
@@ -99,7 +104,7 @@ public class UsuarioController {
         String token = usuarioService.authenticate(email, password);
         //System.out.println("Token: "+ token);
         System.out.println("password primero: " + password);
-		String ok = "Login correcto";
+		String ok = "Se le envió a su correo un código para terminar con el proceso de autenticación";
         Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
         Map<String, String> response = new HashMap<>();
 
@@ -110,7 +115,7 @@ public class UsuarioController {
 				System.out.println("las contraseñas coinciden en controller");
 				//if (token != null) {
 				//	return ResponseEntity.ok(Map.of("token", token));
-				return ResponseEntity.ok(Map.of("token", ok));
+				return ResponseEntity.ok(Map.of("Mensaje", ok));
 			}
         }
         response.put("mensaje", "Credenciales incorrectas");
@@ -224,20 +229,35 @@ public class UsuarioController {
 		}
 	}
 
-	@PostMapping("/cambiarrol")
-	public String cambiarRol(@RequestParam String mail, @RequestParam String rol) {
-		Optional<Usuario> usuario = usuarioService.buscarPorEmail(mail);
+	@PostMapping("/cambiarRol")
+	public String cambiarRol(@RequestParam String email, @RequestParam String rol) {
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
 
 		if (usuario.isPresent()) {
-			System.out.print("Rol actual: " + usuario.get().getRol());
+			System.out.println("Rol actual: " + usuario.get().getRol());
 			if (rol.equals("User")) {
 				usuario.get().setRol(100);
+				usuario.get().setCod_empleado(null);
 			} else if (rol.equals("Vendedor")) {
 				usuario.get().setRol(200);
+				if (usuario.get().getCod_empleado()==0) {
+					try{
+						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado()+1);
+					}catch (Exception e) {
+						usuario.get().setCod_empleado(100);
+					}
+				}
 			} else if (rol.equals("Admin")) {
 				usuario.get().setRol(300);
+				if (usuario.get().getCod_empleado()==0) {
+					try{
+						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado()+1);
+					}catch (Exception e) {
+						usuario.get().setCod_empleado(100);
+					}
+				}
 			} else {
-				System.out.print("No existe el Rol ingresado");
+				System.out.println("No existe el Rol ingresado");
 				return "no existe el rol ingresado";
 			}
 			usuarioService.actualizar(usuario.get());

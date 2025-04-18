@@ -28,6 +28,9 @@ private int codigo;
 private boolean activo;
 private int rol;
 
+@Column(name = "cod_empleado", nullable = true)
+private Integer cod_empleado;
+
 
 
 public Usuario() {
@@ -35,7 +38,7 @@ public Usuario() {
 }
 
 public Usuario(int id, String nombre, String apellido, Date fechaNac, String email, String categoria, String ci,
-		LocalDate fechaCreacion, String password, boolean activo, int rol) {
+		LocalDate fechaCreacion, String password, boolean activo, int rol, int cod_empleado) {
 	super();
 	this.id = id;
 	this.nombre = nombre;
@@ -49,6 +52,7 @@ public Usuario(int id, String nombre, String apellido, Date fechaNac, String ema
 	this.codigo = codigo;
 	this.activo = activo;
 	this.rol = rol;
+	this.cod_empleado= cod_empleado;
 }
 
 //Getters y Setters
@@ -107,6 +111,15 @@ public int getCodigo() {
 public void setCodigo(int codigo) {
 	this.codigo = codigo;
 }
+
+public Integer getCod_empleado() {
+	return cod_empleado;
+}
+
+public void setCod_empleado(Integer cod_empleado) {
+	this.cod_empleado = cod_empleado;
+}
+
 
 
 

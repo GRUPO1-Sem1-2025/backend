@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
+import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.UsuarioRepository;
@@ -106,18 +107,43 @@ public class UsuarioService {
 	}
 
 	// Guardar usuario con contraseña encriptada
-	public Usuario registrarNuevoUsuario(Usuario usuario) {
-		// String contrasenia = encriptarSHA256(usuario.getApellido() +
-		// usuario.getNombre());
-		System.out.println("Entre al usuario service");
-		// usuario.setPassword(encriptarSHA256(contrasenia));
-		int rol = 100;
-		usuario.setRol(rol);
-		System.out.print("Rol del usuario agregado = " + rol);
+	public Usuario crearCuenta(DtoCrearCuenta dtocrearCuenta) {
 		
+		Usuario usuario = new Usuario();
+		Integer rol = 0;
+		System.out.println("Rol del usuario agregado = " + dtocrearCuenta.getRol());
+
+		switch(dtocrearCuenta.getRol()){
+			case "User":
+				rol = null;
+				break;
+			case "Vendedor":
+				rol = 200;
+				break;
+			case "Admin":
+				rol = 300;	
+				break;
+		}
+				
+		if(rol != 100 && rol != 0) {
+			int setCod_empleado = (usuarioRepository.findMaxCodEmpleado());
+			System.out.println("max cod emp: "+ setCod_empleado);
+			try{
+				usuario.setCod_empleado(usuarioRepository.findMaxCodEmpleado()+1);
+			}catch (Exception e) {
+				usuario.setCod_empleado(100);
+			}
+		}
+		usuario.setNombre(dtocrearCuenta.getNombre());
+		usuario.setApellido(dtocrearCuenta.getApellido());
+		usuario.setEmail(dtocrearCuenta.getEmail());
+		usuario.setCategoria(dtocrearCuenta.getCategoria());
+		usuario.setCi(dtocrearCuenta.getCi());
+		usuario.setFechaNac(dtocrearCuenta.getFechaNac());
+		usuario.setRol(rol);
+		System.out.print("Rol del usuario agregado = " + usuario.getRol());
 		usuario.setActivo(true);
 		usuario.setFechaCreacion(LocalDate.now());
-
 		String password = usuario.getApellido() + usuario.getNombre() + "_2025";
 		usuario.setPassword(encriptarSHA256(password));
 
@@ -170,15 +196,29 @@ public class UsuarioService {
 				user.setNombre(values[0]);
 				user.setApellido(values[1]);
 				user.setEmail(values[2]);
+				System.out.println("correo: " + values[2]);
 				user.setPassword(values[3]);
 				user.setPassword(encriptarSHA256(user.getPassword()));
 
 				if (values[4].equals("User")) {
 					user.setRol(100);
+					user.setCod_empleado(null);
 				} else if (values[4].equals("Vendedor")) {
 					user.setRol(200);
+					System.out.println("max codEmp: " + usuarioRepository.findMaxCodEmpleado());
+					try{
+						user.setCod_empleado(usuarioRepository.findMaxCodEmpleado()+1);
+					}catch (Exception e) {
+						user.setCod_empleado(100);
+					}
 				} else if (values[4].equals("Admin")) {
 					user.setRol(300);
+					System.out.println("max codEmp: " + usuarioRepository.findMaxCodEmpleado());
+					try{
+						user.setCod_empleado(usuarioRepository.findMaxCodEmpleado()+1);
+					}catch (Exception e) {
+						user.setCod_empleado(100);
+					}
 				} else {
 					System.out.println("No existe el Rol: " + values[4]);
 				}
@@ -226,39 +266,39 @@ public class UsuarioService {
 
 		if (usuario.isPresent() && encriptarSHA256(password).equals(usuario.get().getPassword())) {
 			System.out.println("Las contraseñas coinciden");
-			//int rol = usuario.get().getRol();
-			
+			// int rol = usuario.get().getRol();
+
 			// le cargo el codigo generado al usuario que se autentico
 			usuario.get().setCodigo(generarCodigo());
 			usuarioRepository.save(usuario.get());
-			
+
 			String para = usuario.get().getEmail();
 			String asunto = "Código de autorización";
-			String mensaje = "Bienvenido " + usuario.get().getNombre() + " utilize el siguiente código " + usuario.get().getCodigo() + " para iniciar sesión en el sistema ";
-					
+			String mensaje = "Bienvenido " + usuario.get().getNombre() + " utilize el siguiente código "
+					+ usuario.get().getCodigo() + " para iniciar sesión en el sistema ";
+
 			emailService.enviarCorreo(para, asunto, mensaje);
-			
+
 			System.out.println("codigo: " + usuario.get().getCodigo());
-			//return jwtService.generateToken(email, rol);
+			// return jwtService.generateToken(email, rol);
 			return "OK";
 		} else {
 			System.out.println("retorna null");
 			return null;
 		}
 	}
-	
+
 	public String verificarCodigo(String email, int codigo) {
 		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 		int rol = usuario.get().getRol();
 		if (usuario.get().getCodigo() == codigo) {
 			return jwtService.generateToken(email, rol);
-		}
-		else {
+		} else {
 			System.out.println("El código ingresado no coincide con el enviado por email");
 			return null;
 		}
 	}
-	
+
 	public void vaciarCodigo(String email) {
 		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 		usuario.get().setCodigo(0);
