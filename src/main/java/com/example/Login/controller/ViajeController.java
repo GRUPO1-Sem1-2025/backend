@@ -104,31 +104,4 @@ public class ViajeController {
 	    }
 	}
 	
-	
-
-//	@PostMapping("/agregarBusAViaje")
-//	@Operation(summary = "Asignar bus a viaje", description = "Agrega un bus a un viaje")
-//	public ResponseEntity<Map<String, String>> asignarOmnibusAViaje(@RequestParam int id_viaje, int id_bus) {
-//		int resultado;
-//		Map<String, String> response = new HashMap<>();
-//
-//		Optional<Omnibus> bus = omnibusRepository.findById(id_bus);
-//		Optional<Viaje> viaje = viajeRepository.findById(id_viaje);
-//		resultado = viajeService.asignarOmnibusAViaje(bus.get(), viaje.get());
-//
-//		switch (resultado) {
-//		case 4:
-//			response.put("mensaje",
-//					"No se puede asignar el viaje ya que el bus no se encuentra en la localida" + "origen del viaje");
-//			return ResponseEntity.status(HttpStatus.OK).body(response);
-//		case 1:
-//			response.put("mensaje", "Se asigno de forma correcta el omnibus al viaje");
-//			return ResponseEntity.status(HttpStatus.OK).body(response);
-//
-//		// case 3:
-//		}
-//
-//		response.put("mensaje", "Error desconocido");
-//		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
-//	}
 }
