@@ -2,6 +2,7 @@ package com.example.Login.controller;
 
 import com.example.Login.dto.DtoCambiarContrasenia;
 import com.example.Login.dto.DtoRegistrarse;
+import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.model.Usuario;
 import com.example.Login.service.EmailService;
 import com.example.Login.service.GenerarContraseniaService;
@@ -117,10 +118,10 @@ public class UsuarioController {
     } 
     @PostMapping("/verificarCodigo")
     @Operation(summary = "Login de un usuario con codigo", description = "Permite verificar el codigo enviado a la hora de hacer login")
-    public ResponseEntity<Map<String, String>> verificarCodigo(@RequestParam String email, @RequestParam int codigo) {
-    	String token = usuarioService.verificarCodigo(email, codigo);
+    public ResponseEntity<Map<String, String>> verificarCodigo(@RequestBody DtoValidarCodigo dtoValidarCodigo) {
+    	String token = usuarioService.verificarCodigo(dtoValidarCodigo.getEmail(), dtoValidarCodigo.getCodigo());
     	if (token != null) {
-    		usuarioService.vaciarCodigo(email);
+    		usuarioService.vaciarCodigo(dtoValidarCodigo.getEmail());
 		return ResponseEntity.ok(Map.of("token", token));
     	}
     	else {
