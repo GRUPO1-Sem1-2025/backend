@@ -1,11 +1,13 @@
 package com.example.Login.controller;
 
 import com.example.Login.dto.DtoCambiarContrasenia;
+import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.UsuarioRepository;
+import com.example.Login.service.CompraPasajeService;
 import com.example.Login.service.EmailService;
 import com.example.Login.service.GenerarContraseniaService;
 import com.example.Login.service.UsuarioService;
@@ -45,6 +47,9 @@ public class UsuarioController {
     
     @Autowired
     private UsuarioRepository usuariorepository;
+    
+    @Autowired
+    CompraPasajeService comprarPasajeService;
 
 
     @PostMapping("/registrarse")
@@ -265,6 +270,10 @@ public class UsuarioController {
 			return "Rol modificado";
 		}
 		return "El correo ingresado no existe registrado en el sistema";// + nuevoRol;
-	}		
-     
+	}	
+	
+	@PostMapping("/comprarPasaje")
+	public void comprarPasaje(@RequestBody DtoCompraPasaje dtoComprarPasaje) {
+		comprarPasajeService.comprarPasaje(dtoComprarPasaje);
+	}     
 }
