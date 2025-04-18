@@ -54,13 +54,6 @@ public class UsuarioController {
     		response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
     		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     	}
-//    	Usuario usuario = new Usuario();
-//    	usuario.setNombre(registrarse.getNombre());
-//    	usuario.setApellido(registrarse.getApellido());
-//    	usuario.setEmail(registrarse.getEmail());
-//    	usuario.setPassword(registrarse.getPassword());
-//    	
-//    	usuarioService.crearUsuario(usuario);
     	usuarioService.crearUsuario(registrarse);
 
     	// 🔹 Prepara la respuesta exitosa
