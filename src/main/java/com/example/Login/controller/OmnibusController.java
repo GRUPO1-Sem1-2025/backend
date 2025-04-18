@@ -1,6 +1,9 @@
 package com.example.Login.controller;
 
+import com.example.Login.dto.DtoBus;
+import com.example.Login.dto.DtoCargarLocalidad;
 import com.example.Login.model.Asiento;
+import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
 import com.example.Login.service.AsientoService;
 import com.example.Login.service.OmnibusService;
@@ -35,7 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Buses", description = "API para gestionar buses")
 public class OmnibusController {
 
-    //private final controller.UsuarioController usuarioController;
+	// private final controller.UsuarioController usuarioController;
 
 	@Autowired
 	private AsientoRepository asientoRepository;
@@ -45,17 +48,23 @@ public class OmnibusController {
 
 	@Autowired
 	private OmnibusService omnibusService;
-	
 
-	public OmnibusController(OmnibusService omnibusService, AsientoRepository asientoRepository){
+	@Autowired
+	private OmnibusRepository omnibusrepository;
+
+	public OmnibusController(OmnibusService omnibusService, AsientoRepository asientoRepository) {
 		this.omnibusService = omnibusService;
 		this.asientoRepository = asientoRepository;
-		//this.usuarioController = usuarioController;
+		// this.usuarioController = usuarioController;
 	}
-	
-	@PostMapping
+
+	@PostMapping("/crearOmnibus")
 	@Operation(summary = "Crear un bus", description = "Agrega un bus")
-	public ResponseEntity<Map<String, String>> crearOmnibus(@RequestBody Omnibus bus) {
+	public ResponseEntity<Map<String, String>> crearOmnibus(@RequestBody DtoBus dtoBus) {
+		Omnibus bus = new Omnibus();
+		bus.setCant_asientos(dtoBus.getCant_asientos());
+		bus.setMarca(dtoBus.getMarca());
+		bus.setActivo(dtoBus.isActivo());
 		
 		Map<String, String> response = new HashMap<>();
 		long totalAsientos = bus.getCant_asientos();
@@ -94,28 +103,67 @@ public class OmnibusController {
 		}
 	}
 
-	@GetMapping ("/asientoslibres")
-	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")	
-	public ResponseEntity<Map<String,String>> mostrarAsientosLibres(@RequestParam int id){
-		Map<String, String> response = new HashMap<>();
-		List<Integer> asientosLibres = omnibusService.mostrarAsientosLibres(id);
-		
-		response.put("mensaje", "El omnibus tiene los asientos " + asientosLibres + " libres");
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-	}
-	
-	@PostMapping ("/cambiarestadoasiento")
-	@Operation(summary = "Cambiar estado de asiento", description = "cambiar estado de asiento")
-	public ResponseEntity<Map<String,String>> cambiarEstadoAsiento(@RequestParam int bus_id, @RequestParam int nro_asiento) {
-		Map<String, String> response = new HashMap<>();
-		
-		omnibusService.cambiarEstadoAsiento(bus_id, nro_asiento);
-		response.put("mensaje", "Se le cambió el estado al asiento nro " + nro_asiento);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-	}
-	
-	
-	
+//	@GetMapping("/asientosLibres")
+//	@Operation(summary = "Mostrar asientos libres", description = "mostrar asientos libres")
+//	public ResponseEntity<Map<String, String>> mostrarAsientosLibres(@RequestParam int id) {
+//		Map<String, String> response = new HashMap<>();
+//		List<Integer> asientosLibres = omnibusService.mostrarAsientosLibres(id);
+//
+//		response.put("mensaje", "El omnibus tiene los asientos " + asientosLibres + " libres");
+//		return ResponseEntity.status(HttpStatus.OK).body(response);
+//	}
+//
+//	@PostMapping("/cambiarEstadoAsiento")
+//	@Operation(summary = "Cambiar estado de asiento", description = "cambiar estado de asiento")
+//	public ResponseEntity<Map<String, String>> cambiarEstadoAsiento(@RequestParam int bus_id,
+//			@RequestParam int nro_asiento) {
+//		Map<String, String> response = new HashMap<>();
+//
+//		boolean modificado = omnibusService.cambiarEstadoAsiento(bus_id, nro_asiento);
+//
+//		if (modificado) {
+//			response.put("mensaje", "Se le cambió el estado al asiento nro " + nro_asiento);
+//			return ResponseEntity.status(HttpStatus.OK).body(response);
+//		} else {
+//			response.put("mensaje",
+//					"No se pudo cambiar el estado del asiento. Verifique si el bus está activo y si el asiento existe.");
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//		}
+//	}
 
+	@GetMapping("/obtenerOmnibusActivos")
+	@Operation(summary = "Obtener omnibus activos", description = "Retorna los omnibus activos")
+	public List<DtoBus> obtenerOmnibusActivos() {
+		return omnibusService.obtenerOmnibusActivos();
+	}
+
+	@PostMapping("/asignarLocalidad")
+	@Operation(summary = "Asigna localidad a un omnibus", description = "Agrega una localidad a un bus")
+	public ResponseEntity<Map<String, String>> asignarLocalidadAOmnibus(@RequestBody DtoCargarLocalidad cargarLocalidad) {
+		int retornoServicio;
+		Map<String, String> response = new HashMap<>();
+		Optional<Omnibus> omnibus = omnibusrepository.findById(cargarLocalidad.getId_bus());
+		System.out.println("idBus: " + cargarLocalidad.getId_bus());
+
+		if (omnibus.isPresent()) {
+			retornoServicio = omnibusService.asignarLocalidadAOmnibus(omnibus.get(), cargarLocalidad.getNombreLocalidad());
+			switch (retornoServicio) {
+			case 0:
+				response.put("mensaje", "Se modifico la localidad en la cual se encuentra el omnibus actualmente");
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			case 1:
+				response.put("mensaje", "No esta permitido hacer viajes a " + cargarLocalidad.getNombreLocalidad());
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			case 2:
+				response.put("mensaje", "No existe una localidad llamada " + cargarLocalidad.getNombreLocalidad() + " en el sistema");
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			}
+		} else {
+			response.put("mensaje", "No existe un omnibus que contenga ese ID");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+		}
+		response.put("mensaje", "Error desconocido");
+		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+	}		
 
 }

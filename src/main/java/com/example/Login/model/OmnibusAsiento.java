@@ -18,8 +18,8 @@ public class OmnibusAsiento {
     @JoinColumn(name = "asiento_id")
     private Asiento asiento;
 
-    @Column(name = "estado")
-    private boolean estado;
+//    @Column(name = "estado")
+//    private boolean estado;
 
     // Getters y setters
     public Long getId() {
@@ -42,11 +42,11 @@ public class OmnibusAsiento {
         this.asiento = asiento;
     }
 
-    public boolean isEstado() {
-        return estado;
-    }
-
-    public void setEstado(boolean estado) {
-        this.estado = estado;
-    }
+//    public boolean isEstado() {
+//        return estado;
+//    }
+//
+//    public void setEstado(boolean estado) {
+//        this.estado = estado;
+//    }
 }

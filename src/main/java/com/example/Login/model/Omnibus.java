@@ -31,22 +31,38 @@ public class Omnibus {
     private List<OmnibusAsiento> omnibusAsientos = new ArrayList<>();
 
     private int cant_asientos;
+    
+    private String localidadActual;
 	
 	// constructor
 	public Omnibus() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Omnibus(int id, String marca, boolean activo, List<OmnibusAsiento> omnibusAsientos, int cant_asientos) {
+	public Omnibus(int id, String marca, boolean activo, List<OmnibusAsiento> omnibusAsientos, int cant_asientos, String localidad) {
 		super();
 		this.id = id;
 		this.marca = marca;
 		this.activo = activo;
 		this.omnibusAsientos = omnibusAsientos;
 		this.cant_asientos = cant_asientos;
+		this.localidadActual = localidad;
 	}
 
 	// set and get
+	
+	public List<OmnibusAsiento> getAsientos() {
+	    return omnibusAsientos;
+	}
+	
+	public String getLocalidad() {
+		return localidadActual;
+	}
+
+	public void setLocalidad(String localidad) {
+		this.localidadActual = localidad;
+	}
+	
 	public int getId() {
 		return id;
 	}

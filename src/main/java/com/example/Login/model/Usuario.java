@@ -24,6 +24,7 @@ private String ci;
 private LocalDate fechaCreacion;
 //hasta aca
 private String password;
+private int codigo;
 private boolean activo;
 private int rol;
 
@@ -45,6 +46,7 @@ public Usuario(int id, String nombre, String apellido, Date fechaNac, String ema
 	this.ci = ci;
 	this.fechaCreacion = fechaCreacion;
 	this.password = password;
+	this.codigo = codigo;
 	this.activo = activo;
 	this.rol = rol;
 }
@@ -97,5 +99,15 @@ public void setPassword(String password) { this.password = password; }
 
 public boolean getActivo() { return activo; }
 public void setActivo(boolean activo) { this.activo = activo; }
+
+public int getCodigo() {
+	return codigo;
+}
+
+public void setCodigo(int codigo) {
+	this.codigo = codigo;
+}
+
+
 
 }
