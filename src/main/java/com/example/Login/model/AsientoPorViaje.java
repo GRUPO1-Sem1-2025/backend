@@ -1,5 +1,7 @@
 package com.example.Login.model;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,6 +29,9 @@ public class AsientoPorViaje {
 
     @Column(name = "reservado")
     private boolean reservado;
+    
+    @OneToMany(mappedBy = "asientoPorViaje")
+    private List<CompraPasaje> compraPasajes;
     
     public AsientoPorViaje() {
     	
