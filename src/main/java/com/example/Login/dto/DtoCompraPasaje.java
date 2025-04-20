@@ -3,27 +3,37 @@ package com.example.Login.dto;
 import java.util.List;
 
 public class DtoCompraPasaje {
-	private int usuarioId;
+	private Integer usuarioId;
+	private Integer vendedorId;
     private int viajeId;
     private List<Integer> numerosDeAsiento;
     
     public DtoCompraPasaje() {
     	
     }
-    
-	public DtoCompraPasaje(int usuarioId, int viajeId, List<Integer> numerosDeAsiento) {
+
+	public DtoCompraPasaje(Integer usuarioId, Integer vendedorId, int viajeId, List<Integer> numerosDeAsiento) {
 		super();
 		this.usuarioId = usuarioId;
+		this.vendedorId = vendedorId;
 		this.viajeId = viajeId;
 		this.numerosDeAsiento = numerosDeAsiento;
 	}
 
-	public int getUsuarioId() {
+	public Integer getUsuarioId() {
 		return usuarioId;
 	}
 
-	public void setUsuarioId(int usuarioId) {
+	public void setUsuarioId(Integer usuarioId) {
 		this.usuarioId = usuarioId;
+	}
+
+	public Integer getVendedorId() {
+		return vendedorId;
+	}
+
+	public void setVendedorId(Integer vendedorId) {
+		this.vendedorId = vendedorId;
 	}
 
 	public int getViajeId() {
@@ -41,9 +51,5 @@ public class DtoCompraPasaje {
 	public void setNumerosDeAsiento(List<Integer> numerosDeAsiento) {
 		this.numerosDeAsiento = numerosDeAsiento;
 	}
-	
-	
-    
-    
 
 }

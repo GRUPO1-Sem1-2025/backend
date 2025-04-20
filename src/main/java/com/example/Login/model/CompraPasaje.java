@@ -24,8 +24,11 @@ public class CompraPasaje {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "cliente_id", nullable = true)
     private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "vendedor_id", nullable = true)
+    private Usuario vendedor;    
     
     @ManyToOne
     @JoinColumn(name = "viaje_id")
@@ -46,20 +49,27 @@ public class CompraPasaje {
     @Column(name = "fecha_hora_compra")
     private LocalDateTime fechaHoraCompra;
     
-    //private float precio;
+    private int cat_pasajes;
+    
+    private float total;
+    
+    private String tipo_venta;
     
     public CompraPasaje() {
     	
     }
 
-	public CompraPasaje(Long id, Usuario usuario, Viaje viaje, List<AsientoPorViaje> asientos,
-			LocalDateTime fechaHoraCompra) {
-		super();
+	public CompraPasaje(Long id, Usuario usuario, Usuario vendedor, Viaje viaje, List<AsientoPorViaje> asientos,
+			LocalDateTime fechaHoraCompra, int cat_pasajes, float total, String tipo_venta) {
 		this.id = id;
 		this.usuario = usuario;
+		this.vendedor = vendedor;
 		this.viaje = viaje;
 		this.asientos = asientos;
 		this.fechaHoraCompra = fechaHoraCompra;
+		this.cat_pasajes = cat_pasajes;
+		this.total = total;
+		this.tipo_venta = tipo_venta;
 	}
 
 	public Long getId() {
@@ -76,6 +86,14 @@ public class CompraPasaje {
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+
+	public Usuario getVendedor() {
+		return vendedor;
+	}
+
+	public void setVendedor(Usuario vendedor) {
+		this.vendedor = vendedor;
 	}
 
 	public Viaje getViaje() {
@@ -101,7 +119,30 @@ public class CompraPasaje {
 	public void setFechaHoraCompra(LocalDateTime fechaHoraCompra) {
 		this.fechaHoraCompra = fechaHoraCompra;
 	}
-    
-    
-    
+
+	public int getCat_pasajes() {
+		return cat_pasajes;
+	}
+
+	public void setCat_pasajes(int cat_pasajes) {
+		this.cat_pasajes = cat_pasajes;
+	}
+
+	public float getTotal() {
+		return total;
+	}
+
+	public void setTotal(float total) {
+		this.total = total;
+	}
+
+	public String getTipo_venta() {
+		return tipo_venta;
+	}
+
+	public void setTipo_venta(String tipo_venta) {
+		this.tipo_venta = tipo_venta;
+	}
+
+	
 }

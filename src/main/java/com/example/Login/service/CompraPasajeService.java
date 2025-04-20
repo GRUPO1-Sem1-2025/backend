@@ -21,24 +21,31 @@ import com.example.Login.repository.ViajeRepository;
 @Service
 public class CompraPasajeService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private AsientoPorViajeRepository asientoPorViajeRepository;
+	@Autowired
+	private AsientoPorViajeRepository asientoPorViajeRepository;
 
-    @Autowired
-    private CompraPasajeRepository compraPasajeRepository;
-    
-    @Autowired
-    private ViajeRepository viajeRepository;
+	@Autowired
+	private CompraPasajeRepository compraPasajeRepository;
 
-    public void comprarPasaje(DtoCompraPasaje request) {
-        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
-        Viaje viaje = Oviaje.get()
-;
+	@Autowired
+	private ViajeRepository viajeRepository;
+
+	public void comprarPasaje(DtoCompraPasaje request) {
+		Usuario vendedor = new Usuario();
+		Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		try {
+			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
+			vendedor = Ovendedor.get();
+		} catch (Exception e) {
+			vendedor = null;
+		}
+
+		Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
+		Viaje viaje = Oviaje.get();
 //        for (Integer nroAsiento : request.getNumerosDeAsiento()) {
 //            // Buscar el asientoPorViaje por número y viaje
 //            Optional<AsientoPorViaje> asientoOpt = asientoPorViajeRepository
@@ -65,32 +72,40 @@ public class CompraPasajeService {
 //                throw new RuntimeException("Asiento nro " + nroAsiento + " no encontrado para ese viaje");
 //            }
 //        }
-        
-        CompraPasaje compra = new CompraPasaje();
-        compra.setUsuario(usuario);
-        compra.setViaje(viaje);
-        compra.setFechaHoraCompra(LocalDateTime.now());
 
-        List<AsientoPorViaje> asientosReservados = new ArrayList<>();
+		CompraPasaje compra = new CompraPasaje();
+		if (vendedor == null) {
+			compra.setTipo_venta("Online");
+		} else {
+			compra.setTipo_venta("Ventanilla");
+		}
+		compra.setUsuario(usuario);
+		compra.setVendedor(vendedor);
+		compra.setViaje(viaje);
+		compra.setFechaHoraCompra(LocalDateTime.now());
 
-        for (Integer nroAsiento : request.getNumerosDeAsiento()) {
-            Optional<AsientoPorViaje> apvOpt = asientoPorViajeRepository.findByViajeIdAndNroAsiento(viaje.getId(), nroAsiento);
-            if (apvOpt.isPresent()) {
-                AsientoPorViaje apv = apvOpt.get();
-                if (!apv.isReservado()) {
-                    apv.setReservado(true);
-                    asientosReservados.add(apv);
-                } else {
-                    throw new RuntimeException("Asiento nro " + nroAsiento + " ya está reservado.");
-                }
-            }
-        }
+		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
 
-        compra.setAsientos(asientosReservados);
-        compraPasajeRepository.save(compra);
+		for (Integer nroAsiento : request.getNumerosDeAsiento()) {
+			Optional<AsientoPorViaje> apvOpt = asientoPorViajeRepository.findByViajeIdAndNroAsiento(viaje.getId(),
+					nroAsiento);
+			if (apvOpt.isPresent()) {
+				AsientoPorViaje apv = apvOpt.get();
+				if (!apv.isReservado()) {
+					apv.setReservado(true);
+					asientosReservados.add(apv);
+				} else {
+					throw new RuntimeException("Asiento nro " + nroAsiento + " ya está reservado.");
+				}
+			}
+		}
+		compra.setCat_pasajes(asientosReservados.size());
+		compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
+		compra.setAsientos(asientosReservados);
+		compraPasajeRepository.save(compra);
 
-        for (AsientoPorViaje apv : asientosReservados) {
-            asientoPorViajeRepository.save(apv);
-        }
-    }
+		for (AsientoPorViaje apv : asientosReservados) {
+			asientoPorViajeRepository.save(apv);
+		}
+	}
 }
