@@ -46,32 +46,6 @@ public class CompraPasajeService {
 
 		Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
 		Viaje viaje = Oviaje.get();
-//        for (Integer nroAsiento : request.getNumerosDeAsiento()) {
-//            // Buscar el asientoPorViaje por número y viaje
-//            Optional<AsientoPorViaje> asientoOpt = asientoPorViajeRepository
-//                     .findByViajeIdAndNroAsiento(request.getViajeId(), nroAsiento);
-//
-//            if (asientoOpt.isPresent()) {
-//                AsientoPorViaje asiento = asientoOpt.get();
-//
-//                if (!asiento.isReservado()) {
-//                    // Marcar como reservado
-//                    asiento.setReservado(true);
-//                    asientoPorViajeRepository.save(asiento);
-//
-//                    // Registrar compra
-//                    CompraPasaje compra = new CompraPasaje();
-//                    compra.setUsuario(usuario);
-//                    compra.set setAsientos(asiento);
-//                    compra.setFechaHoraCompra(LocalDateTime.now());
-//                    compraPasajeRepository.save(compra);
-//                } else {
-//                    throw new RuntimeException("El asiento " + nroAsiento + " ya está reservado");
-//                }
-//            } else {
-//                throw new RuntimeException("Asiento nro " + nroAsiento + " no encontrado para ese viaje");
-//            }
-//        }
 
 		CompraPasaje compra = new CompraPasaje();
 		if (vendedor == null) {
