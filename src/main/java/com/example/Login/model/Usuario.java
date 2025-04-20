@@ -2,6 +2,7 @@ package com.example.Login.model;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.xml.crypto.Data;
 
@@ -30,6 +31,9 @@ private int rol;
 
 @Column(name = "cod_empleado", nullable = true)
 private Integer cod_empleado;
+
+@OneToMany(mappedBy = "usuario")
+private List<CompraPasaje> compraPasajes;
 
 
 
