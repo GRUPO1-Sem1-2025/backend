@@ -1,6 +1,8 @@
 package com.example.Login.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -22,10 +26,22 @@ public class CompraPasaje {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-
+    
     @ManyToOne
-    @JoinColumn(name = "asiento_por_viaje_id")
-    private AsientoPorViaje asientoPorViaje;
+    @JoinColumn(name = "viaje_id")
+    private Viaje viaje;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "compra_asiento_por_viaje",
+        joinColumns = @JoinColumn(name = "compra_id"),
+        inverseJoinColumns = @JoinColumn(name = "asiento_por_viaje_id")
+    )
+    private List<AsientoPorViaje> asientos = new ArrayList<>();
+
+//    @ManyToOne
+//    @JoinColumn(name = "asiento_por_viaje_id")
+//    private AsientoPorViaje asientoPorViaje;
 
     @Column(name = "fecha_hora_compra")
     private LocalDateTime fechaHoraCompra;
@@ -36,14 +52,14 @@ public class CompraPasaje {
     	
     }
 
-	public CompraPasaje(Long id, Usuario usuario, AsientoPorViaje asientoPorViaje, LocalDateTime fechaHoraCompra,
-			float precio) {
+	public CompraPasaje(Long id, Usuario usuario, Viaje viaje, List<AsientoPorViaje> asientos,
+			LocalDateTime fechaHoraCompra) {
 		super();
 		this.id = id;
 		this.usuario = usuario;
-		this.asientoPorViaje = asientoPorViaje;
+		this.viaje = viaje;
+		this.asientos = asientos;
 		this.fechaHoraCompra = fechaHoraCompra;
-		//this.precio = precio;
 	}
 
 	public Long getId() {
@@ -62,12 +78,20 @@ public class CompraPasaje {
 		this.usuario = usuario;
 	}
 
-	public AsientoPorViaje getAsientoPorViaje() {
-		return asientoPorViaje;
+	public Viaje getViaje() {
+		return viaje;
 	}
 
-	public void setAsientoPorViaje(AsientoPorViaje asientoPorViaje) {
-		this.asientoPorViaje = asientoPorViaje;
+	public void setViaje(Viaje viaje) {
+		this.viaje = viaje;
+	}
+
+	public List<AsientoPorViaje> getAsientos() {
+		return asientos;
+	}
+
+	public void setAsientos(List<AsientoPorViaje> asientos) {
+		this.asientos = asientos;
 	}
 
 	public LocalDateTime getFechaHoraCompra() {
@@ -77,22 +101,7 @@ public class CompraPasaje {
 	public void setFechaHoraCompra(LocalDateTime fechaHoraCompra) {
 		this.fechaHoraCompra = fechaHoraCompra;
 	}
-
-//	public float getPrecio() {
-//		return precio;
-//	}
-//
-//	public void setPrecio(float precio) {
-//		this.precio = precio;
-//	}
-	
-	
-
-    // Otros atributos opcionales
-    // private BigDecimal precio;
-    // private String metodoPago;
-
-    // Getters y setters
+    
     
     
 }

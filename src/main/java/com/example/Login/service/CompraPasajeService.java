@@ -1,6 +1,8 @@
 package com.example.Login.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +12,11 @@ import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
+import com.example.Login.model.Viaje;
 import com.example.Login.repository.AsientoPorViajeRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 import com.example.Login.repository.UsuarioRepository;
+import com.example.Login.repository.ViajeRepository;
 
 @Service
 public class CompraPasajeService {
@@ -25,36 +29,68 @@ public class CompraPasajeService {
 
     @Autowired
     private CompraPasajeRepository compraPasajeRepository;
+    
+    @Autowired
+    private ViajeRepository viajeRepository;
 
     public void comprarPasaje(DtoCompraPasaje request) {
         Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
+        Viaje viaje = Oviaje.get()
+;
+//        for (Integer nroAsiento : request.getNumerosDeAsiento()) {
+//            // Buscar el asientoPorViaje por número y viaje
+//            Optional<AsientoPorViaje> asientoOpt = asientoPorViajeRepository
+//                     .findByViajeIdAndNroAsiento(request.getViajeId(), nroAsiento);
+//
+//            if (asientoOpt.isPresent()) {
+//                AsientoPorViaje asiento = asientoOpt.get();
+//
+//                if (!asiento.isReservado()) {
+//                    // Marcar como reservado
+//                    asiento.setReservado(true);
+//                    asientoPorViajeRepository.save(asiento);
+//
+//                    // Registrar compra
+//                    CompraPasaje compra = new CompraPasaje();
+//                    compra.setUsuario(usuario);
+//                    compra.set setAsientos(asiento);
+//                    compra.setFechaHoraCompra(LocalDateTime.now());
+//                    compraPasajeRepository.save(compra);
+//                } else {
+//                    throw new RuntimeException("El asiento " + nroAsiento + " ya está reservado");
+//                }
+//            } else {
+//                throw new RuntimeException("Asiento nro " + nroAsiento + " no encontrado para ese viaje");
+//            }
+//        }
+        
+        CompraPasaje compra = new CompraPasaje();
+        compra.setUsuario(usuario);
+        compra.setViaje(viaje);
+        compra.setFechaHoraCompra(LocalDateTime.now());
+
+        List<AsientoPorViaje> asientosReservados = new ArrayList<>();
 
         for (Integer nroAsiento : request.getNumerosDeAsiento()) {
-            // Buscar el asientoPorViaje por número y viaje
-            Optional<AsientoPorViaje> asientoOpt = asientoPorViajeRepository
-                     .findByViajeIdAndNroAsiento(request.getViajeId(), nroAsiento);
-
-            if (asientoOpt.isPresent()) {
-                AsientoPorViaje asiento = asientoOpt.get();
-
-                if (!asiento.isReservado()) {
-                    // Marcar como reservado
-                    asiento.setReservado(true);
-                    asientoPorViajeRepository.save(asiento);
-
-                    // Registrar compra
-                    CompraPasaje compra = new CompraPasaje();
-                    compra.setUsuario(usuario);
-                    compra.setAsientoPorViaje(asiento);
-                    compra.setFechaHoraCompra(LocalDateTime.now());
-                    compraPasajeRepository.save(compra);
+            Optional<AsientoPorViaje> apvOpt = asientoPorViajeRepository.findByViajeIdAndNroAsiento(viaje.getId(), nroAsiento);
+            if (apvOpt.isPresent()) {
+                AsientoPorViaje apv = apvOpt.get();
+                if (!apv.isReservado()) {
+                    apv.setReservado(true);
+                    asientosReservados.add(apv);
                 } else {
-                    throw new RuntimeException("El asiento " + nroAsiento + " ya está reservado");
+                    throw new RuntimeException("Asiento nro " + nroAsiento + " ya está reservado.");
                 }
-            } else {
-                throw new RuntimeException("Asiento nro " + nroAsiento + " no encontrado para ese viaje");
             }
+        }
+
+        compra.setAsientos(asientosReservados);
+        compraPasajeRepository.save(compra);
+
+        for (AsientoPorViaje apv : asientosReservados) {
+            asientoPorViajeRepository.save(apv);
         }
     }
 }

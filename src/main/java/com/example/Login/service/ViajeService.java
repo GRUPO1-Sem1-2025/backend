@@ -1,7 +1,12 @@
 package com.example.Login.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import com.example.Login.repository.ViajeRepository;
+
+import io.jsonwebtoken.lang.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,45 +33,85 @@ public class ViajeService {
 	@Autowired
 	private OmnibusRepository omnibusRepository;
 
+//	public int crearViaje_viejo(DtoViaje dtoViaje) {
+//		Viaje nuevoViaje = new Viaje();
+//		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
+//		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
+//		Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());// getIdLocalidadOrigen().getId());
+//		Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());// .getId());
+//
+//		if (locOri.isPresent() && locDest.isPresent()) {
+//			if (locOri.get().getId() == locDest.get().getId()) {
+//				System.out.println("La ciudad de origen y destino no pueden ser las mismas");
+//				return 1;
+//			}
+//			if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
+//				System.out.println("estado origen: " + locOri.get().isActivo());
+//				System.out.println("estado destino: " + locDest.get().isActivo());
+//				System.out.println("Una de las ciudades no se encuentra disponible");
+//				return 2;
+//			}
+//
+//			Localidad localidadOrigen = locOri.get();
+//			Localidad localidadDestino = locDest.get();
+//
+//			nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
+//			nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
+//			nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
+//			nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
+//			nuevoViaje.setLocalidadOrigen(localidadOrigen);
+//			nuevoViaje.setLocalidadDestino(localidadDestino);
+//			nuevoViaje.setPrecio(dtoViaje.getPrecio());
+//			nuevoViaje.setOmnibus(null);
+//			nuevoViaje.setAsientosPorViaje(null);
+//			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
+//
+//			viajeRepository.save(nuevoViaje);
+//			return 3;
+//		}
+//		System.out.println("Una de las ciudads ingresadas no existe en el sistema");
+//		return 4;
+//	}
+	
 	public int crearViaje(DtoViaje dtoViaje) {
-		Viaje nuevoViaje = new Viaje();
-		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
-		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
-		Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());// getIdLocalidadOrigen().getId());
-		Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());// .getId());
+	    Viaje nuevoViaje = new Viaje();
+	    
+	    Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());
+	    Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());
 
-		if (locOri.isPresent() && locDest.isPresent()) {
-			if (locOri.get().getId() == locDest.get().getId()) {
-				System.out.println("La ciudad de origen y destino no pueden ser las mismas");
-				return 1;
-			}
-			if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
-				System.out.println("estado origen: " + locOri.get().isActivo());
-				System.out.println("estado destino: " + locDest.get().isActivo());
-				System.out.println("Una de las ciudades no se encuentra disponible");
-				return 2;
-			}
+	    if (locOri.isPresent() && locDest.isPresent()) {
+	        if (locOri.get().getId() == locDest.get().getId()) {
+	            System.out.println("La ciudad de origen y destino no pueden ser las mismas");
+	            return 1;
+	        }
 
-			Localidad localidadOrigen = locOri.get();
-			Localidad localidadDestino = locDest.get();
+	        if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
+	            System.out.println("Una de las ciudades no se encuentra disponible");
+	            return 2;
+	        }
 
-			nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
-			nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
-			nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
-			nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
-			nuevoViaje.setLocalidadOrigen(localidadOrigen);
-			nuevoViaje.setLocalidadDestino(localidadDestino);
-			nuevoViaje.setPrecio(dtoViaje.getPrecio());
-			nuevoViaje.setOmnibus(null);
-			nuevoViaje.setAsientosPorViaje(null);
-			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
+	        nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
+	        nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
+	        nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
+	        nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
+	        nuevoViaje.setLocalidadOrigen(locOri.get());
+	        nuevoViaje.setLocalidadDestino(locDest.get());
+	        nuevoViaje.setPrecio(dtoViaje.getPrecio());
+	        nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
 
-			viajeRepository.save(nuevoViaje);
-			return 3;
-		}
-		System.out.println("Una de las ciudads ingresadas no existe en el sistema");
-		return 4;
+	        // No se asigna aún el omnibus ni los asientos
+	        nuevoViaje.setOmnibus(null);
+	        nuevoViaje.setAsientosPorViaje(new ArrayList<>());
+
+	        viajeRepository.save(nuevoViaje);
+	        return 3;
+	    }
+
+	    System.out.println("Una de las ciudades ingresadas no existe");
+	    return 4;
 	}
+	
+	
 
 	public int asignarOmnibusAViaje_vieja(Omnibus omnibus, Viaje viaje) {
 		int resultado = 0;
