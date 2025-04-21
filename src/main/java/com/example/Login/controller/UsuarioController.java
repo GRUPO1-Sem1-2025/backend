@@ -133,7 +133,8 @@ public class UsuarioController {
 			return ResponseEntity.ok(Map.of("token", token));
 		} else {
 			String mensaje = "El codigo ingresado no conicide con el enviado por email";
-			return ResponseEntity.ok(Map.of("token", mensaje));
+			// verificar
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", mensaje));
 		}
 	}
 
@@ -149,7 +150,7 @@ public class UsuarioController {
 			usuarioService.borrarUsuario(user);// borrarUsuario(usuario);
 			return ResponseEntity.ok(response);
 		}
-		response.put("mensaje", "No existe el usuario");
+		response.put("error", "No existe el usuario");
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 

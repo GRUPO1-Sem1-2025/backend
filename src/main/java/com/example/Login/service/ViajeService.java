@@ -1,5 +1,10 @@
 package com.example.Login.service;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Duration;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +79,19 @@ public class ViajeService {
 //	}
 	
 	public int crearViaje(DtoViaje dtoViaje) {
+//		Date fechaInicio = dtoViaje.getFechaInicio();
+//		Date fechaFin = dtoViaje.getFechaFin();
+//		LocalTime horaInicio = dtoViaje.getHoraInicio();
+//		LocalTime horaFin = dtoViaje.getHoraFin();	
+//
+//		Duration duracion = Duration.between(horaInicio,horaFin);	
+//
+//		long horas = duracion.toHours();
+//        long minutos = duracion.toMinutesPart();
+//        
+//        String demora = horas + " horas y " + minutos + " minutos";
+//        System.out.println("Duración: " + demora);
+				
 	    Viaje nuevoViaje = new Viaje();
 	    
 	    Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());
