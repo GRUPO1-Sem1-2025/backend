@@ -32,154 +32,153 @@ import java.util.Optional;
 
 public class UsuarioController {
 
-    private final UsuarioService usuarioService;
+	private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+	public UsuarioController(UsuarioService usuarioService) {
+		this.usuarioService = usuarioService;
+	}
 
-    @GetMapping("/listarTodos")
-    @Operation(summary = "Obtener todos los usuarios", description = "Retorna una lista de usuarios")
-    
-    public List<Usuario> obtenerUsuarios() {
-        return usuarioService.obtenerUsuarios();
-    }
-    
-    @Autowired
-    private UsuarioRepository usuariorepository;
-    
-    @Autowired
-    CompraPasajeService comprarPasajeService;
+	@GetMapping("/listarTodos")
+	@Operation(summary = "Obtener todos los usuarios", description = "Retorna una lista de usuarios")
 
+	public List<Usuario> obtenerUsuarios() {
+		return usuarioService.obtenerUsuarios();
+	}
 
-    @PostMapping("/registrarse")
-    @Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
-    public ResponseEntity<Map<String,String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
-    	System.out.println("Entre al usuario controller");
-    	
-    	Optional<Usuario> user = usuarioService.buscarPorEmail(registrarse.getEmail());
-    	Map<String, String> response = new HashMap<>();
-    	
-    	if (user.isPresent()) {
-    		response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
-    		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-    	}
-    	usuarioService.crearUsuario(registrarse);
+	@Autowired
+	private UsuarioRepository usuariorepository;
 
-    	// 🔹 Prepara la respuesta exitosa
-        response.put("mensaje", "Usuario registrado exitosamente");
-        return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
-    }
-    
-    @PostMapping("/crearCuenta")
-    @Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
-    public ResponseEntity<Map<String,String>> crearCuenta(@RequestBody DtoCrearCuenta dtocrearCuenta) {
-    	System.out.println("Entre al usuario controller");
-    	
-    	Optional<Usuario> user = usuarioService.buscarPorEmail(dtocrearCuenta.getEmail());
-    	Map<String, String> response = new HashMap<>();
-    	
-    	if (user.isPresent()) {
-    		response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
-    		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-    	}
-    	
-    	usuarioService.crearCuenta(dtocrearCuenta);
-    	// 🔹 Prepara la respuesta exitosa
-        response.put("mensaje", "Usuario registrado exitosamente");
-        return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
-    }
-    
-    
-    @GetMapping("/email/{email}")
-    @Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
-    public ResponseEntity<Usuario> buscarPorEmail(@PathVariable String email) {
-        Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
-        return usuario.map(ResponseEntity::ok) // Si el usuario existe, devolver 200 OK
-                      .orElseGet(() -> ResponseEntity.notFound().build()); // Si no existe, devolver 404
-    }
-    
-    
-    // 🔹 Recibe email y password en el cuerpo de la petición (POST)
-    @PostMapping("/login")
-    @Operation(summary = "Login de un usuario", description = "Permite el inicio de sesión de un usuario con email y contraseña")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> loginRequest) {
-        String email = loginRequest.get("email");
-        String password = loginRequest.get("password");
-        String token = usuarioService.authenticate(email, password);
-        //System.out.println("Token: "+ token);
-        System.out.println("password primero: " + password);
+	@Autowired
+	CompraPasajeService comprarPasajeService;
+
+	@PostMapping("/registrarse")
+	@Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
+	public ResponseEntity<Map<String, String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
+		System.out.println("Entre al usuario controller");
+
+		Optional<Usuario> user = usuarioService.buscarPorEmail(registrarse.getEmail());
+		Map<String, String> response = new HashMap<>();
+
+		if (user.isPresent()) {
+			response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+		}
+		usuarioService.crearUsuario(registrarse);
+
+		// 🔹 Prepara la respuesta exitosa
+		response.put("mensaje", "Usuario registrado exitosamente");
+		return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
+	}
+
+	@PostMapping("/crearCuenta")
+	@Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
+	public ResponseEntity<Map<String, String>> crearCuenta(@RequestBody DtoCrearCuenta dtocrearCuenta) {
+		System.out.println("Entre al usuario controller");
+
+		Optional<Usuario> user = usuarioService.buscarPorEmail(dtocrearCuenta.getEmail());
+		Map<String, String> response = new HashMap<>();
+
+		if (user.isPresent()) {
+			response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+		}
+
+		usuarioService.crearCuenta(dtocrearCuenta);
+		// 🔹 Prepara la respuesta exitosa
+		response.put("mensaje", "Usuario registrado exitosamente");
+		return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
+	}
+
+	@GetMapping("/email/{email}")
+	@Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
+	public ResponseEntity<Usuario> buscarPorEmail(@PathVariable String email) {
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
+		return usuario.map(ResponseEntity::ok) // Si el usuario existe, devolver 200 OK
+				.orElseGet(() -> ResponseEntity.notFound().build()); // Si no existe, devolver 404
+	}
+
+	// 🔹 Recibe email y password en el cuerpo de la petición (POST)
+	@PostMapping("/login")
+	@Operation(summary = "Login de un usuario", description = "Permite el inicio de sesión de un usuario con email y contraseña")
+	public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> loginRequest) {
+		String email = loginRequest.get("email");
+		String password = loginRequest.get("password");
+		String token = usuarioService.authenticate(email, password);
+		// System.out.println("Token: "+ token);
+		System.out.println("password primero: " + password);
 		String ok = "Se le envió a su correo un código para terminar con el proceso de autenticación";
-        Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
-        Map<String, String> response = new HashMap<>();
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
+		Map<String, String> response = new HashMap<>();
 
-        if (usuario.isPresent()) {
-            Usuario usuarioEncontrado = usuario.get();
-            // 🔹 Compara la contraseña ingresada encriptada con la almacenada en la BD
+		if (usuario.isPresent()) {
+			Usuario usuarioEncontrado = usuario.get();
+			// 🔹 Compara la contraseña ingresada encriptada con la almacenada en la BD
 			if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
 				System.out.println("las contraseñas coinciden en controller");
-				//if (token != null) {
-				//	return ResponseEntity.ok(Map.of("token", token));
+				// if (token != null) {
+				// return ResponseEntity.ok(Map.of("token", token));
 				return ResponseEntity.ok(Map.of("Mensaje", ok));
 			}
-        }
-        response.put("mensaje", "Credenciales incorrectas");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-    } 
-    @PostMapping("/verificarCodigo")
-    @Operation(summary = "Login de un usuario con codigo", description = "Permite verificar el codigo enviado a la hora de hacer login")
-    public ResponseEntity<Map<String, String>> verificarCodigo(@RequestBody DtoValidarCodigo dtoValidarCodigo) {
-    	String token = usuarioService.verificarCodigo(dtoValidarCodigo.getEmail(), dtoValidarCodigo.getCodigo());
-    	if (token != null) {
-    		usuarioService.vaciarCodigo(dtoValidarCodigo.getEmail());
-		return ResponseEntity.ok(Map.of("token", token));
-    	}
-    	else {
-    		String mensaje = "El codigo ingresado no conicide con el enviado por email";
-    		return ResponseEntity.ok(Map.of("token", mensaje));
-    	}
-    }
-    @PostMapping("/borrarUsuario")
-    @Operation(summary = "Borrar un usuario por email", description = "Elimina un usuario de la base de datos por su email")
-    public ResponseEntity<Map<String, String>> borrarUsuario(@RequestParam String email) {
-    	
-    	Optional<Usuario> user = usuarioService.buscarPorEmail(email);
-    	Map<String, String> response = new HashMap<>();
-    	
-    	if (user.isPresent()) {
-    		response.put("mensaje", "El usuario ha sido borrado");
-    		usuarioService.borrarUsuario(user);// borrarUsuario(usuario);
-    		return ResponseEntity.ok(response);
-    	}
-    	response.put("mensaje", "No existe el usuario");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
-    
-    @Autowired
-    private UsuarioService fileConversionService;
+		}
+		response.put("mensaje", "Credenciales incorrectas");
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	}
 
-    @PostMapping("/crearUsuariosMasivos")
-    public ResponseEntity<String> crearUsuariosMasivos(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
-        }
+	@PostMapping("/verificarCodigo")
+	@Operation(summary = "Login de un usuario con codigo", description = "Permite verificar el codigo enviado a la hora de hacer login")
+	public ResponseEntity<Map<String, String>> verificarCodigo(@RequestBody DtoValidarCodigo dtoValidarCodigo) {
+		String token = usuarioService.verificarCodigo(dtoValidarCodigo.getEmail(), dtoValidarCodigo.getCodigo());
+		if (token != null) {
+			usuarioService.vaciarCodigo(dtoValidarCodigo.getEmail());
+			return ResponseEntity.ok(Map.of("token", token));
+		} else {
+			String mensaje = "El codigo ingresado no conicide con el enviado por email";
+			return ResponseEntity.ok(Map.of("token", mensaje));
+		}
+	}
 
-        try {
-            // Llamamos al servicio para convertir el archivo a JSON
-            String json = fileConversionService.convertCsvToJson(file);
-            return ResponseEntity.ok(json);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el archivo: " + e.getMessage());
-        }
-    }
-    
-    @GetMapping("/contarUsuarios")
-    @Operation(summary = "Obtener cantidad de usuarios", description = "Retorna la cantidad de usuarios del sistema")
-    
-    public long verCantidadUsuarios() {
-        return usuarioService.verCantidadUsuarios();
-    }
-    
+	@PostMapping("/borrarUsuario")
+	@Operation(summary = "Borrar un usuario por email", description = "Elimina un usuario de la base de datos por su email")
+	public ResponseEntity<Map<String, String>> borrarUsuario(@RequestParam String email) {
+
+		Optional<Usuario> user = usuarioService.buscarPorEmail(email);
+		Map<String, String> response = new HashMap<>();
+
+		if (user.isPresent()) {
+			response.put("mensaje", "El usuario ha sido borrado");
+			usuarioService.borrarUsuario(user);// borrarUsuario(usuario);
+			return ResponseEntity.ok(response);
+		}
+		response.put("mensaje", "No existe el usuario");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	}
+
+	@Autowired
+	private UsuarioService fileConversionService;
+
+	@PostMapping("/crearUsuariosMasivos")
+	public ResponseEntity<String> crearUsuariosMasivos(@RequestParam("file") MultipartFile file) {
+		if (file.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
+		}
+
+		try {
+			// Llamamos al servicio para convertir el archivo a JSON
+			String json = fileConversionService.convertCsvToJson(file);
+			return ResponseEntity.ok(json);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al procesar el archivo: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/contarUsuarios")
+	@Operation(summary = "Obtener cantidad de usuarios", description = "Retorna la cantidad de usuarios del sistema")
+
+	public long verCantidadUsuarios() {
+		return usuarioService.verCantidadUsuarios();
+	}
+
 	@Autowired
 	private EmailService emailService;
 
@@ -206,12 +205,12 @@ public class UsuarioController {
 			return "No existe el usuario ingresado";
 		}
 	}
-	
+
 	@PostMapping("/cambiarContrasenia")
 	public String cambiarContrasenia(@RequestBody DtoCambiarContrasenia cambiarContrasenia) {
-		
+
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(cambiarContrasenia.getEmail());
-		System.out.println("email: " + cambiarContrasenia.getEmail());//  usuario.get().getEmail());
+		System.out.println("email: " + cambiarContrasenia.getEmail());// usuario.get().getEmail());
 
 		if (usuario.isPresent()) {
 
@@ -245,19 +244,19 @@ public class UsuarioController {
 				usuario.get().setCod_empleado(null);
 			} else if (rol.equals("Vendedor")) {
 				usuario.get().setRol(200);
-				if (usuario.get().getCod_empleado()==0) {
-					try{
-						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado()+1);
-					}catch (Exception e) {
+				if (usuario.get().getCod_empleado() == 0) {
+					try {
+						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado() + 1);
+					} catch (Exception e) {
 						usuario.get().setCod_empleado(100);
 					}
 				}
 			} else if (rol.equals("Admin")) {
 				usuario.get().setRol(300);
-				if (usuario.get().getCod_empleado()==0) {
-					try{
-						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado()+1);
-					}catch (Exception e) {
+				if (usuario.get().getCod_empleado() == 0) {
+					try {
+						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado() + 1);
+					} catch (Exception e) {
 						usuario.get().setCod_empleado(100);
 					}
 				}
@@ -270,21 +269,25 @@ public class UsuarioController {
 			return "Rol modificado";
 		}
 		return "El correo ingresado no existe registrado en el sistema";// + nuevoRol;
-	}	
-	
+	}
+
 	@PostMapping("/comprarPasaje")
 	public void comprarPasaje(@RequestBody DtoCompraPasaje dtoComprarPasaje) {
 		comprarPasajeService.comprarPasaje(dtoComprarPasaje);
-	}   
-	
+	}
+
 	@PostMapping("/cancelarCompra")
 	public String cancelarCompra(@RequestParam int idCompra) {
-		boolean resultado = comprarPasajeService.cancelarCompra(idCompra);
-		if(resultado) {
+		int resultado = comprarPasajeService.cancelarCompra(idCompra);
+
+		switch (resultado) {
+		case 1:
 			return "La compra ha sido cancelada";
-		}
-		else {
+		case 2:
+			return "La compra no se puede cancelar porque ya se encuentra cancelada";
+		case 3:
 			return "El id de compra ingresado no existe";
 		}
-	}   
+		return "Error desconocido";
+	}
 }

@@ -76,27 +76,35 @@ public class CompraPasajeService {
 		compra.setCat_pasajes(asientosReservados.size());
 		compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
 		compra.setAsientos(asientosReservados);
+		compra.setEstadoCompra("Realizada");
 		compraPasajeRepository.save(compra);
 
 		for (AsientoPorViaje apv : asientosReservados) {
 			asientoPorViajeRepository.save(apv);
 		}
 	}
-	
-	public boolean cancelarCompra(int idCompra) {
+
+	public int cancelarCompra(int idCompra) {
 		try {
-		Optional<CompraPasaje> Ocompra = compraPasajeRepository.findById(idCompra);
-		CompraPasaje compra = Ocompra.get();
-		
-		for (AsientoPorViaje asiento : compra.getAsientos()) {
-	        asiento.setReservado(false);
-	        asientoPorViajeRepository.save(asiento); // Suponiendo que tenés este repo
-	    }
-		return true;
-		}catch (Exception e) {
-			return false;// TODO: handle exception
+			Optional<CompraPasaje> Ocompra = compraPasajeRepository.findById(idCompra);
+			CompraPasaje compra = Ocompra.get();
+
+			if (compra.getEstadoCompra().equals("Realizada")) {
+
+				for (AsientoPorViaje asiento : compra.getAsientos()) {
+					asiento.setReservado(false);
+					asientoPorViajeRepository.save(asiento); // Suponiendo que tenés este repo
+				}
+				compra.setEstadoCompra("Cancelada");
+				compraPasajeRepository.save(compra);
+				return 1;
+			}else {
+				return 2;
+			}
+		} catch (Exception e) {
+			return 3;// TODO: handle exception
 		}
-		
+
 //		compra.
 //		List<AsientoPorViaje> asientoPprViaje = new ArrayList<>();
 //		asientoPprViaje = compra.getAsientos();

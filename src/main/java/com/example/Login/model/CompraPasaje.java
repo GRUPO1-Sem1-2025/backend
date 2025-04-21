@@ -55,11 +55,13 @@ public class CompraPasaje {
     
     private String tipo_venta;
     
+    private String estadoCompra;
+    
     public CompraPasaje() {
     	
     }
 
-	public CompraPasaje(Long id, Usuario usuario, Usuario vendedor, Viaje viaje, List<AsientoPorViaje> asientos,
+	public CompraPasaje(Long id,String estado, Usuario usuario, Usuario vendedor, Viaje viaje, List<AsientoPorViaje> asientos,
 			LocalDateTime fechaHoraCompra, int cat_pasajes, float total, String tipo_venta) {
 		this.id = id;
 		this.usuario = usuario;
@@ -69,6 +71,7 @@ public class CompraPasaje {
 		this.fechaHoraCompra = fechaHoraCompra;
 		this.cat_pasajes = cat_pasajes;
 		this.total = total;
+		this.estadoCompra = estado;
 		this.tipo_venta = tipo_venta;
 	}
 
@@ -142,6 +145,14 @@ public class CompraPasaje {
 
 	public void setTipo_venta(String tipo_venta) {
 		this.tipo_venta = tipo_venta;
+	}
+
+	public String getEstadoCompra() {
+		return estadoCompra;
+	}
+
+	public void setEstadoCompra(String estadoCompra) {
+		this.estadoCompra = estadoCompra;
 	}
 
 	
