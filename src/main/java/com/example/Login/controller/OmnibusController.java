@@ -55,8 +55,21 @@ public class OmnibusController {
 		bus.setCant_asientos(dtoBus.getCant_asientos());
 		bus.setMarca(dtoBus.getMarca());
 		bus.setActivo(dtoBus.isActivo());
-
 		Map<String, String> response = new HashMap<>();
+		
+		try {
+			Optional<Omnibus> Obus = omnibusrepository.findByMatricula(dtoBus.getMatricula());
+			if(!Obus.isPresent()) {
+				bus.setMatricula(dtoBus.getMatricula());
+			}else {
+				response.put("mensaje", "Ya existe un omnibus ingresado con esa matricula");
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			}
+		}
+		catch (Exception e) {
+			
+		}
+		
 		long totalAsientos = bus.getCant_asientos();
 		long asientosDisponibles = asientoRepository.count();
 		boolean estadoAsiento = true;
