@@ -308,5 +308,22 @@ public class UsuarioService {
 	public long verCantidadUsuarios() {
 		return usuarioRepository.count();
 	}
+	
+	public String obtenerToken(String email, int rol) {
+		String token = null;
+		token = jwtService.generateToken(email, rol);
+		return token;
+	}
+	
+	public int reenviarCodigo(String email) {
+		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+		int codigo = usuario.get().getCodigo();
+		System.out.println("codigo de verificacion service: " + codigo);
+		if (codigo != 0) {
+			return codigo;
+		}else {
+			return 2;
+		}
+	}
 
 }
