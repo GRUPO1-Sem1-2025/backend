@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +33,8 @@ public class Omnibus {
 
     private int cant_asientos;
     
+    @Column(unique = true)
+    private String matricula;
     private String localidadActual;
 	
 	// constructor
@@ -39,11 +42,12 @@ public class Omnibus {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Omnibus(int id, String marca, boolean activo, List<OmnibusAsiento> omnibusAsientos, int cant_asientos, String localidad) {
+	public Omnibus(int id, String marca, String matricula, boolean activo, List<OmnibusAsiento> omnibusAsientos, int cant_asientos, String localidad) {
 		super();
 		this.id = id;
 		this.marca = marca;
 		this.activo = activo;
+		this.matricula = matricula;
 		this.omnibusAsientos = omnibusAsientos;
 		this.cant_asientos = cant_asientos;
 		this.localidadActual = localidad;
@@ -101,6 +105,22 @@ public class Omnibus {
 
 	public void setOmnibusAsientos(List<OmnibusAsiento> omnibusAsientos) {
 		this.omnibusAsientos = omnibusAsientos;
+	}
+
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
+
+	public String getLocalidadActual() {
+		return localidadActual;
+	}
+
+	public void setLocalidadActual(String localidadActual) {
+		this.localidadActual = localidadActual;
 	}
 
 	

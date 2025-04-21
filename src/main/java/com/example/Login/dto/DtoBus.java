@@ -2,6 +2,7 @@ package com.example.Login.dto;
 
 public class DtoBus {
 	private String marca;
+	private String matricula;
 	private int cant_asientos;
 	private boolean activo;
 	
@@ -9,8 +10,9 @@ public class DtoBus {
 		
 	}
 	
-	public DtoBus(String marca, int cant_asientos, boolean activo) {
+	public DtoBus(String marca, String matricula, int cant_asientos, boolean activo) {
 		super();
+		this.matricula = matricula;
 		this.marca = marca;
 		this.cant_asientos = cant_asientos;
 		this.activo = activo;
@@ -38,6 +40,14 @@ public class DtoBus {
 
 	public void setActivo(boolean activo) {
 		this.activo = activo;
+	}
+
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
 	}
 	
 	
