@@ -82,4 +82,30 @@ public class CompraPasajeService {
 			asientoPorViajeRepository.save(apv);
 		}
 	}
+	
+	public boolean cancelarCompra(int idCompra) {
+		try {
+		Optional<CompraPasaje> Ocompra = compraPasajeRepository.findById(idCompra);
+		CompraPasaje compra = Ocompra.get();
+		
+		for (AsientoPorViaje asiento : compra.getAsientos()) {
+	        asiento.setReservado(false);
+	        asientoPorViajeRepository.save(asiento); // Suponiendo que tenés este repo
+	    }
+		return true;
+		}catch (Exception e) {
+			return false;// TODO: handle exception
+		}
+		
+//		compra.
+//		List<AsientoPorViaje> asientoPprViaje = new ArrayList<>();
+//		asientoPprViaje = compra.getAsientos();
+//		
+//		try {
+//		System.out.println("Cantidad de asientos en la compra: " + asientoPprViaje.size());
+//		}
+//		catch (Exception e) {
+//			// TODO: handle exception
+//		}
+	}
 }

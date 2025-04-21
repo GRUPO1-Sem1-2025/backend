@@ -275,5 +275,16 @@ public class UsuarioController {
 	@PostMapping("/comprarPasaje")
 	public void comprarPasaje(@RequestBody DtoCompraPasaje dtoComprarPasaje) {
 		comprarPasajeService.comprarPasaje(dtoComprarPasaje);
-	}     
+	}   
+	
+	@PostMapping("/cancelarCompra")
+	public String cancelarCompra(@RequestParam int idCompra) {
+		boolean resultado = comprarPasajeService.cancelarCompra(idCompra);
+		if(resultado) {
+			return "La compra ha sido cancelada";
+		}
+		else {
+			return "El id de compra ingresado no existe";
+		}
+	}   
 }
