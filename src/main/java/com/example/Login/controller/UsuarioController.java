@@ -54,19 +54,21 @@ public class UsuarioController {
 	@PostMapping("/registrarse")
 	@Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
 	public ResponseEntity<Map<String, String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
+		int rol = 100;
+		String token = usuarioService.obtenerToken(registrarse.getEmail(), rol);// dtoValidarCodigo.getCodigo());
 		System.out.println("Entre al usuario controller");
 
 		Optional<Usuario> user = usuarioService.buscarPorEmail(registrarse.getEmail());
 		Map<String, String> response = new HashMap<>();
 
 		if (user.isPresent()) {
-			response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
+			response.put("error", "El usuario ya se encuentra registrado con ese correo");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 		}
 		usuarioService.crearUsuario(registrarse);
 
 		// 🔹 Prepara la respuesta exitosa
-		response.put("mensaje", "Usuario registrado exitosamente");
+		response.put("token", token);// "Usuario registrado exitosamente");
 		return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
 	}
 
@@ -79,7 +81,7 @@ public class UsuarioController {
 		Map<String, String> response = new HashMap<>();
 
 		if (user.isPresent()) {
-			response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
+			response.put("error", "El usuario ya se encuentra registrado con ese correo");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 		}
 
@@ -290,5 +292,24 @@ public class UsuarioController {
 			return "El id de compra ingresado no existe";
 		}
 		return "Error desconocido";
+	}
+
+	@PostMapping("/reenviarCodigo")
+	@Operation(summary = "Reenviar código para autenticar", description = "Retorna un codigo")
+	public String reenviarCodigo(String email) {
+		int codigo = usuarioService.reenviarCodigo(email);
+		System.out.println("codigo de verificacion controller: " + codigo);
+		String para = email;// usuario.get().getEmail();
+		String asunto = "Código de autorización";
+		String mensaje = "utilize el siguiente código: " + codigo + " para iniciar sesión en el sistema";
+		// + usuario.get().getCodigo() + " para iniciar sesión en el sistema ";
+		if (codigo > 2) {
+			emailService.enviarCorreo(para, asunto, mensaje);
+			return "Se le envió a su correo un código para terminar con el proceso de autenticación";
+		} else if(codigo == 2) {
+			return "Usted no ha iniciado sesion aun, por favor inicie sesion en nuestro sistema";
+		}else {
+			return "Error desconocido";
+		}
 	}
 }
