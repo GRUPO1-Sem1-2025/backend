@@ -106,7 +106,6 @@ public class UsuarioController {
 		String email = loginRequest.get("email");
 		String password = loginRequest.get("password");
 		String token = usuarioService.authenticate(email, password);
-		// System.out.println("Token: "+ token);
 		System.out.println("password primero: " + password);
 		String ok = "Se le envió a su correo un código para terminar con el proceso de autenticación";
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
@@ -280,23 +279,23 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/cancelarCompra")
-	public String cancelarCompra(@RequestParam int idCompra) {
+	public ResponseEntity<String> cancelarCompra(@RequestParam int idCompra) {
 		int resultado = comprarPasajeService.cancelarCompra(idCompra);
 
 		switch (resultado) {
 		case 1:
-			return "La compra ha sido cancelada";
+			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido cancelada");
 		case 2:
-			return "La compra no se puede cancelar porque ya se encuentra cancelada";
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La compra no se puede cancelar porque ya se encuentra cancelada");
 		case 3:
-			return "El id de compra ingresado no existe";
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id de compra ingresado no existe");
 		}
-		return "Error desconocido";
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}
 
 	@PostMapping("/reenviarCodigo")
 	@Operation(summary = "Reenviar código para autenticar", description = "Retorna un codigo")
-	public String reenviarCodigo(String email) {
+	public ResponseEntity<String> reenviarCodigo(String email) {
 		int codigo = usuarioService.reenviarCodigo(email);
 		System.out.println("codigo de verificacion controller: " + codigo);
 		String para = email;// usuario.get().getEmail();
@@ -305,11 +304,11 @@ public class UsuarioController {
 		// + usuario.get().getCodigo() + " para iniciar sesión en el sistema ";
 		if (codigo > 2) {
 			emailService.enviarCorreo(para, asunto, mensaje);
-			return "Se le envió a su correo un código para terminar con el proceso de autenticación";
+			return ResponseEntity.status(HttpStatus.OK).body("Se le envió a su correo un código para terminar con el proceso de autenticación");
 		} else if(codigo == 2) {
-			return "Usted no ha iniciado sesion aun, por favor inicie sesion en nuestro sistema";
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usted no ha iniciado sesion aun, por favor inicie sesion en nuestro sistema");
 		}else {
-			return "Error desconocido";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 		}
 	}
 }
