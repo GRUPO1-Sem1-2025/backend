@@ -266,8 +266,7 @@ public class UsuarioService {
 
 		if (usuario.isPresent() && encriptarSHA256(password).equals(usuario.get().getPassword())) {
 			System.out.println("Las contraseñas coinciden");
-			// int rol = usuario.get().getRol();
-
+			
 			// le cargo el codigo generado al usuario que se autentico
 			usuario.get().setCodigo(generarCodigo());
 			usuarioRepository.save(usuario.get());
