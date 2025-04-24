@@ -163,8 +163,9 @@ public class OmnibusService {
 	public int cambiarEstadoBus(int busId) {
 		Optional<Omnibus> Obus = omnibusRepository.findById(busId);
 		int cantidadOmnibusAsignadosAViaje = viajeRepository.contarViajesAsignadoABus(busId);
+		int cantidadViajesActivosParaBus = viajeRepository.contarViajesActivosAsignadoABus(busId);
 
-		if (cantidadOmnibusAsignadosAViaje == 0) {
+		if (cantidadOmnibusAsignadosAViaje == 0 || cantidadViajesActivosParaBus == 0) {
 
 			if (Obus.isPresent()) {
 				Omnibus bus = Obus.get();
@@ -180,7 +181,8 @@ public class OmnibusService {
 				}
 			}
 			return 3;
-		} else
+		} else {			
 			return 4;
+	}
 	}
 }

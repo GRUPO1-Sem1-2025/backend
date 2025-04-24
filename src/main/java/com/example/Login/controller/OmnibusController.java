@@ -154,7 +154,7 @@ public class OmnibusController {
 		case 2:return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Se habilito el Omnibus");
 		case 3:return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No existe un omnibus con ese id");
 		case 4:return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El omnibus esta asignado"+
-				" a algun viaje, por lo tanto no puede ser deshabilitado");
+				" a algun viaje activo, por lo tanto no puede ser deshabilitado");
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 		

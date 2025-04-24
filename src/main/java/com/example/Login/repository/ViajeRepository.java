@@ -14,5 +14,8 @@ import com.example.Login.model.Viaje;
 public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
 	@Query("SELECT COUNT(v) FROM Viaje v WHERE v.omnibus.id = :omnibusId")
     int contarViajesAsignadoABus(@Param("omnibusId") int omnibusId);
+	
+	@Query("SELECT COUNT(v) FROM Viaje v WHERE v.omnibus.id = :omnibusId and v.estadoViaje <=1")
+    int contarViajesActivosAsignadoABus(@Param("omnibusId") int omnibusId);
 
 }
