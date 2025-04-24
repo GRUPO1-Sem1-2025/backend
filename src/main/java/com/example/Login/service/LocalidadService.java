@@ -28,7 +28,7 @@ public class LocalidadService {
 	// Guardar localidad
 	public DtoLocalidad crearLocalidad(DtoLocalidad dtoLocalidad) {
 		Localidad localidad = new Localidad();
-		localidad.setActivo(dtoLocalidad.isActivo());
+		localidad.setActivo(true);//dtoLocalidad.isActivo());
 		localidad.setDepartamento(dtoLocalidad.getDepartamento());
 		localidad.setNombre(dtoLocalidad.getNombre());
 		localidadRepository.save(localidad);

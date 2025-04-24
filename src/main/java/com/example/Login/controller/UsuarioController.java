@@ -105,7 +105,7 @@ public class UsuarioController {
 	public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> loginRequest) {
 		String email = loginRequest.get("email");
 		String password = loginRequest.get("password");
-		String token = usuarioService.authenticate(email, password);
+		//String token = usuarioService.login(email, password);
 		System.out.println("password primero: " + password);
 		String ok = "Se le envió a su correo un código para terminar con el proceso de autenticación";
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
@@ -113,12 +113,19 @@ public class UsuarioController {
 
 		if (usuario.isPresent()) {
 			Usuario usuarioEncontrado = usuario.get();
-			// 🔹 Compara la contraseña ingresada encriptada con la almacenada en la BD
-			if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
-				System.out.println("las contraseñas coinciden en controller");
-				// if (token != null) {
-				// return ResponseEntity.ok(Map.of("token", token));
-				return ResponseEntity.ok(Map.of("Mensaje", ok));
+			if (usuarioEncontrado.getActivo() == true) {
+				// 🔹 Compara la contraseña ingresada encriptada con la almacenada en la BD
+				if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
+					System.out.println("las contraseñas coinciden en controller");
+					// if (token != null) {
+					// return ResponseEntity.ok(Map.of("token", token));
+					String token = usuarioService.login(email, password);
+					return ResponseEntity.ok(Map.of("Mensaje", ok));
+				}
+			}else {
+				response.put("mensaje", "El usuario no se encuentra habilitado, pongase en contacto"+
+			" con un administrador para que lo habilite");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 			}
 		}
 		response.put("mensaje", "Credenciales incorrectas");
@@ -141,14 +148,14 @@ public class UsuarioController {
 
 	@PostMapping("/borrarUsuario")
 	@Operation(summary = "Borrar un usuario por email", description = "Elimina un usuario de la base de datos por su email")
-	public ResponseEntity<Map<String, String>> borrarUsuario(@RequestParam String email) {
+	public ResponseEntity<Map<String, String>> bajaUsuario(@RequestParam String email) {
 
 		Optional<Usuario> user = usuarioService.buscarPorEmail(email);
 		Map<String, String> response = new HashMap<>();
 
 		if (user.isPresent()) {
-			response.put("mensaje", "El usuario ha sido borrado");
-			usuarioService.borrarUsuario(user);// borrarUsuario(usuario);
+			response.put("mensaje", "El usuario ha sido dado de baja");
+			usuarioService.bajaUsuario(user);// borrarUsuario(usuario);
 			return ResponseEntity.ok(response);
 		}
 		response.put("error", "No existe el usuario");
@@ -286,7 +293,8 @@ public class UsuarioController {
 		case 1:
 			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido cancelada");
 		case 2:
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La compra no se puede cancelar porque ya se encuentra cancelada");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("La compra no se puede cancelar porque ya se encuentra cancelada");
 		case 3:
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id de compra ingresado no existe");
 		}
@@ -304,10 +312,12 @@ public class UsuarioController {
 		// + usuario.get().getCodigo() + " para iniciar sesión en el sistema ";
 		if (codigo > 2) {
 			emailService.enviarCorreo(para, asunto, mensaje);
-			return ResponseEntity.status(HttpStatus.OK).body("Se le envió a su correo un código para terminar con el proceso de autenticación");
-		} else if(codigo == 2) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usted no ha iniciado sesion aun, por favor inicie sesion en nuestro sistema");
-		}else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body("Se le envió a su correo un código para terminar con el proceso de autenticación");
+		} else if (codigo == 2) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("Usted no ha iniciado sesion aun, por favor inicie sesion en nuestro sistema");
+		} else {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 		}
 	}

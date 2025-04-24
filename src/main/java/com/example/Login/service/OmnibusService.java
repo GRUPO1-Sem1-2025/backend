@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 //import com.example.Login.model.Usuario;
 import com.example.Login.repository.OmnibusRepository;
+import com.example.Login.repository.ViajeRepository;
 //import com.example.Login.repository.UsuarioRepository;
 
 @Service
@@ -24,6 +25,9 @@ public class OmnibusService {
 
 	@Autowired
 	private OmnibusRepository omnibusRepository;
+
+	@Autowired
+	private ViajeRepository viajeRepository;
 
 	@Autowired
 	private LocalidadRepository localidadRepository;
@@ -131,7 +135,7 @@ public class OmnibusService {
 	}
 
 	public int asignarLocalidadAOmnibus(Omnibus omnibus, String nombreLocalidad) {
-		int salida;	
+		int salida;
 		try {
 			Optional<Localidad> loc = localidadRepository.findByNombre(nombreLocalidad);
 
@@ -139,20 +143,46 @@ public class OmnibusService {
 				if (loc.get().isActivo()) {
 					omnibus.setLocalidad(loc.get().getNombre());
 					omnibusRepository.save(omnibus);
-					return salida=0;
+					return salida = 0;
 				} else {
 					System.out.println("No está permitido hacer viajes a " + loc.get().getNombre());
-					return salida=1;
+					return salida = 1;
 				}
 			} else {
 				System.out.println("No existe una localidad llamada " + nombreLocalidad + " en el sistema");
-				return salida=2;
+				return salida = 2;
 			}
 
 		} catch (Exception e) {
 			System.out.println("Error al buscar la localidad: " + e.getMessage());
 			e.printStackTrace();
-			return salida=3;
+			return salida = 3;
 		}
+	}
+
+	public int cambiarEstadoBus(int busId) {
+		Optional<Omnibus> Obus = omnibusRepository.findById(busId);
+		int cantidadOmnibusAsignadosAViaje = viajeRepository.contarViajesAsignadoABus(busId);
+		int cantidadViajesActivosParaBus = viajeRepository.contarViajesActivosAsignadoABus(busId);
+
+		if (cantidadOmnibusAsignadosAViaje == 0 || cantidadViajesActivosParaBus == 0) {
+
+			if (Obus.isPresent()) {
+				Omnibus bus = Obus.get();
+				// verificar si existen viajes activos para ese bus
+				if (bus.isActivo()) {
+					bus.setActivo(false);
+					omnibusRepository.save(bus);
+					return 1;
+				} else {
+					bus.setActivo(true);
+					omnibusRepository.save(bus);
+					return 2;
+				}
+			}
+			return 3;
+		} else {			
+			return 4;
+	}
 	}
 }

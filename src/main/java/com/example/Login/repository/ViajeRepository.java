@@ -3,6 +3,8 @@ package com.example.Login.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.Login.model.Asiento;
@@ -10,6 +12,10 @@ import com.example.Login.model.Viaje;
 
 @Repository
 public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
-   // Optional<Viaje> findByNombre(String nombre);
+	@Query("SELECT COUNT(v) FROM Viaje v WHERE v.omnibus.id = :omnibusId")
+    int contarViajesAsignadoABus(@Param("omnibusId") int omnibusId);
+	
+	@Query("SELECT COUNT(v) FROM Viaje v WHERE v.omnibus.id = :omnibusId and v.estadoViaje <=1")
+    int contarViajesActivosAsignadoABus(@Param("omnibusId") int omnibusId);
 
 }

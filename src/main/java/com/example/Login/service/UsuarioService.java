@@ -157,7 +157,7 @@ public class UsuarioService {
 		return usuarioRepository.save(usuario);
 	}
 
-	public Usuario borrarUsuario(Optional<Usuario> user) {
+	public Usuario bajaUsuario(Optional<Usuario> user) {
 		Usuario u = user.get();
 		u.setActivo(false);
 		usuarioRepository.save(u);
@@ -260,14 +260,13 @@ public class UsuarioService {
 		}
 	}
 
-	public String authenticate(String email, String password) {
+	public String login(String email, String password) {
 		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 		System.out.println("encontró usuario en service ");
 
 		if (usuario.isPresent() && encriptarSHA256(password).equals(usuario.get().getPassword())) {
 			System.out.println("Las contraseñas coinciden");
-			// int rol = usuario.get().getRol();
-
+			
 			// le cargo el codigo generado al usuario que se autentico
 			usuario.get().setCodigo(generarCodigo());
 			usuarioRepository.save(usuario.get());
