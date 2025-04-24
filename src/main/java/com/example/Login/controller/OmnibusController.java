@@ -143,5 +143,23 @@ public class OmnibusController {
 		response.put("mensaje", "Error desconocido");
 		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 	}
+	
+	@PostMapping("/darDeBajaOmnibus")
+	@Operation(summary = "Se cambia el estado de un omnibus para darlo de baja", description = "se marca el bus como en desuso")
+	public ResponseEntity<String> darDeBaja(int busId){
+		int resultado = omnibusService.darDeBaja(busId);
+		
+		switch(resultado) {
+		case 1:return ResponseEntity.status(HttpStatus.OK).body("Se deshabilito el Omnibus");
+		case 2:return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("No se puede deshabilitar el Omnibus, "+
+					"porque ya se encuenta deshabilitado");
+		case 3:return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No existe un omnibus con ese id");
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
+		
+		
+		
+	}
+	
 
 }

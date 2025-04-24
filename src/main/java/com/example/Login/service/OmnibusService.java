@@ -131,7 +131,7 @@ public class OmnibusService {
 	}
 
 	public int asignarLocalidadAOmnibus(Omnibus omnibus, String nombreLocalidad) {
-		int salida;	
+		int salida;
 		try {
 			Optional<Localidad> loc = localidadRepository.findByNombre(nombreLocalidad);
 
@@ -139,20 +139,36 @@ public class OmnibusService {
 				if (loc.get().isActivo()) {
 					omnibus.setLocalidad(loc.get().getNombre());
 					omnibusRepository.save(omnibus);
-					return salida=0;
+					return salida = 0;
 				} else {
 					System.out.println("No está permitido hacer viajes a " + loc.get().getNombre());
-					return salida=1;
+					return salida = 1;
 				}
 			} else {
 				System.out.println("No existe una localidad llamada " + nombreLocalidad + " en el sistema");
-				return salida=2;
+				return salida = 2;
 			}
 
 		} catch (Exception e) {
 			System.out.println("Error al buscar la localidad: " + e.getMessage());
 			e.printStackTrace();
-			return salida=3;
+			return salida = 3;
 		}
+	}
+
+	public int darDeBaja(int busId) {
+		Optional<Omnibus> Obus = omnibusRepository.findById(busId);
+
+		if (Obus.isPresent()) {
+			Omnibus bus = Obus.get();
+			if (bus.isActivo()) {
+				bus.setActivo(false);
+				omnibusRepository.save(bus);
+				return 1;
+			}else {
+				return 2;
+			}
+		}
+		return 3;
 	}
 }
