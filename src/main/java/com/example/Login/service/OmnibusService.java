@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 //import com.example.Login.model.Usuario;
 import com.example.Login.repository.OmnibusRepository;
+import com.example.Login.repository.ViajeRepository;
 //import com.example.Login.repository.UsuarioRepository;
 
 @Service
@@ -24,6 +25,9 @@ public class OmnibusService {
 
 	@Autowired
 	private OmnibusRepository omnibusRepository;
+
+	@Autowired
+	private ViajeRepository viajeRepository;
 
 	@Autowired
 	private LocalidadRepository localidadRepository;
@@ -156,19 +160,27 @@ public class OmnibusService {
 		}
 	}
 
-	public int darDeBaja(int busId) {
+	public int cambiarEstadoBus(int busId) {
 		Optional<Omnibus> Obus = omnibusRepository.findById(busId);
+		int cantidadOmnibusAsignadosAViaje = viajeRepository.contarViajesAsignadoABus(busId);
 
-		if (Obus.isPresent()) {
-			Omnibus bus = Obus.get();
-			if (bus.isActivo()) {
-				bus.setActivo(false);
-				omnibusRepository.save(bus);
-				return 1;
-			}else {
-				return 2;
+		if (cantidadOmnibusAsignadosAViaje == 0) {
+
+			if (Obus.isPresent()) {
+				Omnibus bus = Obus.get();
+				// verificar si existen viajes activos para ese bus
+				if (bus.isActivo()) {
+					bus.setActivo(false);
+					omnibusRepository.save(bus);
+					return 1;
+				} else {
+					bus.setActivo(true);
+					omnibusRepository.save(bus);
+					return 2;
+				}
 			}
-		}
-		return 3;
+			return 3;
+		} else
+			return 4;
 	}
 }
