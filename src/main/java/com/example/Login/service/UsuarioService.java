@@ -157,7 +157,7 @@ public class UsuarioService {
 		return usuarioRepository.save(usuario);
 	}
 
-	public Usuario borrarUsuario(Optional<Usuario> user) {
+	public Usuario bajaUsuario(Optional<Usuario> user) {
 		Usuario u = user.get();
 		u.setActivo(false);
 		usuarioRepository.save(u);
@@ -260,7 +260,7 @@ public class UsuarioService {
 		}
 	}
 
-	public String authenticate(String email, String password) {
+	public String login(String email, String password) {
 		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 		System.out.println("encontró usuario en service ");
 
