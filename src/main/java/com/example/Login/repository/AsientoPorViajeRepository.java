@@ -20,4 +20,14 @@ public interface AsientoPorViajeRepository extends JpaRepository<AsientoPorViaje
 		       "WHERE apv.viaje.id = :viajeId AND a.nro = :nroAsiento")
 		Optional<AsientoPorViaje> findByViajeIdAndNroAsiento(@Param("viajeId") int viajeId,
 		                                                     @Param("nroAsiento") int nroAsiento);
+	
+	@Query(value = """
+	        SELECT COUNT(a.nro)
+	        FROM asiento_por_viaje apv
+	        JOIN bus_asiento ba ON apv.omnibus_asiento_id = ba.id
+	        JOIN asientos a ON ba.asiento_id = a.id
+	        WHERE apv.viaje_id = :viajeId
+	          AND apv.reservado = false
+	        """, nativeQuery = true)
+	    int contarAsientosDisponiblesPorViaje(@Param("viajeId") int viajeId);
 }
