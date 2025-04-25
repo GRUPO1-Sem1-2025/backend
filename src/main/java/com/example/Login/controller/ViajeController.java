@@ -1,6 +1,7 @@
 package com.example.Login.controller;
 
 import com.example.Login.dto.DtoViaje;
+import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.Viaje;
 import com.example.Login.repository.OmnibusRepository;
@@ -8,13 +9,16 @@ import com.example.Login.repository.ViajeRepository;
 import com.example.Login.service.OmnibusService;
 import com.example.Login.service.ViajeService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -102,6 +106,19 @@ public class ViajeController {
 	        response.put("mensaje", "No se encontró el viaje o el ómnibus con los IDs proporcionados.");
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	    }
+	}
+	
+	@GetMapping("/obtenerViajesPorFechaYDestino")
+	@Operation(summary = "obtenerViajesPorFechaYDestino", description = "obtenerViajesPorFechaYDestino")
+	public ResponseEntity<List<DtoViaje>> obtenerViajesPorFechaYDestino(@RequestBody DtoViaje dtoVDF){
+		System.out.println("Cdestino: " +dtoVDF.getIdLocalidadDestino());
+		System.out.println("Corigen: " + dtoVDF.getIdLocalidadOrigen());
+		System.out.println("Cinicio: " + dtoVDF.getFechaInicio());// IdLocalidadOrigen());
+		System.out.println("Cfin: " + dtoVDF.getFechaFin());// IdLocalidadOrigen());
+		List<DtoViaje> dtovdf = new ArrayList<>();
+		dtovdf = viajeService.obtenerViajesPorFechaYDestino(dtoVDF);	
+		//response.put("mensaje", "No se encontró el viaje o el ómnibus con los IDs proporcionados.");
+        return ResponseEntity.status(HttpStatus.OK).body(dtovdf);		
 	}
 	
 }

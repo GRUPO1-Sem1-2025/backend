@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoViaje;
+import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.Localidad;
@@ -227,4 +228,38 @@ public class ViajeService {
 
 		return resultado;
 	}
+
+
+
+	public List<DtoViaje> obtenerViajesPorFechaYDestino(DtoViaje dtoVDF) {
+		List<DtoViaje> lista = new ArrayList<>();
+		System.out.println("Sdestino: " +dtoVDF.getIdLocalidadDestino());
+		System.out.println("Sorigen: " + dtoVDF.getIdLocalidadOrigen());
+		System.out.println("Sinicio: " + dtoVDF.getFechaInicio());// IdLocalidadOrigen());
+		System.out.println("Sfin: " + dtoVDF.getFechaFin());// IdLocalidadOrigen());
+		//lista = viajeRepository.buscarViajesFiltrados(dtoVDF.getFechaInicio(),dtoVDF.getFechaFin(),dtoVDF.getIdLocalidadOrigen(),dtoVDF.getIdLocalidadDestino());
+		lista = viajeRepository.buscarViajesFiltrados(dtoVDF.getFechaInicio(),dtoVDF.getFechaFin(),				
+				dtoVDF.getIdLocalidadOrigen(),dtoVDF.getIdLocalidadDestino());
+		System.out.println("Cantidad de objetos: " + lista.size());
+		return lista;
+	}
 }
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+

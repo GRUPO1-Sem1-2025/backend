@@ -1,5 +1,6 @@
 package com.example.Login.dto;
 
+import java.sql.Date;
 import java.time.LocalTime;
 
 public class DtoViajeDestinoFecha {
@@ -8,19 +9,23 @@ public class DtoViajeDestinoFecha {
 	private LocalTime horaInicio;
 	private LocalTime horaFin;
 	private float precioPasaje;
+	private Date fechaInicio;
+	private Date fechaFin;
 
 	public DtoViajeDestinoFecha() {
 
-	}
-
+	}	
+	
 	public DtoViajeDestinoFecha(int busId, int cantAsientosDisponibles, LocalTime horaInicio, LocalTime horaFin,
-			float precioPasaje) {
+			float precioPasaje, Date fechaInicio, Date fechaFin) {
 		super();
 		BusId = busId;
 		this.cantAsientosDisponibles = cantAsientosDisponibles;
 		this.horaInicio = horaInicio;
 		this.horaFin = horaFin;
 		this.precioPasaje = precioPasaje;
+		this.fechaInicio = fechaInicio;
+		this.fechaFin = fechaFin;
 	}
 
 	public int getBusId() {
@@ -62,4 +67,22 @@ public class DtoViajeDestinoFecha {
 	public void setPrecioPasaje(float precioPasaje) {
 		this.precioPasaje = precioPasaje;
 	}
+
+	public Date getFechaInicio() {
+		return fechaInicio;
+	}
+
+	public void setFechaInicio(Date fechaInicio) {
+		this.fechaInicio = fechaInicio;
+	}
+
+	public Date getFechaFin() {
+		return fechaFin;
+	}
+
+	public void setFechaFin(Date fechaFin) {
+		this.fechaFin = fechaFin;
+	}
+	
+	
 }
