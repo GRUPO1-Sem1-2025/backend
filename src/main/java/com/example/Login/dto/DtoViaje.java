@@ -10,9 +10,11 @@ public class DtoViaje {
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "America/Montevideo")
 	private Date fechaInicio;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "America/Montevideo")
-
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "America/Montevideo")	
 	private Date fechaFin;
+	
+	private int id;
 	private LocalTime horaInicio;
 	private LocalTime horaFin;
 	private int idLocalidadOrigen;
@@ -23,16 +25,15 @@ public class DtoViaje {
 
 	}
 
-	public DtoViaje(Date fechaInicio, Date fechaFin, Integer idLocalidadOrigen, Integer idLocalidadDestino) {
-		this.fechaInicio = fechaInicio;
-		this.fechaFin = fechaFin;
-		this.idLocalidadOrigen = idLocalidadOrigen;
-		this.idLocalidadDestino = idLocalidadDestino;
-	}
+//	public DtoViaje(int id, Date fechaInicio, Date fechaFin, Integer idLocalidadOrigen, Integer idLocalidadDestino) {
+//		this.fechaInicio = fechaInicio;
+//		this.fechaFin = fechaFin;
+//		this.idLocalidadOrigen = idLocalidadOrigen;
+//		this.idLocalidadDestino = idLocalidadDestino;
+//	}
 
 	public DtoViaje(float precio, Date fechaInicio, Date fechaFin, LocalTime horaInicio, LocalTime horaFin,
-			int idLocalidadOrigen, int idLocalidadDestino, int idOmnibus) {
-		super();
+			int idLocalidadOrigen, int idLocalidadDestino, int idOmnibus, int id) {
 		this.precio = precio;
 		this.fechaInicio = fechaInicio;
 		this.fechaFin = fechaFin;
@@ -41,6 +42,15 @@ public class DtoViaje {
 		this.idLocalidadOrigen = idLocalidadOrigen;
 		this.idLocalidadDestino = idLocalidadDestino;
 		this.idOmnibus = idOmnibus;
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public float getPrecio() {

@@ -53,14 +53,14 @@ public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
 //		    @Param("destinoId") int destinoId
 //		);
 	
-	@Query("SELECT new com.example.Login.dto.DtoViaje(v.precio, v.fechaInicio, v.fechaFin, v.horaInicio, v.horaFin, v.localidadOrigen.id, v.localidadDestino.id, v.omnibus.id) " +
-		       "FROM Viaje v " +
-		       "WHERE v.fechaInicio >= :fechaInicio " +
-		       "AND v.fechaFin < :fechaFin " +
-		       "AND v.localidadOrigen.id = :origenId " +
-		       "AND v.localidadDestino.id = :destinoId " +
-		       "AND v.estadoViaje < 2 " +
-		       "AND v.omnibus IS NOT NULL")
+		@Query("SELECT new com.example.Login.dto.DtoViaje(v.precio, v.fechaInicio, v.fechaFin, v.horaInicio, v.horaFin, v.localidadOrigen.id, v.localidadDestino.id, v.omnibus.id, v.id) " +
+			       "FROM Viaje v " +
+			       "WHERE v.fechaInicio >= :fechaInicio " +
+			       "AND v.fechaFin <= :fechaFin " +
+			       "AND v.localidadOrigen.id = :origenId " +
+			       "AND v.localidadDestino.id = :destinoId " +
+			       "AND v.estadoViaje < 2 " +
+			       "AND v.omnibus IS NOT NULL")
 		List<DtoViaje> buscarViajesFiltrados(
 		    @Param("fechaInicio") Date fechaInicio,
 		    @Param("fechaFin") Date fechaFin,

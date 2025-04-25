@@ -1,4 +1,5 @@
 package com.example.Login.service;
+import com.example.Login.repository.AsientoPorViajeRepository;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -32,6 +33,9 @@ public class ViajeService {
 
 	@Autowired
 	private LocalidadRepository localidadRepository;
+	
+	@Autowired
+	private AsientoPorViajeRepository asientoPorViajeRepository;
 
 	@Autowired
 	private ViajeRepository viajeRepository;
@@ -231,8 +235,9 @@ public class ViajeService {
 
 
 
-	public List<DtoViaje> obtenerViajesPorFechaYDestino(DtoViaje dtoVDF) {
+	public List<DtoViajeDestinoFecha> obtenerViajesPorFechaYDestino(DtoViaje dtoVDF) {
 		List<DtoViaje> lista = new ArrayList<>();
+		List<DtoViajeDestinoFecha> listaDto= new ArrayList<>();
 		System.out.println("Sdestino: " +dtoVDF.getIdLocalidadDestino());
 		System.out.println("Sorigen: " + dtoVDF.getIdLocalidadOrigen());
 		System.out.println("Sinicio: " + dtoVDF.getFechaInicio());// IdLocalidadOrigen());
@@ -241,7 +246,18 @@ public class ViajeService {
 		lista = viajeRepository.buscarViajesFiltrados(dtoVDF.getFechaInicio(),dtoVDF.getFechaFin(),				
 				dtoVDF.getIdLocalidadOrigen(),dtoVDF.getIdLocalidadDestino());
 		System.out.println("Cantidad de objetos: " + lista.size());
-		return lista;
+		
+		for(DtoViaje dto: lista) {
+			DtoViajeDestinoFecha vdf = new DtoViajeDestinoFecha();
+			vdf.setBusId(dto.getIdOmnibus());
+			vdf.setCantAsientosDisponibles(asientoPorViajeRepository.contarAsientosDisponiblesPorViaje(dto.getId()));
+			System.out.println("Cantida de asientos" + vdf.getCantAsientosDisponibles());
+			vdf.setHoraFin(dto.getHoraFin());
+			vdf.setHoraInicio(dto.getHoraInicio());
+			vdf.setPrecioPasaje(dto.getPrecio());
+			listaDto.add(vdf);
+		}
+		return listaDto;
 	}
 }
 
