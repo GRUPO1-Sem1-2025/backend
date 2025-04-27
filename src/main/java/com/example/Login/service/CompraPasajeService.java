@@ -96,7 +96,7 @@ public class CompraPasajeService {
 			}
 		} catch (Exception e) {
 			return 1;
-		}
+		}//
 		try {
 			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
 			vendedor = Ovendedor.get();
