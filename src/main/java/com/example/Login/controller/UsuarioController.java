@@ -105,7 +105,7 @@ public class UsuarioController {
 	public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> loginRequest) {
 		String email = loginRequest.get("email");
 		String password = loginRequest.get("password");
-		//String token = usuarioService.login(email, password);
+		// String token = usuarioService.login(email, password);
 		System.out.println("password primero: " + password);
 		String ok = "Se le envió a su correo un código para terminar con el proceso de autenticación";
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
@@ -122,9 +122,9 @@ public class UsuarioController {
 					String token = usuarioService.login(email, password);
 					return ResponseEntity.ok(Map.of("Mensaje", ok));
 				}
-			}else {
-				response.put("mensaje", "El usuario no se encuentra habilitado, pongase en contacto"+
-			" con un administrador para que lo habilite");
+			} else {
+				response.put("mensaje", "El usuario no se encuentra habilitado, pongase en contacto"
+						+ " con un administrador para que lo habilite");
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 			}
 		}
@@ -283,13 +283,19 @@ public class UsuarioController {
 	@PostMapping("/comprarPasaje")
 	public ResponseEntity<String> comprarPasaje(@RequestBody DtoCompraPasaje dtoComprarPasaje) {
 		int resultadoCompra = comprarPasajeService.comprarPasaje(dtoComprarPasaje);
-		switch(resultadoCompra) {
-		case 3:
-			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido realizada de forma correcta");
-		case 2:
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno de los asientos solicitados ya se encuentra reservado");
+		switch (resultadoCompra) {
 		case 1:
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El cliente ingresado no existe");
+		case 2:
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("Uno de los asientos solicitados ya se encuentra reservado");
+		case 3:
+			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido realizada de forma correcta");
+		case 4:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+					"El cliente ingresado no se encuentra habilitado, por lo tanto" + " no puede realizar compras");
+		case 5:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje ingresado no existe");
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}

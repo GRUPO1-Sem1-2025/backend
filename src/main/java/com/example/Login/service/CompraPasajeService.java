@@ -87,9 +87,13 @@ public class CompraPasajeService {
 	public int comprarPasaje(DtoCompraPasaje request) {
 		Usuario vendedor = new Usuario();
 		Usuario usuario = new Usuario();
+		Viaje viaje = new Viaje();
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findById(request.getUsuarioId());
 			usuario = Ousuario.get();
+			if (usuario.getActivo() == false) {
+				return 4;
+			}
 		} catch (Exception e) {
 			return 1;
 		}
@@ -99,9 +103,12 @@ public class CompraPasajeService {
 		} catch (Exception e) {
 			vendedor = null;
 		}
-
-		Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
-		Viaje viaje = Oviaje.get();
+		try {
+			Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
+			viaje = Oviaje.get();
+		} catch (Exception e) {
+			return 5;
+		}
 
 		CompraPasaje compra = new CompraPasaje();
 		if (vendedor == null) {
