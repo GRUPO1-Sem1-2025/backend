@@ -33,10 +33,66 @@ public class CompraPasajeService {
 	@Autowired
 	private ViajeRepository viajeRepository;
 
-	public void comprarPasaje(DtoCompraPasaje request) {
+//	public void comprarPasaje(DtoCompraPasaje request) {
+//		Usuario vendedor = new Usuario();
+//		Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+//				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+//		try {
+//			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
+//			vendedor = Ovendedor.get();
+//		} catch (Exception e) {
+//			vendedor = null;
+//		}
+//
+//		Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
+//		Viaje viaje = Oviaje.get();
+//
+//		CompraPasaje compra = new CompraPasaje();
+//		if (vendedor == null) {
+//			compra.setTipo_venta("Online");
+//		} else {
+//			compra.setTipo_venta("Ventanilla");
+//		}
+//		compra.setUsuario(usuario);
+//		compra.setVendedor(vendedor);
+//		compra.setViaje(viaje);
+//		compra.setFechaHoraCompra(LocalDateTime.now());
+//
+//		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
+//
+//		for (Integer nroAsiento : request.getNumerosDeAsiento()) {
+//			Optional<AsientoPorViaje> apvOpt = asientoPorViajeRepository.findByViajeIdAndNroAsiento(viaje.getId(),
+//					nroAsiento);
+//			if (apvOpt.isPresent()) {
+//				AsientoPorViaje apv = apvOpt.get();
+//				if (!apv.isReservado()) {
+//					apv.setReservado(true);
+//					asientosReservados.add(apv);
+//				} else {
+//					throw new RuntimeException("Asiento nro " + nroAsiento + " ya está reservado.");
+//				}
+//			}
+//		}
+//		compra.setCat_pasajes(asientosReservados.size());
+//		compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
+//		compra.setAsientos(asientosReservados);
+//		compra.setEstadoCompra("Realizada");
+//		compraPasajeRepository.save(compra);
+//
+//		for (AsientoPorViaje apv : asientosReservados) {
+//			asientoPorViajeRepository.save(apv);
+//		}
+//	}
+
+	public int comprarPasaje(DtoCompraPasaje request) {
 		Usuario vendedor = new Usuario();
-		Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		Usuario usuario = new Usuario();
+		try {
+			Optional<Usuario> Ousuario = usuarioRepository.findById(request.getUsuarioId());
+			usuario = Ousuario.get();
+		} catch (Exception e) {
+			return 1;
+		}
 		try {
 			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
 			vendedor = Ovendedor.get();
@@ -69,7 +125,7 @@ public class CompraPasajeService {
 					apv.setReservado(true);
 					asientosReservados.add(apv);
 				} else {
-					throw new RuntimeException("Asiento nro " + nroAsiento + " ya está reservado.");
+					return 2;
 				}
 			}
 		}
@@ -82,6 +138,7 @@ public class CompraPasajeService {
 		for (AsientoPorViaje apv : asientosReservados) {
 			asientoPorViajeRepository.save(apv);
 		}
+		return 3;
 	}
 
 	public int cancelarCompra(int idCompra) {
@@ -98,7 +155,7 @@ public class CompraPasajeService {
 				compra.setEstadoCompra("Cancelada");
 				compraPasajeRepository.save(compra);
 				return 1;
-			}else {
+			} else {
 				return 2;
 			}
 		} catch (Exception e) {
