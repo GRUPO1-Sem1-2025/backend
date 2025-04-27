@@ -281,8 +281,17 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/comprarPasaje")
-	public void comprarPasaje(@RequestBody DtoCompraPasaje dtoComprarPasaje) {
-		comprarPasajeService.comprarPasaje(dtoComprarPasaje);
+	public ResponseEntity<String> comprarPasaje(@RequestBody DtoCompraPasaje dtoComprarPasaje) {
+		int resultadoCompra = comprarPasajeService.comprarPasaje(dtoComprarPasaje);
+		switch(resultadoCompra) {
+		case 3:
+			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido realizada de forma correcta");
+		case 2:
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno de los asientos solicitados ya se encuentra reservado");
+		case 1:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El cliente ingresado no existe");
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}
 
 	@PostMapping("/cancelarCompra")
