@@ -55,7 +55,15 @@ public class UsuarioController {
 	@Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
 	public ResponseEntity<Map<String, String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
 		int rol = 100;
-		String token = usuarioService.obtenerToken(registrarse.getEmail(), rol);// dtoValidarCodigo.getCodigo());
+		int id = 0;
+		try {
+		Optional<Usuario> Ousuario = usuariorepository.findByEmail(registrarse.getEmail());
+		id = Ousuario.get().getId();
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		String token = usuarioService.obtenerToken(registrarse.getEmail(), rol, id);// dtoValidarCodigo.getCodigo());
 		System.out.println("Entre al usuario controller");
 
 		Optional<Usuario> user = usuarioService.buscarPorEmail(registrarse.getEmail());
@@ -135,6 +143,12 @@ public class UsuarioController {
 	@PostMapping("/verificarCodigo")
 	@Operation(summary = "Login de un usuario con codigo", description = "Permite verificar el codigo enviado a la hora de hacer login")
 	public ResponseEntity<Map<String, String>> verificarCodigo(@RequestBody DtoValidarCodigo dtoValidarCodigo) {
+		
+		try {
+			Optional<Usuario> Ousuario = usuariorepository.findByEmail(dtoValidarCodigo.getEmail());
+		}catch (Exception e){
+			
+		}		
 		String token = usuarioService.verificarCodigo(dtoValidarCodigo.getEmail(), dtoValidarCodigo.getCodigo());
 		if (token != null) {
 			usuarioService.vaciarCodigo(dtoValidarCodigo.getEmail());
