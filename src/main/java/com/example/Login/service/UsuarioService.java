@@ -288,10 +288,18 @@ public class UsuarioService {
 	}
 
 	public String verificarCodigo(String email, int codigo) {
-		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
-		int rol = usuario.get().getRol();
-		if (usuario.get().getCodigo() == codigo) {
-			return jwtService.generateToken(email, rol);
+		Usuario usuario = new Usuario();
+		try {
+		Optional<Usuario> Ousuario = usuarioRepository.findByEmail(email);
+		usuario = Ousuario.get();
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		int id = usuario.getId();
+		int rol = usuario.getRol();
+		//int id = usuario.get().getId();
+		if (usuario.getCodigo() == codigo) {
+			return jwtService.generateToken(email, rol, id);
 		} else {
 			System.out.println("El código ingresado no coincide con el enviado por email");
 			return null;
@@ -308,9 +316,9 @@ public class UsuarioService {
 		return usuarioRepository.count();
 	}
 	
-	public String obtenerToken(String email, int rol) {
+	public String obtenerToken(String email, int rol, int id) {
 		String token = null;
-		token = jwtService.generateToken(email, rol);
+		token = jwtService.generateToken(email, rol, id);
 		return token;
 	}
 	

@@ -45,10 +45,11 @@ public class JwtService {
 
     private static final String SECRET_KEY = "MI_CLAVE_SECRETA_DE_32_CARACTERES_O_MAS";
 
-    public String generateToken(String email, int rol) {
+    public String generateToken(String email, int rol, int id) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("rol", rol)
+                .claim("id", id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes())
