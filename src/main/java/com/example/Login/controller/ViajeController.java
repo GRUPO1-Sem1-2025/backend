@@ -9,6 +9,7 @@ import com.example.Login.repository.ViajeRepository;
 import com.example.Login.service.OmnibusService;
 import com.example.Login.service.ViajeService;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,14 +109,33 @@ public class ViajeController {
 	    }
 	}
 	
+//	@GetMapping("/obtenerViajesPorFechaYDestino")
+//	@Operation(summary = "obtenerViajesPorFechaYDestino", description = "obtenerViajesPorFechaYDestino")
+//	public ResponseEntity<List<DtoViajeDestinoFecha>> obtenerViajesPorFechaYDestino(@RequestBody DtoViaje dtoVDF){
+//		System.out.println("Cdestino: " +dtoVDF.getIdLocalidadDestino());
+//		System.out.println("Corigen: " + dtoVDF.getIdLocalidadOrigen());
+//		System.out.println("Cinicio: " + dtoVDF.getFechaInicio());// IdLocalidadOrigen());
+//		System.out.println("Cfin: " + dtoVDF.getFechaFin());// IdLocalidadOrigen());
+//		//List<DtoViaje> dtovdf = new ArrayList<>();
+//		List<DtoViajeDestinoFecha> Dtovdf = new ArrayList<>();
+//		Dtovdf = viajeService.obtenerViajesPorFechaYDestino(dtoVDF);	
+//		//response.put("mensaje", "No se encontró el viaje o el ómnibus con los IDs proporcionados.");
+//        return ResponseEntity.status(HttpStatus.OK).body(Dtovdf);		
+//	}
+	
 	@GetMapping("/obtenerViajesPorFechaYDestino")
 	@Operation(summary = "obtenerViajesPorFechaYDestino", description = "obtenerViajesPorFechaYDestino")
-	public ResponseEntity<List<DtoViajeDestinoFecha>> obtenerViajesPorFechaYDestino(@RequestBody DtoViaje dtoVDF){
-		System.out.println("Cdestino: " +dtoVDF.getIdLocalidadDestino());
-		System.out.println("Corigen: " + dtoVDF.getIdLocalidadOrigen());
-		System.out.println("Cinicio: " + dtoVDF.getFechaInicio());// IdLocalidadOrigen());
-		System.out.println("Cfin: " + dtoVDF.getFechaFin());// IdLocalidadOrigen());
-		//List<DtoViaje> dtovdf = new ArrayList<>();
+	public ResponseEntity<List<DtoViajeDestinoFecha>> obtenerViajesPorFechaYDestino(@RequestParam int locOrigen, @RequestParam int locDestino,
+			@RequestParam Date fechaInicio, @RequestParam Date fechaFin){
+		System.out.println("Cdestino: " + locOrigen);// dtoVDF.getIdLocalidadDestino());
+		System.out.println("Corigen: " + locDestino);//dtoVDF.getIdLocalidadOrigen());
+		System.out.println("Cinicio: " + fechaInicio);//dtoVDF.getFechaInicio());// IdLocalidadOrigen());
+		System.out.println("Cfin: " + fechaFin);//dtoVDF.getFechaFin());// IdLocalidadOrigen());
+		DtoViaje dtoVDF = new DtoViaje();
+		dtoVDF.setFechaFin(fechaFin);
+		dtoVDF.setFechaInicio(fechaInicio);
+		dtoVDF.setIdLocalidadOrigen(locOrigen);
+		dtoVDF.setIdLocalidadDestino(locDestino);
 		List<DtoViajeDestinoFecha> Dtovdf = new ArrayList<>();
 		Dtovdf = viajeService.obtenerViajesPorFechaYDestino(dtoVDF);	
 		//response.put("mensaje", "No se encontró el viaje o el ómnibus con los IDs proporcionados.");
