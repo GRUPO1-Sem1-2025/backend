@@ -132,9 +132,7 @@ public class ViajeService {
 
 	    System.out.println("Una de las ciudades ingresadas no existe");
 	    return 4;
-	}
-	
-	
+	}	
 
 	public int asignarOmnibusAViaje_vieja(Omnibus omnibus, Viaje viaje) {
 		int resultado = 0;
@@ -202,8 +200,7 @@ public class ViajeService {
 					// Asignar el ómnibus al viaje
 					viaje.setOmnibus(bus);
 
-					// Crear relación asiento/viaje (modelo AsientoPorViaje, si estás usando ambos
-					// modelos)
+					// Crear relación asiento/viaje (modelo AsientoPorViaje, si estás usando ambos modelos)
 					for (OmnibusAsiento asiento : bus.getAsientos()) {
 						AsientoPorViaje apv = new AsientoPorViaje();
 						apv.setOmnibusAsiento(asiento);
@@ -232,8 +229,6 @@ public class ViajeService {
 
 		return resultado;
 	}
-
-
 
 	public List<DtoViajeDestinoFecha> obtenerViajesPorFechaYDestino(DtoViaje dtoVDF) {
 		List<DtoViaje> lista = new ArrayList<>();
