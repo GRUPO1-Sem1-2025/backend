@@ -318,6 +318,13 @@ public class UsuarioController {
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}
+	
+	@PostMapping("/cambiarEstadoCompra")
+	public ResponseEntity<String> cambiarEstadoCompra(@RequestParam int idCompra) {
+		usuarioService.cambiarEstadoCompra(idCompra);
+		return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado de la compra");
+	}
+	
 
 	@PostMapping("/reenviarCodigo")
 	@Operation(summary = "Reenviar código para autenticar", description = "Retorna un codigo")

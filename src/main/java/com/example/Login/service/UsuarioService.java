@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoRegistrarse;
+import com.example.Login.dto.EstadoCompra;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
 import com.example.Login.model.Viaje;
@@ -288,7 +289,9 @@ public class UsuarioService {
 			int codigo = usuario.get().getCodigo();
 			String para = usuario.get().getEmail();
 			String asunto = "Código de autorización";
-			String mensaje = String.format("Bienvenido <b>%s</b> utilize el siguiente código <b>%s</b> para iniciar sesión en el sistema",nombre,codigo);
+			String mensaje = String.format(
+					"Bienvenido <b>%s</b> utilize el siguiente código <b>%s</b> para iniciar sesión en el sistema",
+					nombre, codigo);
 
 			emailService.enviarCorreo(para, asunto, mensaje);
 
@@ -395,16 +398,17 @@ public class UsuarioService {
 				fechaInicio, hora);
 		emailService.enviarCorreo(para, asunto, mensaje);
 	}
-	
+
 	public void enviarMailReenviarCodigo(String email) {
 		Optional<Usuario> Ousuario = usuarioRepository.findByEmail(email);// Id(compraPasaje.getUsuarioId());
 		Usuario usuario = Ousuario.get();
 		int codigo = usuario.getCodigo();
 		String para = email;
 		String asunto = "Codigo de acceso";
-		String mensaje = String.format("utilize el siguiente código: <b>%s</b> para iniciar sesión en el sistema",codigo);
+		String mensaje = String.format("utilize el siguiente código: <b>%s</b> para iniciar sesión en el sistema",
+				codigo);
 		emailService.enviarCorreo(para, asunto, mensaje);
-		
+
 	}
 
 	public void enviarMailReservarPasaje(DtoCompraPasaje dtoComprarPasaje) {
@@ -424,7 +428,30 @@ public class UsuarioService {
 				"Usted ha realizado una reserva con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b>.",
 				destino, fechaInicio, hora);
 		emailService.enviarCorreo(para, asunto, mensaje);
-		
+
 	}
 
+	public void cambiarEstadoCompra(int idCompra) {
+		CompraPasaje compra = new CompraPasaje();
+		try {
+			Optional<CompraPasaje> Ocompra = comprapasajerepository.findById(idCompra);
+			compra = Ocompra.get();
+		} catch (Exception e) {
+
+		}
+		EstadoCompra estado = compra.getEstadoCompra();
+		switch (estado) {
+		case REALIZADA:
+			compra.setEstadoCompra(EstadoCompra.RESERVADA);
+			comprapasajerepository.save(compra);
+			break;
+		case RESERVADA:
+			compra.setEstadoCompra(EstadoCompra.REALIZADA);
+			comprapasajerepository.save(compra);
+			break;
+		default:
+			System.out.println("Estado desconocido: " + estado);
+		}
+		
+	}
 }
