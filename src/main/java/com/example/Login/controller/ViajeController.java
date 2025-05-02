@@ -108,25 +108,14 @@ public class ViajeController {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	    }
 	}
-	
-//	@GetMapping("/obtenerViajesPorFechaYDestino")
-//	@Operation(summary = "obtenerViajesPorFechaYDestino", description = "obtenerViajesPorFechaYDestino")
-//	public ResponseEntity<List<DtoViajeDestinoFecha>> obtenerViajesPorFechaYDestino(@RequestBody DtoViaje dtoVDF){
-//		System.out.println("Cdestino: " +dtoVDF.getIdLocalidadDestino());
-//		System.out.println("Corigen: " + dtoVDF.getIdLocalidadOrigen());
-//		System.out.println("Cinicio: " + dtoVDF.getFechaInicio());// IdLocalidadOrigen());
-//		System.out.println("Cfin: " + dtoVDF.getFechaFin());// IdLocalidadOrigen());
-//		//List<DtoViaje> dtovdf = new ArrayList<>();
-//		List<DtoViajeDestinoFecha> Dtovdf = new ArrayList<>();
-//		Dtovdf = viajeService.obtenerViajesPorFechaYDestino(dtoVDF);	
-//		//response.put("mensaje", "No se encontró el viaje o el ómnibus con los IDs proporcionados.");
-//        return ResponseEntity.status(HttpStatus.OK).body(Dtovdf);		
-//	}
-	
+		
 	@GetMapping("/obtenerViajesPorFechaYDestino")
 	@Operation(summary = "obtenerViajesPorFechaYDestino", description = "obtenerViajesPorFechaYDestino")
-	public ResponseEntity<List<DtoViajeDestinoFecha>> obtenerViajesPorFechaYDestino(@RequestParam int locOrigen, @RequestParam int locDestino,
-			@RequestParam Date fechaInicio, @RequestParam Date fechaFin){
+	public ResponseEntity<List<DtoViajeDestinoFecha>> obtenerViajesPorFechaYDestino(
+			@RequestParam int locOrigen,
+			@RequestParam int locDestino,
+			@RequestParam Date fechaInicio,
+			@RequestParam Date fechaFin){
 		System.out.println("Cdestino: " + locOrigen);// dtoVDF.getIdLocalidadDestino());
 		System.out.println("Corigen: " + locDestino);//dtoVDF.getIdLocalidadOrigen());
 		System.out.println("Cinicio: " + fechaInicio);//dtoVDF.getFechaInicio());// IdLocalidadOrigen());
