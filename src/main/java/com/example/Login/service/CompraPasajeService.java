@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoCompraPasaje;
+import com.example.Login.dto.EstadoCompra;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
@@ -17,6 +19,9 @@ import com.example.Login.repository.AsientoPorViajeRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.repository.ViajeRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class CompraPasajeService {
@@ -29,6 +34,9 @@ public class CompraPasajeService {
 
 	@Autowired
 	private CompraPasajeRepository compraPasajeRepository;
+	
+	@Autowired
+	private TransactionalService transactionalService;
 
 	@Autowired
 	private ViajeRepository viajeRepository;
@@ -96,7 +104,7 @@ public class CompraPasajeService {
 			}
 		} catch (Exception e) {
 			return 1;
-		}//
+		} //
 		try {
 			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
 			vendedor = Ovendedor.get();
@@ -136,16 +144,37 @@ public class CompraPasajeService {
 				}
 			}
 		}
+
+		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
+		switch (estado) {
+		case REALIZADA:
+			compra.setEstadoCompra(EstadoCompra.REALIZADA);
+			break;
+		case RESERVADA:
+			compra.setEstadoCompra(EstadoCompra.RESERVADA);
+			break;
+		default:
+			System.out.println("Estado desconocido: " + estado);
+		}
+
 		compra.setCat_pasajes(asientosReservados.size());
 		compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
 		compra.setAsientos(asientosReservados);
-		compra.setEstadoCompra("Realizada");
 		compraPasajeRepository.save(compra);
 
 		for (AsientoPorViaje apv : asientosReservados) {
 			asientoPorViajeRepository.save(apv);
 		}
-		return 3;
+		switch (estado) {
+		case REALIZADA:
+			return 3;
+		case RESERVADA:
+			return 6;
+		default:
+			System.out.println("Estado desconocido: " + estado);
+		}
+
+		return 7;
 	}
 
 	public int cancelarCompra(int idCompra) {
@@ -159,7 +188,7 @@ public class CompraPasajeService {
 					asiento.setReservado(false);
 					asientoPorViajeRepository.save(asiento); // Suponiendo que tenés este repo
 				}
-				compra.setEstadoCompra("Cancelada");
+				compra.setEstadoCompra(EstadoCompra.CANCELADA);
 				compraPasajeRepository.save(compra);
 				return 1;
 			} else {
@@ -168,16 +197,29 @@ public class CompraPasajeService {
 		} catch (Exception e) {
 			return 3;// TODO: handle exception
 		}
+	}	
 
-//		compra.
-//		List<AsientoPorViaje> asientoPprViaje = new ArrayList<>();
-//		asientoPprViaje = compra.getAsientos();
-//		
-//		try {
-//		System.out.println("Cantidad de asientos en la compra: " + asientoPprViaje.size());
-//		}
-//		catch (Exception e) {
-//			// TODO: handle exception
-//		}
+	// Ejecuta cada minuto
+	@Scheduled(fixedRate = 60000) // cada 60 segundos
+	public void eliminarReservasVencidas() {
+	    LocalDateTime tiempoDeReserva = LocalDateTime.now().minusMinutes(10);
+
+	    List<CompraPasaje> vencidas = compraPasajeRepository.findByEstadoCompraAndFechaHoraCompraBefore(
+	            EstadoCompra.RESERVADA, tiempoDeReserva
+	    );
+	
+
+	    if (!vencidas.isEmpty()) {
+	        for (CompraPasaje compra: vencidas) {
+		    	long idCompra = compra.getId();
+		    	transactionalService.eliminarCompra(idCompra);
+		    	System.out.println("Eliminando reservas vencidas: " + vencidas.size());
+		    }
+	        //System.out.println("Eliminando reservas vencidas: " + vencidas.size());
+	        //compraPasajeRepository.deleteAll(vencidas);
+	    }else {
+	        System.out.println("No existen reservas para eliminar que cumplan con la condición: " + vencidas.size());
+
+	    }
 	}
 }
