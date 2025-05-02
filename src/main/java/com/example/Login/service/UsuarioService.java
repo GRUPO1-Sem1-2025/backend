@@ -333,5 +333,14 @@ public class UsuarioService {
 			return 2;
 		}
 	}
+	
+	public void enviarMailRegistrarse(DtoRegistrarse registrarse) {
+		String email = registrarse.getEmail();
+		int codigo = obtenerCodigo(email);
+		String para = email;
+		String asunto = "Código de autorización";
+		String mensaje = "utilize el siguiente código: " + codigo + " para iniciar sesión en el sistema";
+		emailService.enviarCorreo(para, asunto, mensaje);
+	}
 
 }
