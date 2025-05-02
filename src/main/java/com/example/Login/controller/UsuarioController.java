@@ -206,7 +206,7 @@ public class UsuarioController {
 	private EmailService emailService;
 
 	@PostMapping("/resetearcontrasenia")
-	public String resetearContrasenia(@RequestParam String para) {
+	public ResponseEntity<String> resetearContrasenia(@RequestParam String para) {
 		String asunto = "Nueva contraseña temporal";
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(para);
 
@@ -223,9 +223,9 @@ public class UsuarioController {
 
 			emailService.enviarCorreo(para, asunto, mensaje);
 
-			return "Correo enviado!";
+			return ResponseEntity.status(HttpStatus.OK).body("Se le ha enviado una contraseña temporal al correo ingresado");
 		} else {
-			return "No existe el usuario ingresado";
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No existe un usuario registrado con ese correo");
 		}
 	}
 
