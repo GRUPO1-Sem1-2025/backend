@@ -53,16 +53,16 @@ public class UsuarioController {
 
 	@PostMapping("/registrarse")
 	@Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
-	public ResponseEntity<Map<String, String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
+	public ResponseEntity<String> registrarse(@RequestBody DtoRegistrarse registrarse) {
 		int rol = 100;
 		int id = 0;
 		try {
-		Optional<Usuario> Ousuario = usuariorepository.findByEmail(registrarse.getEmail());
-		id = Ousuario.get().getId();
-		}catch (Exception e) {
+			Optional<Usuario> Ousuario = usuariorepository.findByEmail(registrarse.getEmail());
+			id = Ousuario.get().getId();
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+
 		String token = usuarioService.obtenerToken(registrarse.getEmail(), rol, id);// dtoValidarCodigo.getCodigo());
 		System.out.println("Entre al usuario controller");
 
@@ -70,14 +70,18 @@ public class UsuarioController {
 		Map<String, String> response = new HashMap<>();
 
 		if (user.isPresent()) {
-			response.put("error", "El usuario ya se encuentra registrado con ese correo");
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+			//response.put("El usuario ya se encuentra registrado con ese correo");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya se encuentra registrado con ese correo");
+		} else {
+			usuarioService.crearUsuario(registrarse);
+			String email = registrarse.getEmail();
+			int codigo = usuarioService.obtenerCodigo(email);
+			String para = email;
+			String asunto = "Código de autorización";
+			String mensaje = "utilize el siguiente código: " + codigo + " para iniciar sesión en el sistema";
+			emailService.enviarCorreo(para, asunto, mensaje);
+			return ResponseEntity.status(HttpStatus.CREATED).body("Se le ha enviado un correo electrónico con un código para poder validar el registro");
 		}
-		usuarioService.crearUsuario(registrarse);
-
-		// 🔹 Prepara la respuesta exitosa
-		response.put("token", token);// "Usuario registrado exitosamente");
-		return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
 	}
 
 	@PostMapping("/crearCuenta")
@@ -143,12 +147,12 @@ public class UsuarioController {
 	@PostMapping("/verificarCodigo")
 	@Operation(summary = "Login de un usuario con codigo", description = "Permite verificar el codigo enviado a la hora de hacer login")
 	public ResponseEntity<Map<String, String>> verificarCodigo(@RequestBody DtoValidarCodigo dtoValidarCodigo) {
-		
+
 		try {
 			Optional<Usuario> Ousuario = usuariorepository.findByEmail(dtoValidarCodigo.getEmail());
-		}catch (Exception e){
-			
-		}		
+		} catch (Exception e) {
+
+		}
 		String token = usuarioService.verificarCodigo(dtoValidarCodigo.getEmail(), dtoValidarCodigo.getCodigo());
 		if (token != null) {
 			usuarioService.vaciarCodigo(dtoValidarCodigo.getEmail());
@@ -223,7 +227,8 @@ public class UsuarioController {
 
 			emailService.enviarCorreo(para, asunto, mensaje);
 
-			return ResponseEntity.status(HttpStatus.OK).body("Se le ha enviado una contraseña temporal al correo ingresado");
+			return ResponseEntity.status(HttpStatus.OK)
+					.body("Se le ha enviado una contraseña temporal al correo ingresado");
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No existe un usuario registrado con ese correo");
 		}
@@ -333,7 +338,7 @@ public class UsuarioController {
 	@PostMapping("/reenviarCodigo")
 	@Operation(summary = "Reenviar código para autenticar", description = "Retorna un codigo")
 	public ResponseEntity<String> reenviarCodigo(String email) {
-		int codigo = usuarioService.reenviarCodigo(email);
+		int codigo = usuarioService.obtenerCodigo(email);
 		System.out.println("codigo de verificacion controller: " + codigo);
 		String para = email;// usuario.get().getEmail();
 		String asunto = "Código de autorización";

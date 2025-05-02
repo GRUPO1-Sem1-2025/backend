@@ -91,7 +91,7 @@ public class UsuarioService {
 	}
 
 	// Guardar usuario con contraseña encriptada
-	public Usuario crearUsuario(DtoRegistrarse registrarse) {
+	public void crearUsuario(DtoRegistrarse registrarse) {
 		System.out.println("Entre al usuario service");
 		Usuario usuario = new Usuario();
 		usuario.setNombre(registrarse.getNombre());
@@ -101,7 +101,8 @@ public class UsuarioService {
 		usuario.setRol(100);
 		usuario.setActivo(true);
 		usuario.setFechaCreacion(LocalDate.now());
-		return usuarioRepository.save(usuario);
+		usuario.setCodigo(generarCodigo());
+		usuarioRepository.save(usuario);
 		// emailService.enviarCorreo(para, asunto, mensaje);
 
 	}
@@ -322,7 +323,7 @@ public class UsuarioService {
 		return token;
 	}
 	
-	public int reenviarCodigo(String email) {
+	public int obtenerCodigo(String email) {
 		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 		int codigo = usuario.get().getCodigo();
 		System.out.println("codigo de verificacion service: " + codigo);
