@@ -7,6 +7,7 @@ public class DtoCompraPasaje {
 	private Integer vendedorId;
     private int viajeId;
     private List<Integer> numerosDeAsiento;
+    EstadoCompra estadoCompra;
     
     public DtoCompraPasaje() {
     	
@@ -50,6 +51,14 @@ public class DtoCompraPasaje {
 
 	public void setNumerosDeAsiento(List<Integer> numerosDeAsiento) {
 		this.numerosDeAsiento = numerosDeAsiento;
+	}
+	
+	public EstadoCompra getEstadoCompra() {
+		return estadoCompra;
+	}
+
+	public void setEstadoCompra(EstadoCompra estadoCompra) {
+		this.estadoCompra = estadoCompra;
 	}
 
 }

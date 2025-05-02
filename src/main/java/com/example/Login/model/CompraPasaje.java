@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.Login.dto.EstadoCompra;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +37,7 @@ public class CompraPasaje {
     @JoinColumn(name = "viaje_id")
     private Viaje viaje;
     
-    @ManyToMany
+    @ManyToMany//(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
         name = "compra_asiento_por_viaje",
         joinColumns = @JoinColumn(name = "compra_id"),
@@ -55,13 +58,13 @@ public class CompraPasaje {
     
     private String tipo_venta;
     
-    private String estadoCompra;
+    private EstadoCompra estadoCompra;
     
     public CompraPasaje() {
     	
     }
 
-	public CompraPasaje(Long id,String estado, Usuario usuario, Usuario vendedor, Viaje viaje, List<AsientoPorViaje> asientos,
+	public CompraPasaje(Long id, EstadoCompra estado, Usuario usuario, Usuario vendedor, Viaje viaje, List<AsientoPorViaje> asientos,
 			LocalDateTime fechaHoraCompra, int cat_pasajes, float total, String tipo_venta) {
 		this.id = id;
 		this.usuario = usuario;
@@ -147,11 +150,11 @@ public class CompraPasaje {
 		this.tipo_venta = tipo_venta;
 	}
 
-	public String getEstadoCompra() {
+	public EstadoCompra getEstadoCompra() {
 		return estadoCompra;
 	}
 
-	public void setEstadoCompra(String estadoCompra) {
+	public void setEstadoCompra(EstadoCompra estadoCompra) {
 		this.estadoCompra = estadoCompra;
 	}
 

@@ -407,4 +407,24 @@ public class UsuarioService {
 		
 	}
 
+	public void enviarMailReservarPasaje(DtoCompraPasaje dtoComprarPasaje) {
+		Optional<Usuario> Ousuario = usuarioRepository.findById(dtoComprarPasaje.getUsuarioId());
+		Usuario usuario = Ousuario.get();
+		String email = usuario.getEmail();
+		int viajeId = dtoComprarPasaje.getViajeId();
+		Optional<Viaje> Oviaje = viajeRepository.findById(viajeId);
+		Viaje viaje = Oviaje.get();
+		String destino = viaje.getLocalidadDestino().getNombre();
+		Date fechaInicio = viaje.getFechaInicio();
+		LocalTime hora = viaje.getHoraInicio();
+		String para = email;
+		String asunto = "Compra reservada";
+
+		String mensaje = String.format(
+				"Usted ha realizado una reserva con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b>.",
+				destino, fechaInicio, hora);
+		emailService.enviarCorreo(para, asunto, mensaje);
+		
+	}
+
 }

@@ -295,6 +295,9 @@ public class UsuarioController {
 					"El cliente ingresado no se encuentra habilitado, por lo tanto" + " no puede realizar compras");
 		case 5:
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje ingresado no existe");
+		case 6:
+			usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
+			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada de forma correcta");
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}
