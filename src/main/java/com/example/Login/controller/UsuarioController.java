@@ -116,6 +116,7 @@ public class UsuarioController {
 			Usuario usuarioEncontrado = usuario.get();
 			if (usuarioEncontrado.getActivo() == true) {
 				if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
+					usuarioService.login(email, password);
 					return ResponseEntity.ok(Map.of("Mensaje", ok));
 				}
 			} else {
@@ -304,7 +305,7 @@ public class UsuarioController {
 
 		switch (resultado) {
 		case 1:
-			usuarioService.enviarMailCancelarCompra(idCompra);			
+			usuarioService.enviarMailCancelarCompra(idCompra);
 			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido cancelada");
 		case 2:
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -319,13 +320,9 @@ public class UsuarioController {
 	@Operation(summary = "Reenviar código para autenticar", description = "Retorna un codigo")
 	public ResponseEntity<String> reenviarCodigo(String email) {
 		int codigo = usuarioService.obtenerCodigo(email);
-		System.out.println("codigo de verificacion controller: " + codigo);
-		String para = email;// usuario.get().getEmail();
-		String asunto = "Código de autorización";
-		String mensaje = "utilize el siguiente código: " + codigo + " para iniciar sesión en el sistema";
-		// + usuario.get().getCodigo() + " para iniciar sesión en el sistema ";
+		
 		if (codigo > 2) {
-			emailService.enviarCorreo(para, asunto, mensaje);
+			usuarioService.enviarMailReenviarCodigo(email);
 			return ResponseEntity.status(HttpStatus.OK)
 					.body("Se le envió a su correo un código para terminar con el proceso de autenticación");
 		} else if (codigo == 2) {

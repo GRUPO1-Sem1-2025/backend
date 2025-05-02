@@ -48,14 +48,12 @@ public class UsuarioService {
 
 	@Autowired
 	private final UsuarioRepository usuarioRepository;
-	
+
 	@Autowired
 	private ViajeRepository viajeRepository;
-	
+
 	@Autowired
 	private CompraPasajeRepository comprapasajerepository;
-	
-	
 
 	@Autowired
 	private JwtService jwtService;
@@ -69,7 +67,7 @@ public class UsuarioService {
 	// Inyección de dependencias
 	public UsuarioService(UsuarioRepository usuarioRepository) {
 		this.usuarioRepository = usuarioRepository;
-		//this.viajeRepository = ;
+		// this.viajeRepository = ;
 	}
 
 	// Generar codigo de 5 digitos
@@ -124,29 +122,29 @@ public class UsuarioService {
 
 	// Guardar usuario con contraseña encriptada
 	public Usuario crearCuenta(DtoCrearCuenta dtocrearCuenta) {
-		
+
 		Usuario usuario = new Usuario();
 		Integer rol = 0;
 		System.out.println("Rol del usuario agregado = " + dtocrearCuenta.getRol());
 
-		switch(dtocrearCuenta.getRol()){
-			case "User":
-				rol = null;
-				break;
-			case "Vendedor":
-				rol = 200;
-				break;
-			case "Admin":
-				rol = 300;	
-				break;
+		switch (dtocrearCuenta.getRol()) {
+		case "User":
+			rol = null;
+			break;
+		case "Vendedor":
+			rol = 200;
+			break;
+		case "Admin":
+			rol = 300;
+			break;
 		}
-				
-		if(rol != 100 && rol != 0) {
+
+		if (rol != 100 && rol != 0) {
 			int setCod_empleado = (usuarioRepository.findMaxCodEmpleado());
-			System.out.println("max cod emp: "+ setCod_empleado);
-			try{
-				usuario.setCod_empleado(usuarioRepository.findMaxCodEmpleado()+1);
-			}catch (Exception e) {
+			System.out.println("max cod emp: " + setCod_empleado);
+			try {
+				usuario.setCod_empleado(usuarioRepository.findMaxCodEmpleado() + 1);
+			} catch (Exception e) {
 				usuario.setCod_empleado(100);
 			}
 		}
@@ -222,17 +220,17 @@ public class UsuarioService {
 				} else if (values[4].equals("Vendedor")) {
 					user.setRol(200);
 					System.out.println("max codEmp: " + usuarioRepository.findMaxCodEmpleado());
-					try{
-						user.setCod_empleado(usuarioRepository.findMaxCodEmpleado()+1);
-					}catch (Exception e) {
+					try {
+						user.setCod_empleado(usuarioRepository.findMaxCodEmpleado() + 1);
+					} catch (Exception e) {
 						user.setCod_empleado(100);
 					}
 				} else if (values[4].equals("Admin")) {
 					user.setRol(300);
 					System.out.println("max codEmp: " + usuarioRepository.findMaxCodEmpleado());
-					try{
-						user.setCod_empleado(usuarioRepository.findMaxCodEmpleado()+1);
-					}catch (Exception e) {
+					try {
+						user.setCod_empleado(usuarioRepository.findMaxCodEmpleado() + 1);
+					} catch (Exception e) {
 						user.setCod_empleado(100);
 					}
 				} else {
@@ -282,15 +280,15 @@ public class UsuarioService {
 
 		if (usuario.isPresent() && encriptarSHA256(password).equals(usuario.get().getPassword())) {
 			System.out.println("Las contraseñas coinciden");
-			
+
 			// le cargo el codigo generado al usuario que se autentico
 			usuario.get().setCodigo(generarCodigo());
 			usuarioRepository.save(usuario.get());
-
+			String nombre = usuario.get().getNombre();
+			int codigo = usuario.get().getCodigo();
 			String para = usuario.get().getEmail();
 			String asunto = "Código de autorización";
-			String mensaje = "Bienvenido " + usuario.get().getNombre() + " utilize el siguiente código "
-					+ usuario.get().getCodigo() + " para iniciar sesión en el sistema ";
+			String mensaje = String.format("Bienvenido <b>%s</b> utilize el siguiente código <b>%s</b> para iniciar sesión en el sistema",nombre,codigo);
 
 			emailService.enviarCorreo(para, asunto, mensaje);
 
@@ -306,14 +304,14 @@ public class UsuarioService {
 	public String verificarCodigo(String email, int codigo) {
 		Usuario usuario = new Usuario();
 		try {
-		Optional<Usuario> Ousuario = usuarioRepository.findByEmail(email);
-		usuario = Ousuario.get();
-		}catch (Exception e) {
+			Optional<Usuario> Ousuario = usuarioRepository.findByEmail(email);
+			usuario = Ousuario.get();
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		int id = usuario.getId();
 		int rol = usuario.getRol();
-		//int id = usuario.get().getId();
+		// int id = usuario.get().getId();
 		if (usuario.getCodigo() == codigo) {
 			return jwtService.generateToken(email, rol, id);
 		} else {
@@ -331,24 +329,24 @@ public class UsuarioService {
 	public long verCantidadUsuarios() {
 		return usuarioRepository.count();
 	}
-	
+
 	public String obtenerToken(String email, int rol, int id) {
 		String token = null;
 		token = jwtService.generateToken(email, rol, id);
 		return token;
 	}
-	
+
 	public int obtenerCodigo(String email) {
 		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 		int codigo = usuario.get().getCodigo();
 		System.out.println("codigo de verificacion service: " + codigo);
 		if (codigo != 0) {
 			return codigo;
-		}else {
+		} else {
 			return 2;
 		}
 	}
-	
+
 	public void enviarMailRegistrarse(DtoRegistrarse registrarse) {
 		String email = registrarse.getEmail();
 		int codigo = obtenerCodigo(email);
@@ -357,7 +355,7 @@ public class UsuarioService {
 		String mensaje = "utilize el siguiente código: " + codigo + " para iniciar sesión en el sistema";
 		emailService.enviarCorreo(para, asunto, mensaje);
 	}
-	
+
 	public void enviarMailCompraPasaje(DtoCompraPasaje compraPasaje) {
 		Optional<Usuario> Ousuario = usuarioRepository.findById(compraPasaje.getUsuarioId());
 		Usuario usuario = Ousuario.get();
@@ -370,14 +368,13 @@ public class UsuarioService {
 		LocalTime hora = viaje.getHoraInicio();
 		String para = email;
 		String asunto = "Compra realizada";
-		
+
 		String mensaje = String.format(
-			    "Usted ha realizado una compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b>.",
-			    destino, fechaInicio, hora);
-		//String mensaje = "Usted ha realizado una compra con destino " + destino + " para el día " + fechaInicio + " a la hora " + hora;
+				"Usted ha realizado una compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b>.",
+				destino, fechaInicio, hora);
 		emailService.enviarCorreo(para, asunto, mensaje);
 	}
-	
+
 	public void enviarMailCancelarCompra(int idCompra) {
 		Optional<CompraPasaje> Ocompra = comprapasajerepository.findById(idCompra);
 		CompraPasaje compra = Ocompra.get();
@@ -392,12 +389,22 @@ public class UsuarioService {
 		LocalTime hora = viaje.getHoraInicio();
 		String para = email;
 		String asunto = "Compra cancelada";
-		
+
 		String mensaje = String.format(
-			    "La compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b> ha sido cancelada.",
-			    destino, fechaInicio, hora);
-		//String mensaje = "Usted ha realizado una compra con destino " + destino + " para el día " + fechaInicio + " a la hora " + hora;
+				"La compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b> ha sido cancelada.", destino,
+				fechaInicio, hora);
 		emailService.enviarCorreo(para, asunto, mensaje);
+	}
+	
+	public void enviarMailReenviarCodigo(String email) {
+		Optional<Usuario> Ousuario = usuarioRepository.findByEmail(email);// Id(compraPasaje.getUsuarioId());
+		Usuario usuario = Ousuario.get();
+		int codigo = usuario.getCodigo();
+		String para = email;
+		String asunto = "Codigo de acceso";
+		String mensaje = String.format("utilize el siguiente código: <b>%s</b> para iniciar sesión en el sistema",codigo);
+		emailService.enviarCorreo(para, asunto, mensaje);
+		
 	}
 
 }
