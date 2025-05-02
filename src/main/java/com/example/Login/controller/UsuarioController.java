@@ -287,6 +287,7 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body("Uno de los asientos solicitados ya se encuentra reservado");
 		case 3:
+			usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
 			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido realizada de forma correcta");
 		case 4:
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
@@ -303,6 +304,7 @@ public class UsuarioController {
 
 		switch (resultado) {
 		case 1:
+			usuarioService.enviarMailCancelarCompra(idCompra);			
 			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido cancelada");
 		case 2:
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)

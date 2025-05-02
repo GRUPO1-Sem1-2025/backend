@@ -19,10 +19,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
+import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoRegistrarse;
+import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
+import com.example.Login.model.Viaje;
+import com.example.Login.repository.CompraPasajeRepository;
 import com.example.Login.repository.UsuarioRepository;
+import com.example.Login.repository.ViajeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.internal.function.text.Concatenate;
 
@@ -33,6 +38,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -42,6 +48,14 @@ public class UsuarioService {
 
 	@Autowired
 	private final UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private ViajeRepository viajeRepository;
+	
+	@Autowired
+	private CompraPasajeRepository comprapasajerepository;
+	
+	
 
 	@Autowired
 	private JwtService jwtService;
@@ -55,6 +69,7 @@ public class UsuarioService {
 	// Inyección de dependencias
 	public UsuarioService(UsuarioRepository usuarioRepository) {
 		this.usuarioRepository = usuarioRepository;
+		//this.viajeRepository = ;
 	}
 
 	// Generar codigo de 5 digitos
@@ -340,6 +355,48 @@ public class UsuarioService {
 		String para = email;
 		String asunto = "Código de autorización";
 		String mensaje = "utilize el siguiente código: " + codigo + " para iniciar sesión en el sistema";
+		emailService.enviarCorreo(para, asunto, mensaje);
+	}
+	
+	public void enviarMailCompraPasaje(DtoCompraPasaje compraPasaje) {
+		Optional<Usuario> Ousuario = usuarioRepository.findById(compraPasaje.getUsuarioId());
+		Usuario usuario = Ousuario.get();
+		String email = usuario.getEmail();
+		int viajeId = compraPasaje.getViajeId();
+		Optional<Viaje> Oviaje = viajeRepository.findById(viajeId);
+		Viaje viaje = Oviaje.get();
+		String destino = viaje.getLocalidadDestino().getNombre();
+		Date fechaInicio = viaje.getFechaInicio();
+		LocalTime hora = viaje.getHoraInicio();
+		String para = email;
+		String asunto = "Compra realizada";
+		
+		String mensaje = String.format(
+			    "Usted ha realizado una compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b>.",
+			    destino, fechaInicio, hora);
+		//String mensaje = "Usted ha realizado una compra con destino " + destino + " para el día " + fechaInicio + " a la hora " + hora;
+		emailService.enviarCorreo(para, asunto, mensaje);
+	}
+	
+	public void enviarMailCancelarCompra(int idCompra) {
+		Optional<CompraPasaje> Ocompra = comprapasajerepository.findById(idCompra);
+		CompraPasaje compra = Ocompra.get();
+		Optional<Usuario> Ousuario = usuarioRepository.findByEmail(compra.getUsuario().getEmail());
+		Usuario usuario = Ousuario.get();
+		String email = usuario.getEmail();
+		int viajeId = compra.getViaje().getId();
+		Optional<Viaje> Oviaje = viajeRepository.findById(viajeId);
+		Viaje viaje = Oviaje.get();
+		String destino = viaje.getLocalidadDestino().getNombre();
+		Date fechaInicio = viaje.getFechaInicio();
+		LocalTime hora = viaje.getHoraInicio();
+		String para = email;
+		String asunto = "Compra cancelada";
+		
+		String mensaje = String.format(
+			    "La compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b> ha sido cancelada.",
+			    destino, fechaInicio, hora);
+		//String mensaje = "Usted ha realizado una compra con destino " + destino + " para el día " + fechaInicio + " a la hora " + hora;
 		emailService.enviarCorreo(para, asunto, mensaje);
 	}
 
