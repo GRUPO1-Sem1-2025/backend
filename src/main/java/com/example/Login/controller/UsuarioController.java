@@ -5,6 +5,7 @@ import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoValidarCodigo;
+import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.service.CompraPasajeService;
@@ -115,6 +116,10 @@ public class UsuarioController {
 		if (usuario.isPresent()) {
 			Usuario usuarioEncontrado = usuario.get();
 			if (usuarioEncontrado.getActivo() == true) {
+				if(!usuarioEncontrado.isContraseniaValida()) {
+					response.put("mensaje", "Debe de cambiar la contraseña para iniciar sesion");
+					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+				}
 				if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
 					usuarioService.login(email, password);
 					return ResponseEntity.ok(Map.of("Mensaje", ok));
@@ -202,6 +207,7 @@ public class UsuarioController {
 
 			// Setear nueva contraseña encriptada
 			usuario.get().setPassword(usuarioService.encriptarSHA256(contrasenia));
+			usuario.get().setContraseniaValida(false);
 			usuarioService.actualizar(usuario.get());
 
 			emailService.enviarCorreo(para, asunto, mensaje);
@@ -227,6 +233,7 @@ public class UsuarioController {
 				if (cambiarContrasenia.getNew_pass().equals(cambiarContrasenia.getNew_pass1())) {
 					String nuevaContrasenia = usuarioService.encriptarSHA256(cambiarContrasenia.getNew_pass());// new_pass;
 					usuario.get().setPassword(nuevaContrasenia);
+					usuario.get().setContraseniaValida(true);
 					usuarioService.actualizar(usuario.get());
 					return "Contraseña cambiada";
 				} else {
@@ -298,6 +305,37 @@ public class UsuarioController {
 		case 6:
 			usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
 			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada de forma correcta");
+		case 8:
+			//usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+			return ResponseEntity.status(HttpStatus.OK).body("Solo los clientes pueden comprar pasajes");
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
+	}
+	
+	@PostMapping("/venderPasaje")
+	public ResponseEntity<String> venderPasaje(@RequestBody DtoVenderPasaje dtoVenderPasaje) {
+		int resultadoCompra = comprarPasajeService.venderPasaje(dtoVenderPasaje);
+		switch (resultadoCompra) {
+		case 1:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El Vendedor ingresado no existe");
+		case 2:
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("Uno de los asientos solicitados ya se encuentra reservado");
+		case 3:
+			usuarioService.enviarMailVenderPasaje(dtoVenderPasaje);
+			return ResponseEntity.status(HttpStatus.OK).body("La venta ha sido realizada de forma correcta");
+		case 4:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+					"El vendedor ingresado no se encuentra habilitado, por lo tanto no puede realizar ventas");
+		case 5:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje ingresado no existe");
+		case 6:
+			//usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada de forma correcta");
+		case 8:
+			//usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+			return ResponseEntity.status(HttpStatus.OK).body("Solo los vendedores pueden vender pasajes");
+
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}

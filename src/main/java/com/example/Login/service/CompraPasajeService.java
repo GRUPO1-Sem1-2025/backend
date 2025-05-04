@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoCompraPasaje;
+import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
@@ -48,6 +49,11 @@ public class CompraPasajeService {
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findById(request.getUsuarioId());
 			usuario = Ousuario.get();
+			
+			if (usuario.getRol()!= 100) {
+				return 8;
+			}
+			
 			if (usuario.getActivo() == false) {
 				return 4;
 			}
@@ -125,13 +131,103 @@ public class CompraPasajeService {
 
 		return 7;
 	}
+	
+	public int venderPasaje(DtoVenderPasaje request) {
+		Usuario vendedor = new Usuario();
+		Usuario usuario = new Usuario();
+		Viaje viaje = new Viaje();
+		try {
+			Optional<Usuario> Ousuario = usuarioRepository.findByEmail(request.getEmailCliente());// Class(). getClass() getClass() UsuarioId());
+			usuario = Ousuario.get();
+		} catch (Exception e) {
+			usuario = null;
+		}
+		try {
+			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
+			vendedor = Ovendedor.get();
+			if (vendedor.getRol()!= 200) {
+				return 8;
+			}
+			if(!vendedor.getActivo()) {
+				return 4;
+			}
+		} catch (Exception e) {
+			vendedor = null;
+			return 1;
+		}
+		try {
+			Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
+			viaje = Oviaje.get();
+		} catch (Exception e) {
+			return 5;
+		}
+
+		CompraPasaje compra = new CompraPasaje();
+		if (vendedor == null) {
+			compra.setTipo_venta("Online");
+		} else {
+			compra.setTipo_venta("Ventanilla");
+		}
+		compra.setUsuario(usuario);
+		compra.setVendedor(vendedor);
+		compra.setViaje(viaje);
+		compra.setFechaHoraCompra(LocalDateTime.now());
+
+		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
+
+		for (Integer nroAsiento : request.getNumerosDeAsiento()) {
+			Optional<AsientoPorViaje> apvOpt = asientoPorViajeRepository.findByViajeIdAndNroAsiento(viaje.getId(),
+					nroAsiento);
+			if (apvOpt.isPresent()) {
+				AsientoPorViaje apv = apvOpt.get();
+				if (!apv.isReservado()) {
+					apv.setReservado(true);
+					asientosReservados.add(apv);
+				} else {
+					return 2;
+				}
+			}
+		}
+		EstadoCompra estado = EstadoCompra.REALIZADA;
+		compra.setEstadoCompra(estado);
+//		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
+//		switch (estado) {
+//		case REALIZADA:
+//			compra.setEstadoCompra(EstadoCompra.REALIZADA);
+//			break;
+//		case RESERVADA:
+//			compra.setEstadoCompra(EstadoCompra.RESERVADA);
+//			break;
+//		default:
+//			System.out.println("Estado desconocido: " + estado);
+//		}
+
+		compra.setCat_pasajes(asientosReservados.size());
+		compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
+		compra.setAsientos(asientosReservados);
+		compraPasajeRepository.save(compra);
+
+		for (AsientoPorViaje apv : asientosReservados) {
+			asientoPorViajeRepository.save(apv);
+		}
+		switch (estado) {
+		case REALIZADA:
+			return 3;
+		case RESERVADA:
+			return 6;
+		default:
+			System.out.println("Estado desconocido: " + estado);
+		}
+
+		return 7;
+	}
 
 	public int cancelarCompra(int idCompra) {
 		try {
 			Optional<CompraPasaje> Ocompra = compraPasajeRepository.findById(idCompra);
 			CompraPasaje compra = Ocompra.get();
 
-			if (compra.getEstadoCompra().equals("Realizada")) {
+			if (!compra.getEstadoCompra().equals(EstadoCompra.CANCELADA)) {  // POR LAS DUDAS REVISAR ESTO
 
 				for (AsientoPorViaje asiento : compra.getAsientos()) {
 					asiento.setReservado(false);

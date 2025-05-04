@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoRegistrarse;
+import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
@@ -376,6 +377,32 @@ public class UsuarioService {
 				"Usted ha realizado una compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b>.",
 				destino, fechaInicio, hora);
 		emailService.enviarCorreo(para, asunto, mensaje);
+	}
+	
+	public int enviarMailVenderPasaje(DtoVenderPasaje venderPasaje) {
+		Usuario usuario = new Usuario();
+		try{
+			Optional<Usuario> Ousuario = usuarioRepository.findByEmail(venderPasaje.getEmailCliente());// Id(venderPasaje.getUsuarioId());
+			usuario = Ousuario.get();
+		}
+		catch (Exception e) {
+			return 0;
+		}		
+		String email = usuario.getEmail();
+		int viajeId = venderPasaje.getViajeId();
+		Optional<Viaje> Oviaje = viajeRepository.findById(viajeId);
+		Viaje viaje = Oviaje.get();
+		String destino = viaje.getLocalidadDestino().getNombre();
+		Date fechaInicio = viaje.getFechaInicio();
+		LocalTime hora = viaje.getHoraInicio();
+		String para = email;
+		String asunto = "Compra realizada";
+
+		String mensaje = String.format(
+				"Usted ha realizado una compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b>.",
+				destino, fechaInicio, hora);
+		emailService.enviarCorreo(para, asunto, mensaje);
+		return 1;
 	}
 
 	public void enviarMailCancelarCompra(int idCompra) {
