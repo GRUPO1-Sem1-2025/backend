@@ -27,7 +27,10 @@ private LocalDate fechaCreacion;
 private String password;
 private int codigo;
 private boolean activo;
-private int rol;
+private int rol; //100 USUAIO FINAL 200 VENDEDOR 300 ADMIN
+
+@Column(name = "contraseniaValida", nullable = true)
+private Boolean contraseniaValida;
 
 @Column(name = "cod_empleado", nullable = true)
 private Integer cod_empleado;
@@ -42,7 +45,7 @@ public Usuario() {
 }
 
 public Usuario(int id, String nombre, String apellido, Date fechaNac, String email, String categoria, String ci,
-		LocalDate fechaCreacion, String password, boolean activo, int rol, int cod_empleado) {
+		LocalDate fechaCreacion, String password, boolean activo, int rol, int cod_empleado, Boolean contrasenia) {
 	super();
 	this.id = id;
 	this.nombre = nombre;
@@ -57,12 +60,31 @@ public Usuario(int id, String nombre, String apellido, Date fechaNac, String ema
 	this.activo = activo;
 	this.rol = rol;
 	this.cod_empleado= cod_empleado;
+	this.contraseniaValida = contrasenia;
 }
 
 //Getters y Setters
+
+
 public String getApellido() {
 	return apellido;
 }
+public Boolean isContraseniaValida() {
+	return contraseniaValida;
+}
+
+public void setContraseniaValida(Boolean contraseniaValida) {
+	this.contraseniaValida = contraseniaValida;
+}
+
+public List<CompraPasaje> getCompraPasajes() {
+	return compraPasajes;
+}
+
+public void setCompraPasajes(List<CompraPasaje> compraPasajes) {
+	this.compraPasajes = compraPasajes;
+}
+
 public void setApellido(String apellido) {
 	this.apellido = apellido;
 }
