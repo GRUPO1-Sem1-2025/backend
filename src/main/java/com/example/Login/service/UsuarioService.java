@@ -21,9 +21,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
+import com.example.Login.dto.DtoMisCompras;
+import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoVenderPasaje;
+import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
+import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
 import com.example.Login.model.Viaje;
@@ -480,5 +484,83 @@ public class UsuarioService {
 			System.out.println("Estado desconocido: " + estado);
 		}
 		
+	}
+
+	public List<DtoMisViajes> obtenerMisViajes(String email) {
+		List<Viaje> viajes = viajeRepository.findAll();
+		List<DtoMisViajes> misViajes = new ArrayList<>();
+		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
+		int cantidadViajes=0;
+		for(Viaje v: viajes) {
+			if (v.getId() == idUsuario) {
+				cantidadViajes ++;
+				DtoMisViajes viaje = new DtoMisViajes();
+				viaje.setFechaInicio(v.getFechaInicio());// setFechaInicio() = v.ge//misViajes.add(v);
+				viaje.setIdLocalidadDestino(v.getLocalidadDestino().getId());
+				viaje.setPrecio(v.getPrecio());
+				viaje.setIdOmnibus(v.getOmnibus().getId());
+				misViajes.add(viaje);
+			}
+		}
+		System.out.println("cantidad de viajes: " + cantidadViajes);
+		return misViajes;
+	}
+
+	public List<DtoMisCompras> obtenerMisCompras(String email) {
+		List<CompraPasaje> compras = comprapasajerepository.findAll();
+		List<DtoMisCompras> misCompras = new ArrayList<>();
+		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
+				
+		for (CompraPasaje c: compras) {
+			if (c.getUsuario().getId() == idUsuario) {
+				DtoMisCompras compra = new DtoMisCompras();
+				EstadoCompra estado = c.getEstadoCompra();
+				switch (estado) {
+				case REALIZADA:
+					System.out.println("compraId: " + c.getId());
+					compra.setEstadoCompra(c.getEstadoCompra());
+					compra.setViajeId(c.getViaje().getId());
+					List<Integer> asientos = new ArrayList<>();
+					for(AsientoPorViaje apv: c.getAsientos()) {
+						asientos.add(apv.getOmnibusAsiento().getAsiento().getId());
+					}
+					compra.setNumerosDeAsiento(asientos);
+					compra.setEstadoCompra(c.getEstadoCompra());
+					misCompras.add(compra);
+				default:
+					System.out.println("Estado desconocido: " + estado);
+				}
+			}			
+		}
+		return misCompras;		
+	}
+	
+	public List<DtoMisCompras> obtenerMisReservas(String email) {
+		List<CompraPasaje> compras = comprapasajerepository.findAll();
+		List<DtoMisCompras> misReservas = new ArrayList<>();
+		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
+				
+		for (CompraPasaje c: compras) {
+			if (c.getUsuario().getId() == idUsuario) {
+				DtoMisCompras compra = new DtoMisCompras();
+				EstadoCompra estado = c.getEstadoCompra();
+				switch (estado) {
+				case RESERVADA:
+					System.out.println("compraId: " + c.getId());
+					compra.setEstadoCompra(c.getEstadoCompra());
+					compra.setViajeId(c.getViaje().getId());
+					List<Integer> asientos = new ArrayList<>();
+					for(AsientoPorViaje apv: c.getAsientos()) {
+						asientos.add(apv.getOmnibusAsiento().getAsiento().getId());
+					}
+					compra.setNumerosDeAsiento(asientos);
+					compra.setEstadoCompra(c.getEstadoCompra());
+					misReservas.add(compra);
+				default:
+					System.out.println("Estado desconocido: " + estado);
+				}
+			}			
+		}
+		return misReservas;
 	}
 }

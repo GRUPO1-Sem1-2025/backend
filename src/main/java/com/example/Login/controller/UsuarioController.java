@@ -3,9 +3,12 @@ package com.example.Login.controller;
 import com.example.Login.dto.DtoCambiarContrasenia;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
+import com.example.Login.dto.DtoMisCompras;
+import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.dto.DtoVenderPasaje;
+import com.example.Login.dto.DtoViaje;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.service.CompraPasajeService;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -116,7 +120,7 @@ public class UsuarioController {
 		if (usuario.isPresent()) {
 			Usuario usuarioEncontrado = usuario.get();
 			if (usuarioEncontrado.getActivo() == true) {
-				if(!usuarioEncontrado.isContraseniaValida()) {
+				if (!usuarioEncontrado.isContraseniaValida()) {
 					response.put("mensaje", "Debe de cambiar la contraseña para iniciar sesion");
 					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 				}
@@ -306,12 +310,12 @@ public class UsuarioController {
 			usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
 			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada de forma correcta");
 		case 8:
-			//usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
 			return ResponseEntity.status(HttpStatus.OK).body("Solo los clientes pueden comprar pasajes");
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}
-	
+
 	@PostMapping("/venderPasaje")
 	public ResponseEntity<String> venderPasaje(@RequestBody DtoVenderPasaje dtoVenderPasaje) {
 		int resultadoCompra = comprarPasajeService.venderPasaje(dtoVenderPasaje);
@@ -325,15 +329,15 @@ public class UsuarioController {
 			usuarioService.enviarMailVenderPasaje(dtoVenderPasaje);
 			return ResponseEntity.status(HttpStatus.OK).body("La venta ha sido realizada de forma correcta");
 		case 4:
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-					"El vendedor ingresado no se encuentra habilitado, por lo tanto no puede realizar ventas");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("El vendedor ingresado no se encuentra habilitado, por lo tanto no puede realizar ventas");
 		case 5:
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje ingresado no existe");
 		case 6:
-			//usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
 			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada de forma correcta");
 		case 8:
-			//usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
 			return ResponseEntity.status(HttpStatus.OK).body("Solo los vendedores pueden vender pasajes");
 
 		}
@@ -356,19 +360,18 @@ public class UsuarioController {
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}
-	
+
 	@PostMapping("/cambiarEstadoCompra")
 	public ResponseEntity<String> cambiarEstadoCompra(@RequestParam int idCompra) {
 		usuarioService.cambiarEstadoCompra(idCompra);
 		return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado de la compra");
 	}
-	
 
 	@PostMapping("/reenviarCodigo")
 	@Operation(summary = "Reenviar código para autenticar", description = "Retorna un codigo")
 	public ResponseEntity<String> reenviarCodigo(String email) {
 		int codigo = usuarioService.obtenerCodigo(email);
-		
+
 		if (codigo > 2) {
 			usuarioService.enviarMailReenviarCodigo(email);
 			return ResponseEntity.status(HttpStatus.OK)
@@ -380,4 +383,28 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 		}
 	}
+
+	@PostMapping("/ObtenerMisViajes")
+	@Operation(summary = "Obtener los viajes de un usuario", description = "Obtener los viajes de un usuaio")
+	public List<DtoMisViajes> obtenerMisViajes(@RequestParam String email) {
+		List<DtoMisViajes> misViajes = new ArrayList<>();
+		misViajes=usuarioService.obtenerMisViajes(email);
+		return misViajes;
+	}
+	
+	@PostMapping("/ObtenerMisCompras")
+	public List<DtoMisCompras> obtenerMisCompras(@RequestParam String email) {
+		List<DtoMisCompras> misCompras = new ArrayList<>();
+		misCompras=usuarioService.obtenerMisCompras(email);
+		return misCompras;
+	}
+	
+	@PostMapping("/ObtenerMisReservas")
+	public List<DtoMisCompras> obtenerMisReservas(@RequestParam String email) {
+		List<DtoMisCompras> misCompras = new ArrayList<>();
+		misCompras=usuarioService.obtenerMisReservas(email);
+		return misCompras;
+	}
+	
+
 }
