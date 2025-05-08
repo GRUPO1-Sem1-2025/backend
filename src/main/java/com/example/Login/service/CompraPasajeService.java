@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoCompraPasaje;
+import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.model.AsientoPorViaje;
@@ -20,6 +21,7 @@ import com.example.Login.repository.AsientoPorViajeRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.repository.ViajeRepository;
+//import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -42,23 +44,28 @@ public class CompraPasajeService {
 	@Autowired
 	private ViajeRepository viajeRepository;
 
-	public int comprarPasaje(DtoCompraPasaje request) {
+	public DtoRespuestaCompraPasaje comprarPasaje(DtoCompraPasaje request) {
 		Usuario vendedor = new Usuario();
 		Usuario usuario = new Usuario();
 		Viaje viaje = new Viaje();
+		List <Integer> asientosOcupado = new ArrayList<>();
+		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
+		DtoRespuestaCompraPasaje asientosOcupados = new DtoRespuestaCompraPasaje();
+		asientosOcupados.setEstado(estado);
+		
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findById(request.getUsuarioId());
 			usuario = Ousuario.get();
 			
 			if (usuario.getRol()!= 100) {
-				return 8;
+				return asientosOcupados;
 			}
 			
 			if (usuario.getActivo() == false) {
-				return 4;
+				return asientosOcupados;
 			}
 		} catch (Exception e) {
-			return 1;
+			return asientosOcupados;
 		} //
 		try {
 			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
@@ -70,7 +77,7 @@ public class CompraPasajeService {
 			Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
 			viaje = Oviaje.get();
 		} catch (Exception e) {
-			return 5;
+			return asientosOcupados;
 		}
 
 		CompraPasaje compra = new CompraPasaje();
@@ -95,12 +102,18 @@ public class CompraPasajeService {
 					apv.setReservado(true);
 					asientosReservados.add(apv);
 				} else {
-					return 2;
+					asientosOcupado.add(nroAsiento);
+					//return 2;
 				}
 			}
 		}
-
-		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
+		
+		if(!asientosOcupado.isEmpty()) {
+			System.out.println("asientos ocupados: " + asientosOcupado);
+			asientosOcupados.setAsientosOcupados(asientosOcupado);
+			return asientosOcupados;
+		}
+		
 		switch (estado) {
 		case REALIZADA:
 			compra.setEstadoCompra(EstadoCompra.REALIZADA);
@@ -120,16 +133,19 @@ public class CompraPasajeService {
 		for (AsientoPorViaje apv : asientosReservados) {
 			asientoPorViajeRepository.save(apv);
 		}
-		switch (estado) {
-		case REALIZADA:
-			return 3;
-		case RESERVADA:
-			return 6;
-		default:
-			System.out.println("Estado desconocido: " + estado);
-		}
+//		switch (estado) {
+//		case REALIZADA:
+//			return asientosOcupados;
+//		case RESERVADA:
+//			return asientosOcupados;
+//		default:
+//			System.out.println("Estado desconocido: " + estado);
+//		}
+		
+	
+		
 
-		return 7;
+		return asientosOcupados;
 	}
 	
 	public int venderPasaje(DtoVenderPasaje request) {
