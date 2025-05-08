@@ -2,6 +2,7 @@ package com.example.Login.controller;
 
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeDestinoFecha;
+import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.Viaje;
 import com.example.Login.repository.OmnibusRepository;
@@ -130,6 +131,12 @@ public class ViajeController {
 		//response.put("mensaje", "No se encontró el viaje o el ómnibus con los IDs proporcionados.");
         return ResponseEntity.status(HttpStatus.OK).body(Dtovdf);		
 	}
+	
+	@GetMapping("/obtenerAsientosDisponibles")
+	public List<Integer> asientosDisponibles (@RequestParam int idViaje){
+		return viajeService.asientosDisponibles(idViaje);
+	}
+	
 	
 }
 
