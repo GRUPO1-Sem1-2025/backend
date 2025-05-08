@@ -54,7 +54,7 @@ public class OmnibusController {
 		Omnibus bus = new Omnibus();
 		bus.setCant_asientos(dtoBus.getCant_asientos());
 		bus.setMarca(dtoBus.getMarca());
-		bus.setActivo(dtoBus.isActivo());
+		bus.setActivo(true);//dtoBus.isActivo());
 		Map<String, String> response = new HashMap<>();
 		
 		try {

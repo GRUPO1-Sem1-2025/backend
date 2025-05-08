@@ -6,9 +6,11 @@ import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoRegistrarse;
+import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
+import com.example.Login.dto.EstadoCompra;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.service.CompraPasajeService;
@@ -290,30 +292,65 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/comprarPasaje")
-	public ResponseEntity<String> comprarPasaje(@RequestBody DtoCompraPasaje dtoComprarPasaje) {
-		int resultadoCompra = comprarPasajeService.comprarPasaje(dtoComprarPasaje);
-		switch (resultadoCompra) {
-		case 1:
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El cliente ingresado no existe");
-		case 2:
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body("Uno de los asientos solicitados ya se encuentra reservado");
-		case 3:
-			usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
-			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido realizada de forma correcta");
-		case 4:
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-					"El cliente ingresado no se encuentra habilitado, por lo tanto" + " no puede realizar compras");
-		case 5:
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje ingresado no existe");
-		case 6:
-			usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
-			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada de forma correcta");
-		case 8:
-			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
-			return ResponseEntity.status(HttpStatus.OK).body("Solo los clientes pueden comprar pasajes");
+	public ResponseEntity<Map<String, Object>> comprarPasaje(@RequestBody DtoCompraPasaje dtoComprarPasaje) {
+		DtoRespuestaCompraPasaje resultado = comprarPasajeService.comprarPasaje(dtoComprarPasaje);
+		EstadoCompra estado = resultado.getEstado();
+		List<Integer> asientos = new ArrayList<>();
+		try {
+			asientos = resultado.getAsientosOcupados();
+		}catch (Exception e) {
+			// TODO: handle exception
 		}
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
+
+		Map<String, Object> response = new HashMap<>();
+	
+		if (!resultado.getAsientosOcupados().isEmpty()) {
+			// Map<String, Object> response = new HashMap<>();
+			response.put("mensaje", "Uno de los asientos solicitados ya se encuentra reservado");
+			response.put("asientosOcupados", asientos);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		} else {
+			switch (estado) {
+			case REALIZADA:
+				response.put("mensaje", "La compra ha sido realizada de forma exitosa");
+				usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			case RESERVADA:
+				response.put("mensaje", "La compra ha sido reservada de forma exitosa. Recurede"+
+			" que tiene 10 minutos para completar el proceso de compra, de lo contrario su "+
+						"reserva sera cancelada de forma automatica");
+				usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
+				return ResponseEntity.status(HttpStatus.OK).body(response);				
+			}
+
+		}
+	
+		response.put("mensaje", "Error desconocido");
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+		// int resultadoCompra = comprarPasajeService.comprarPasaje(dtoComprarPasaje);
+//		switch (resultadoCompra) {
+//		case 1:
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El cliente ingresado no existe");
+//		case 2:
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//					.body("Uno de los asientos solicitados ya se encuentra reservado");
+//		case 3:
+//			usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
+//			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido realizada de forma correcta");
+//		case 4:
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+//					"El cliente ingresado no se encuentra habilitado, por lo tanto" + " no puede realizar compras");
+//		case 5:
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje ingresado no existe");
+//		case 6:
+//			usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
+//			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada de forma correcta");
+//		case 8:
+//			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+//			return ResponseEntity.status(HttpStatus.OK).body("Solo los clientes pueden comprar pasajes");
+//		}
+//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}
 
 	@PostMapping("/venderPasaje")
@@ -388,23 +425,22 @@ public class UsuarioController {
 	@Operation(summary = "Obtener los viajes de un usuario", description = "Obtener los viajes de un usuaio")
 	public List<DtoMisViajes> obtenerMisViajes(@RequestParam String email) {
 		List<DtoMisViajes> misViajes = new ArrayList<>();
-		misViajes=usuarioService.obtenerMisViajes(email);
+		misViajes = usuarioService.obtenerMisViajes(email);
 		return misViajes;
 	}
-	
+
 	@PostMapping("/ObtenerMisCompras")
 	public List<DtoMisCompras> obtenerMisCompras(@RequestParam String email) {
 		List<DtoMisCompras> misCompras = new ArrayList<>();
-		misCompras=usuarioService.obtenerMisCompras(email);
+		misCompras = usuarioService.obtenerMisCompras(email);
 		return misCompras;
 	}
-	
+
 	@PostMapping("/ObtenerMisReservas")
 	public List<DtoMisCompras> obtenerMisReservas(@RequestParam String email) {
 		List<DtoMisCompras> misCompras = new ArrayList<>();
-		misCompras=usuarioService.obtenerMisReservas(email);
+		misCompras = usuarioService.obtenerMisReservas(email);
 		return misCompras;
 	}
-	
 
 }
