@@ -133,7 +133,7 @@ public class ViajeController {
 	}
 	
 	@GetMapping("/obtenerAsientosDisponibles")
-	public List<AsientoPorViaje> asientosDisponibles (@RequestParam int idViaje){
+	public List<Integer> asientosDisponibles (@RequestParam int idViaje){
 		return viajeService.asientosDisponibles(idViaje);
 	}
 	

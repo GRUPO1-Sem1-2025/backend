@@ -254,9 +254,10 @@ public class ViajeService {
 		}
 		return listaDto;
 	}
-	public List<AsientoPorViaje> asientosDisponibles (int idViaje){
+	public List<Integer> asientosDisponibles (int idViaje){
 		List<AsientoPorViaje> resultado = new ArrayList<>();
 		List<AsientoPorViaje> salida = new ArrayList<>();
+		List <Integer> asientosDisponibles = new ArrayList<>();
 		Viaje viaje = new Viaje();
 		try {
 		Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
@@ -274,9 +275,10 @@ public class ViajeService {
 		}
 		for (AsientoPorViaje a : salida) {
 			int nro = a.getOmnibusAsiento().getAsiento().getNro();
-			System.out.println("asiento nro " + nro + " esta disponible"); 
+			System.out.println("asiento nro " + nro + " esta disponible");
+			asientosDisponibles.add(nro);
 		}
-		return salida;
+		return asientosDisponibles;
 	}
 }
 
