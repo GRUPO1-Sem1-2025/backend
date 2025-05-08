@@ -306,7 +306,7 @@ public class UsuarioController {
 	
 		if (!resultado.getAsientosOcupados().isEmpty()) {
 			// Map<String, Object> response = new HashMap<>();
-			response.put("mensaje", "Uno de los asientos solicitados ya se encuentra reservado");
+			response.put("mensaje", "Alguno de el/los asiento/s solicitado/s ya se encuentra/n reservado/s");
 			response.put("asientosOcupados", asientos);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} else {

@@ -254,6 +254,30 @@ public class ViajeService {
 		}
 		return listaDto;
 	}
+	public List<AsientoPorViaje> asientosDisponibles (int idViaje){
+		List<AsientoPorViaje> resultado = new ArrayList<>();
+		List<AsientoPorViaje> salida = new ArrayList<>();
+		Viaje viaje = new Viaje();
+		try {
+		Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
+		viaje = Oviaje.get();
+		resultado = viaje.getAsientosPorViaje();
+		
+		for(AsientoPorViaje apv : resultado) {
+			if(!apv.isReservado()) {
+				salida.add(apv);
+			}
+		}
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+		for (AsientoPorViaje a : salida) {
+			int nro = a.getOmnibusAsiento().getAsiento().getNro();
+			System.out.println("asiento nro " + nro + " esta disponible"); 
+		}
+		return salida;
+	}
 }
 
 
