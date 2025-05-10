@@ -24,6 +24,7 @@ import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoRegistrarse;
+import com.example.Login.dto.DtoUsuario;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
@@ -382,16 +383,15 @@ public class UsuarioService {
 				destino, fechaInicio, hora);
 		emailService.enviarCorreo(para, asunto, mensaje);
 	}
-	
+
 	public int enviarMailVenderPasaje(DtoVenderPasaje venderPasaje) {
 		Usuario usuario = new Usuario();
-		try{
+		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findByEmail(venderPasaje.getEmailCliente());// Id(venderPasaje.getUsuarioId());
 			usuario = Ousuario.get();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return 0;
-		}		
+		}
 		String email = usuario.getEmail();
 		int viajeId = venderPasaje.getViajeId();
 		Optional<Viaje> Oviaje = viajeRepository.findById(viajeId);
@@ -483,17 +483,17 @@ public class UsuarioService {
 		default:
 			System.out.println("Estado desconocido: " + estado);
 		}
-		
+
 	}
 
 	public List<DtoMisViajes> obtenerMisViajes(String email) {
 		List<Viaje> viajes = viajeRepository.findAll();
 		List<DtoMisViajes> misViajes = new ArrayList<>();
 		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
-		int cantidadViajes=0;
-		for(Viaje v: viajes) {
+		int cantidadViajes = 0;
+		for (Viaje v : viajes) {
 			if (v.getId() == idUsuario) {
-				cantidadViajes ++;
+				cantidadViajes++;
 				DtoMisViajes viaje = new DtoMisViajes();
 				viaje.setFechaInicio(v.getFechaInicio());// setFechaInicio() = v.ge//misViajes.add(v);
 				viaje.setIdLocalidadDestino(v.getLocalidadDestino().getId());
@@ -510,8 +510,8 @@ public class UsuarioService {
 		List<CompraPasaje> compras = comprapasajerepository.findAll();
 		List<DtoMisCompras> misCompras = new ArrayList<>();
 		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
-				
-		for (CompraPasaje c: compras) {
+
+		for (CompraPasaje c : compras) {
 			if (c.getUsuario().getId() == idUsuario) {
 				DtoMisCompras compra = new DtoMisCompras();
 				EstadoCompra estado = c.getEstadoCompra();
@@ -521,7 +521,7 @@ public class UsuarioService {
 					compra.setEstadoCompra(c.getEstadoCompra());
 					compra.setViajeId(c.getViaje().getId());
 					List<Integer> asientos = new ArrayList<>();
-					for(AsientoPorViaje apv: c.getAsientos()) {
+					for (AsientoPorViaje apv : c.getAsientos()) {
 						asientos.add(apv.getOmnibusAsiento().getAsiento().getId());
 					}
 					compra.setNumerosDeAsiento(asientos);
@@ -530,17 +530,17 @@ public class UsuarioService {
 				default:
 					System.out.println("Estado desconocido: " + estado);
 				}
-			}			
+			}
 		}
-		return misCompras;		
+		return misCompras;
 	}
-	
+
 	public List<DtoMisCompras> obtenerMisReservas(String email) {
 		List<CompraPasaje> compras = comprapasajerepository.findAll();
 		List<DtoMisCompras> misReservas = new ArrayList<>();
 		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
-				
-		for (CompraPasaje c: compras) {
+
+		for (CompraPasaje c : compras) {
 			if (c.getUsuario().getId() == idUsuario) {
 				DtoMisCompras compra = new DtoMisCompras();
 				EstadoCompra estado = c.getEstadoCompra();
@@ -550,7 +550,7 @@ public class UsuarioService {
 					compra.setEstadoCompra(c.getEstadoCompra());
 					compra.setViajeId(c.getViaje().getId());
 					List<Integer> asientos = new ArrayList<>();
-					for(AsientoPorViaje apv: c.getAsientos()) {
+					for (AsientoPorViaje apv : c.getAsientos()) {
 						asientos.add(apv.getOmnibusAsiento().getAsiento().getId());
 					}
 					compra.setNumerosDeAsiento(asientos);
@@ -559,8 +559,29 @@ public class UsuarioService {
 				default:
 					System.out.println("Estado desconocido: " + estado);
 				}
-			}			
+			}
 		}
 		return misReservas;
+	}
+
+	public DtoUsuario buscarPorId(int idUsuario) {
+		DtoUsuario usuario = new DtoUsuario();
+		Usuario user = new Usuario();
+		try {
+			Optional<Usuario> Ousuario = usuarioRepository.findById(idUsuario);
+			user = Ousuario.get();
+		} catch (Exception e) {
+		}
+		usuario.setActivo(user.getActivo());
+		usuario.setApellido(user.getApellido());
+		usuario.setCategoria(user.getCategoria());
+		usuario.setCi(user.getCi());
+		usuario.setCod_empleado(user.getCod_empleado());
+		usuario.setEmail(user.getEmail());
+		usuario.setFechaNac(user.getFechaNac());
+		usuario.setNombre(user.getNombre());
+		usuario.setRol(user.getRol());
+		usuario.setId(user.getId());
+		return usuario;
 	}
 }

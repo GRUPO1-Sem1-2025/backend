@@ -7,6 +7,7 @@ import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
+import com.example.Login.dto.DtoUsuario;
 import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
@@ -298,12 +299,12 @@ public class UsuarioController {
 		List<Integer> asientos = new ArrayList<>();
 		try {
 			asientos = resultado.getAsientosOcupados();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
 		Map<String, Object> response = new HashMap<>();
-	
+
 		if (!resultado.getAsientosOcupados().isEmpty()) {
 			// Map<String, Object> response = new HashMap<>();
 			response.put("mensaje", "Alguno de el/los asiento/s solicitado/s ya se encuentra/n reservado/s");
@@ -316,15 +317,20 @@ public class UsuarioController {
 				usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			case RESERVADA:
-				response.put("mensaje", "La compra ha sido reservada de forma exitosa. Recurede"+
-			" que tiene 10 minutos para completar el proceso de compra, de lo contrario su "+
-						"reserva sera cancelada de forma automatica");
+				response.put("mensaje",
+						"La compra ha sido reservada de forma exitosa. Recurede"
+								+ " que tiene 10 minutos para completar el proceso de compra, de lo contrario su "
+								+ "reserva sera cancelada de forma automatica");
 				usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
-				return ResponseEntity.status(HttpStatus.OK).body(response);				
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			case CANCELADA:
+				response.put("mensaje", "No se pueden comprar pasajesa a viajes cancelados");
+				//usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}
 
 		}
-	
+
 		response.put("mensaje", "Error desconocido");
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
@@ -441,6 +447,13 @@ public class UsuarioController {
 		List<DtoMisCompras> misCompras = new ArrayList<>();
 		misCompras = usuarioService.obtenerMisReservas(email);
 		return misCompras;
+	}
+
+	@GetMapping("/buscarUsuarioPorId")
+	public DtoUsuario buscarUsuariosPorId(@RequestParam int idUsuario) {
+		DtoUsuario dtousuario = new DtoUsuario();
+		dtousuario=usuarioService.buscarPorId(idUsuario);
+		return dtousuario;
 	}
 
 }

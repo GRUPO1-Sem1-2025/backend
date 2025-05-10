@@ -7,12 +7,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.EstadoCompra;
+import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
@@ -29,6 +31,8 @@ import jakarta.transaction.Transactional;
 @Service
 public class CompraPasajeService {
 
+    private final SecurityFilterChain securityFilterChain;
+
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
@@ -44,10 +48,15 @@ public class CompraPasajeService {
 	@Autowired
 	private ViajeRepository viajeRepository;
 
+    CompraPasajeService(SecurityFilterChain securityFilterChain) {
+        this.securityFilterChain = securityFilterChain;
+    }
+
 	public DtoRespuestaCompraPasaje comprarPasaje(DtoCompraPasaje request) {
 		Usuario vendedor = new Usuario();
 		Usuario usuario = new Usuario();
 		Viaje viaje = new Viaje();
+		
 		List <Integer> asientosOcupado = new ArrayList<>();
 		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
 		DtoRespuestaCompraPasaje asientosOcupados = new DtoRespuestaCompraPasaje();
@@ -88,7 +97,17 @@ public class CompraPasajeService {
 		}
 		compra.setUsuario(usuario);
 		compra.setVendedor(vendedor);
-		compra.setViaje(viaje);
+		
+		EstadoViaje ev = viaje.getEstadoViaje();
+		switch (ev) {
+		case CANCELADO:
+			System.out.println("No se puede comprar pasaje para un viaje cancelado");
+			asientosOcupados.setEstado(EstadoCompra.CANCELADA);
+			return asientosOcupados;
+		default:
+			compra.setViaje(viaje);
+		}
+		
 		compra.setFechaHoraCompra(LocalDateTime.now());
 
 		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
