@@ -1,5 +1,6 @@
 package com.example.Login.service;
 import com.example.Login.repository.AsientoPorViajeRepository;
+import com.example.Login.repository.CompraPasajeRepository;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -9,6 +10,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.ToIntFunction;
+
 import com.example.Login.repository.ViajeRepository;
 
 import io.jsonwebtoken.lang.Collections;
@@ -20,6 +23,7 @@ import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
+import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.OmnibusAsiento;
@@ -32,7 +36,13 @@ import com.example.Login.model.Viaje;
 public class ViajeService {
 
 	@Autowired
+    private UsuarioService usuarioService;
+
+	@Autowired
 	private LocalidadRepository localidadRepository;
+	
+	@Autowired
+	CompraPasajeRepository compraPasajeRepository;
 	
 	@Autowired
 	private AsientoPorViajeRepository asientoPorViajeRepository;
@@ -42,6 +52,14 @@ public class ViajeService {
 
 	@Autowired
 	private OmnibusRepository omnibusRepository;
+	
+	@Autowired
+	private CompraPasajeService compraPasajeService;
+	
+
+    ViajeService(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
 //	public int crearViaje_viejo(DtoViaje dtoViaje) {
 //		Viaje nuevoViaje = new Viaje();
@@ -280,6 +298,41 @@ public class ViajeService {
 		}
 		return asientosDisponibles;
 	}
+	
+	public boolean cancelarViaje (Long idViaje){
+		Viaje viaje = new Viaje();
+		try {
+			Optional<Viaje>Oviaje = viajeRepository.findById(idViaje.intValue());
+			viaje = Oviaje.get();
+			if(viaje.getEstadoViaje().equals(EstadoViaje.CANCELADO)) {
+				return false;
+			}
+			viaje.setEstadoViaje(EstadoViaje.CANCELADO);
+			viajeRepository.save(viaje);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		List<Long> compraPasajeACancelar = new ArrayList<>();
+		try{
+			List<CompraPasaje> compraPasaje = compraPasajeRepository.findByViajeId(idViaje);
+			System.out.println("Cantidad de compras: "+ compraPasaje.size());//Ok
+			
+			for(CompraPasaje cp : compraPasaje) {
+				compraPasajeACancelar.add(cp.getId());
+			}
+			for(Long id : compraPasajeACancelar) {
+				compraPasajeService.cancelarCompra(id.intValue()); // cancela la compra
+				usuarioService.enviarMailCancelarCompra(id.intValue());
+				System.out.println("Se canceló la compra nro " + id);
+			}
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		return true;
+	}
+	
+	
 }
 
 

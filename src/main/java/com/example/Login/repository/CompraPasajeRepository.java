@@ -27,4 +27,6 @@ public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Inte
 	List<CompraPasaje> findByEstadoCompraAndFechaHoraCompraBefore(EstadoCompra estadoCompra, LocalDateTime fechaLimite);
 
 	Optional<CompraPasaje> findById(Long compraId);
+	
+	List<CompraPasaje> findByViajeId(Long idViaje);
 }
