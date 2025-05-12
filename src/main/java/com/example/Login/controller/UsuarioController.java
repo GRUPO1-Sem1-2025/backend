@@ -423,42 +423,60 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/cancelarCompra")
-	public ResponseEntity<String> cancelarCompra(@RequestParam int idCompra) {
+	public ResponseEntity<Map<String, String>> cancelarCompra(@RequestParam int idCompra) {
+		Map<String, String> response = new HashMap<>();
 		int resultado = comprarPasajeService.cancelarCompra(idCompra);
 
 		switch (resultado) {
 		case 1:
 			usuarioService.enviarMailCancelarCompra(idCompra);
-			return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido cancelada");
+			response.put("mensaje", "La compra ha sido cancelada");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+			//return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido cancelada");
 		case 2:
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body("La compra no se puede cancelar porque ya se encuentra cancelada");
+					response.put("mensaje", "La compra no se puede cancelar porque ya se encuentra cancelada");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//
+//					.body("La compra no se puede cancelar porque ya se encuentra cancelada");
 		case 3:
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id de compra ingresado no existe");
+			response.put("mensaje", "El id de compra ingresado no existe");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			//return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id de compra ingresado no existe");
 		}
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
+		response.put("mensaje", "Error desconocido");
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 	}
 
 	@PostMapping("/cambiarEstadoCompra")
-	public ResponseEntity<String> cambiarEstadoCompra(@RequestParam int idCompra) {
+	public ResponseEntity<Map<String, String>> cambiarEstadoCompra(@RequestParam int idCompra) {
+		Map<String, String> response = new HashMap<>();
 		usuarioService.cambiarEstadoCompra(idCompra);
-		return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado de la compra");
+		response.put("mensaje", "Se cambió el estado de la compra");
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+		//return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado de la compra");
 	}
 
 	@PostMapping("/reenviarCodigo")
 	@Operation(summary = "Reenviar código para autenticar", description = "Retorna un codigo")
-	public ResponseEntity<String> reenviarCodigo(String email) {
+	public ResponseEntity<Map<String, String>>  reenviarCodigo(String email) {
+		Map<String, String> response = new HashMap<>();
 		int codigo = usuarioService.obtenerCodigo(email);
 
 		if (codigo > 2) {
 			usuarioService.enviarMailReenviarCodigo(email);
-			return ResponseEntity.status(HttpStatus.OK)
-					.body("Se le envió a su correo un código para terminar con el proceso de autenticación");
+			response.put("mensaje", "Se le envió a su correo un código para terminar con el proceso de autenticación");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+			//return ResponseEntity.status(HttpStatus.OK).body("Se le envió a su correo un código para terminar con el proceso de autenticación");
 		} else if (codigo == 2) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body("Usted no ha iniciado sesion aun, por favor inicie sesion en nuestro sistema");
+			response.put("mensaje", "Usted no ha iniciado sesion aun, por favor inicie sesión en nuestro sistema");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			//return ResponseEntity.status(HttpStatus.UNAUTHORIZED)	Usted no ha iniciado sesion aun, por favor inicie sesion en nuestro sistema");
 		} else {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
+			response.put("mensaje", "Error desconocido");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
 		}
 	}
 
