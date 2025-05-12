@@ -1,4 +1,5 @@
 package com.example.Login.service;
+
 import com.example.Login.repository.AsientoPorViajeRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeDestinoFecha;
+import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
@@ -36,14 +38,14 @@ import com.example.Login.model.Viaje;
 public class ViajeService {
 
 	@Autowired
-    private UsuarioService usuarioService;
+	private UsuarioService usuarioService;
 
 	@Autowired
 	private LocalidadRepository localidadRepository;
-	
+
 	@Autowired
 	CompraPasajeRepository compraPasajeRepository;
-	
+
 	@Autowired
 	private AsientoPorViajeRepository asientoPorViajeRepository;
 
@@ -52,14 +54,13 @@ public class ViajeService {
 
 	@Autowired
 	private OmnibusRepository omnibusRepository;
-	
+
 	@Autowired
 	private CompraPasajeService compraPasajeService;
-	
 
-    ViajeService(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+	ViajeService(UsuarioService usuarioService) {
+		this.usuarioService = usuarioService;
+	}
 
 //	public int crearViaje_viejo(DtoViaje dtoViaje) {
 //		Viaje nuevoViaje = new Viaje();
@@ -100,7 +101,7 @@ public class ViajeService {
 //		System.out.println("Una de las ciudads ingresadas no existe en el sistema");
 //		return 4;
 //	}
-	
+
 	public int crearViaje(DtoViaje dtoViaje) {
 //		Date fechaInicio = dtoViaje.getFechaInicio();
 //		Date fechaFin = dtoViaje.getFechaFin();
@@ -114,43 +115,43 @@ public class ViajeService {
 //        
 //        String demora = horas + " horas y " + minutos + " minutos";
 //        System.out.println("Duración: " + demora);
-				
-	    Viaje nuevoViaje = new Viaje();
-	    
-	    Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());
-	    Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());
 
-	    if (locOri.isPresent() && locDest.isPresent()) {
-	        if (locOri.get().getId() == locDest.get().getId()) {
-	            System.out.println("La ciudad de origen y destino no pueden ser las mismas");
-	            return 1;
-	        }
+		Viaje nuevoViaje = new Viaje();
 
-	        if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
-	            System.out.println("Una de las ciudades no se encuentra disponible");
-	            return 2;
-	        }
+		Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());
+		Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());
 
-	        nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
-	        nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
-	        nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
-	        nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
-	        nuevoViaje.setLocalidadOrigen(locOri.get());
-	        nuevoViaje.setLocalidadDestino(locDest.get());
-	        nuevoViaje.setPrecio(dtoViaje.getPrecio());
-	        nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
+		if (locOri.isPresent() && locDest.isPresent()) {
+			if (locOri.get().getId() == locDest.get().getId()) {
+				System.out.println("La ciudad de origen y destino no pueden ser las mismas");
+				return 1;
+			}
 
-	        // No se asigna aún el omnibus ni los asientos
-	        nuevoViaje.setOmnibus(null);
-	        nuevoViaje.setAsientosPorViaje(new ArrayList<>());
+			if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
+				System.out.println("Una de las ciudades no se encuentra disponible");
+				return 2;
+			}
 
-	        viajeRepository.save(nuevoViaje);
-	        return 3;
-	    }
+			nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
+			nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
+			nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
+			nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
+			nuevoViaje.setLocalidadOrigen(locOri.get());
+			nuevoViaje.setLocalidadDestino(locDest.get());
+			nuevoViaje.setPrecio(dtoViaje.getPrecio());
+			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
 
-	    System.out.println("Una de las ciudades ingresadas no existe");
-	    return 4;
-	}	
+			// No se asigna aún el omnibus ni los asientos
+			nuevoViaje.setOmnibus(null);
+			nuevoViaje.setAsientosPorViaje(new ArrayList<>());
+
+			viajeRepository.save(nuevoViaje);
+			return 3;
+		}
+
+		System.out.println("Una de las ciudades ingresadas no existe");
+		return 4;
+	}
 
 	public int asignarOmnibusAViaje_vieja(Omnibus omnibus, Viaje viaje) {
 		int resultado = 0;
@@ -218,7 +219,8 @@ public class ViajeService {
 					// Asignar el ómnibus al viaje
 					viaje.setOmnibus(bus);
 
-					// Crear relación asiento/viaje (modelo AsientoPorViaje, si estás usando ambos modelos)
+					// Crear relación asiento/viaje (modelo AsientoPorViaje, si estás usando ambos
+					// modelos)
 					for (OmnibusAsiento asiento : bus.getAsientos()) {
 						AsientoPorViaje apv = new AsientoPorViaje();
 						apv.setOmnibusAsiento(asiento);
@@ -250,17 +252,18 @@ public class ViajeService {
 
 	public List<DtoViajeDestinoFecha> obtenerViajesPorFechaYDestino(DtoViaje dtoVDF) {
 		List<DtoViaje> lista = new ArrayList<>();
-		List<DtoViajeDestinoFecha> listaDto= new ArrayList<>();
-		System.out.println("Sdestino: " +dtoVDF.getIdLocalidadDestino());
+		List<DtoViajeDestinoFecha> listaDto = new ArrayList<>();
+		System.out.println("Sdestino: " + dtoVDF.getIdLocalidadDestino());
 		System.out.println("Sorigen: " + dtoVDF.getIdLocalidadOrigen());
 		System.out.println("Sinicio: " + dtoVDF.getFechaInicio());// IdLocalidadOrigen());
 		System.out.println("Sfin: " + dtoVDF.getFechaFin());// IdLocalidadOrigen());
-		//lista = viajeRepository.buscarViajesFiltrados(dtoVDF.getFechaInicio(),dtoVDF.getFechaFin(),dtoVDF.getIdLocalidadOrigen(),dtoVDF.getIdLocalidadDestino());
-		lista = viajeRepository.buscarViajesFiltrados(dtoVDF.getFechaInicio(),dtoVDF.getFechaFin(),				
-				dtoVDF.getIdLocalidadOrigen(),dtoVDF.getIdLocalidadDestino());
+		// lista =
+		// viajeRepository.buscarViajesFiltrados(dtoVDF.getFechaInicio(),dtoVDF.getFechaFin(),dtoVDF.getIdLocalidadOrigen(),dtoVDF.getIdLocalidadDestino());
+		lista = viajeRepository.buscarViajesFiltrados(dtoVDF.getFechaInicio(), dtoVDF.getFechaFin(),
+				dtoVDF.getIdLocalidadOrigen(), dtoVDF.getIdLocalidadDestino());
 		System.out.println("Cantidad de objetos: " + lista.size());
-		
-		for(DtoViaje dto: lista) {
+
+		for (DtoViaje dto : lista) {
 			DtoViajeDestinoFecha vdf = new DtoViajeDestinoFecha();
 			vdf.setBusId(dto.getIdOmnibus());
 			vdf.setCantAsientosDisponibles(asientoPorViajeRepository.contarAsientosDisponiblesPorViaje(dto.getId()));
@@ -272,23 +275,23 @@ public class ViajeService {
 		}
 		return listaDto;
 	}
-	public List<Integer> asientosDisponibles (int idViaje){
+
+	public List<Integer> asientosDisponibles(int idViaje) {
 		List<AsientoPorViaje> resultado = new ArrayList<>();
 		List<AsientoPorViaje> salida = new ArrayList<>();
-		List <Integer> asientosDisponibles = new ArrayList<>();
+		List<Integer> asientosDisponibles = new ArrayList<>();
 		Viaje viaje = new Viaje();
 		try {
-		Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
-		viaje = Oviaje.get();
-		resultado = viaje.getAsientosPorViaje();
-		
-		for(AsientoPorViaje apv : resultado) {
-			if(!apv.isReservado()) {
-				salida.add(apv);
+			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
+			viaje = Oviaje.get();
+			resultado = viaje.getAsientosPorViaje();
+
+			for (AsientoPorViaje apv : resultado) {
+				if (!apv.isReservado()) {
+					salida.add(apv);
+				}
 			}
-		}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		for (AsientoPorViaje a : salida) {
@@ -298,58 +301,37 @@ public class ViajeService {
 		}
 		return asientosDisponibles;
 	}
-	
-	public boolean cancelarViaje (Long idViaje){
+
+	public boolean cancelarViaje(Long idViaje) {
 		Viaje viaje = new Viaje();
 		try {
-			Optional<Viaje>Oviaje = viajeRepository.findById(idViaje.intValue());
+			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje.intValue());
 			viaje = Oviaje.get();
-			if(viaje.getEstadoViaje().equals(EstadoViaje.CANCELADO)) {
+			if (viaje.getEstadoViaje().equals(EstadoViaje.CANCELADO)) {
 				return false;
 			}
 			viaje.setEstadoViaje(EstadoViaje.CANCELADO);
 			viajeRepository.save(viaje);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		List<Long> compraPasajeACancelar = new ArrayList<>();
-		try{
+		try {
 			List<CompraPasaje> compraPasaje = compraPasajeRepository.findByViajeId(idViaje);
-			System.out.println("Cantidad de compras: "+ compraPasaje.size());//Ok
-			
-			for(CompraPasaje cp : compraPasaje) {
+			System.out.println("Cantidad de compras: " + compraPasaje.size());// Ok
+
+			for (CompraPasaje cp : compraPasaje) {
 				compraPasajeACancelar.add(cp.getId());
 			}
-			for(Long id : compraPasajeACancelar) {
+			for (Long id : compraPasajeACancelar) {
 				compraPasajeService.cancelarCompra(id.intValue()); // cancela la compra
 				usuarioService.enviarMailCancelarCompra(id.intValue());
 				System.out.println("Se canceló la compra nro " + id);
 			}
-			
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return true;
 	}
-	
-	
+
 }
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
