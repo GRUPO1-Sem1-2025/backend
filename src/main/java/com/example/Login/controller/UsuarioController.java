@@ -341,7 +341,7 @@ public class UsuarioController {
 				usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			case CANCELADA:
-				response.put("mensaje", "No se pueden comprar pasajesa a viajes cancelados");
+				response.put("mensaje", "No se pueden comprar pasajesa a viajes cancelados o cerrados");
 				//usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}

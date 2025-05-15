@@ -104,6 +104,10 @@ public class CompraPasajeService {
 			System.out.println("No se puede comprar pasaje para un viaje cancelado");
 			asientosOcupados.setEstado(EstadoCompra.CANCELADA);
 			return asientosOcupados;
+		case CERRADO:
+			System.out.println("No se puede comprar pasaje para un viaje cancelado");
+			asientosOcupados.setEstado(EstadoCompra.CANCELADA);
+			return asientosOcupados;
 		default:
 			compra.setViaje(viaje);
 		}

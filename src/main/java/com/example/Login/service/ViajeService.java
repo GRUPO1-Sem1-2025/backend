@@ -18,8 +18,10 @@ import com.example.Login.repository.ViajeRepository;
 import io.jsonwebtoken.lang.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.dto.EstadoCompra;
@@ -333,5 +335,32 @@ public class ViajeService {
 		}
 		return true;
 	}
+
+	@Scheduled(fixedRate = 600000) // cada 600 segundos
+	public void cerrarViajes() {
+		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximos60Minutos();
+		System.out.println("Cantidad de viajes a cerrar: " + viajesACerrar.size());
+		for (Viaje v : viajesACerrar) {
+			if (!v.getEstadoViaje().equals(EstadoViaje.CERRADO)) {
+				v.setEstadoViaje(EstadoViaje.CERRADO);
+				viajeRepository.save(v);
+				
+				// enviar mail a los compradores de pasajes para ese viaje
+				List<CompraPasaje> comprapasaje = new ArrayList<>();
+				comprapasaje = compraPasajeRepository.findByViajeId((long) v.getId());
+				System.out.println("cantidad de compras para ese viaje: " + comprapasaje.size());
+				System.out.println("");
+				System.out.println("El viaje de id " + v.getId() + " ha sido cerrado");
+				for(CompraPasaje cp: comprapasaje) {
+					usuarioService.enviarMailAvisandoDeViaje(cp.getId().intValue());
+				}
+			}else {
+				System.out.println("El viaje no se puede cerrar porque ya esta cerrado");
+			}
+		}
+	}
+//	@Query("SELECT v FROM Viaje v " +
+//		       "WHERE FUNCTION('TIMESTAMP', v.fechaInicio, v.horaInicio) BETWEEN CURRENT_TIMESTAMP AND FUNCTION('TIMESTAMPADD', 'MINUTE', 60, CURRENT_TIMESTAMP)")
+//		List<Viaje> findViajesConInicioEnLosProximos60Minutos();
 
 }
