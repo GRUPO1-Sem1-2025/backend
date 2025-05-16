@@ -125,6 +125,7 @@ public class OmnibusService {
 		for (Omnibus omnibus : omnibusTotales) {
 			if (omnibus.isActivo()) {
 				DtoBus bus = new DtoBus();
+				bus.setId(omnibus.getId());
 				bus.setActivo(true);
 				bus.setCant_asientos(omnibus.getCant_asientos());
 				bus.setMarca(omnibus.getMarca());

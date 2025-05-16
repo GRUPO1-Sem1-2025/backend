@@ -532,7 +532,12 @@ public class UsuarioService {
 	public List<DtoMisCompras> obtenerMisCompras(String email) {
 		List<CompraPasaje> compras = comprapasajerepository.findAll();
 		List<DtoMisCompras> misCompras = new ArrayList<>();
-		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
+		int idUsuario = 0; 
+		try {
+			idUsuario = usuarioRepository.findByEmail(email).get().getId();
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 
 		for (CompraPasaje c : compras) {
 			if (c.getUsuario().getId() == idUsuario) {
