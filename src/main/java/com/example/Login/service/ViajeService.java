@@ -364,4 +364,28 @@ public class ViajeService {
 //		       "WHERE FUNCTION('TIMESTAMP', v.fechaInicio, v.horaInicio) BETWEEN CURRENT_TIMESTAMP AND FUNCTION('TIMESTAMPADD', 'MINUTE', 60, CURRENT_TIMESTAMP)")
 //		List<Viaje> findViajesConInicioEnLosProximos60Minutos();
 
+	public List<DtoViaje> obtenerViajesPorBus(int idBus) {
+		List<DtoViaje> dtoViajes = new ArrayList<>();
+		List<Viaje> viajes = new ArrayList<>();
+		try {
+			viajes = viajeRepository.findByOmnibus_Id(idBus);
+			for(Viaje v: viajes) {
+				DtoViaje viaje = new DtoViaje();
+				viaje.setFechaFin(v.getFechaFin());
+				viaje.setFechaInicio(v.getFechaInicio());
+				viaje.setHoraFin(v.getHoraFin());
+				viaje.setHoraInicio(v.getHoraInicio());
+				viaje.setId(v.getId());
+				viaje.setIdLocalidadDestino(v.getLocalidadDestino().getId());
+				viaje.setIdLocalidadOrigen(v.getLocalidadOrigen().getId());
+				viaje.setIdOmnibus(v.getOmnibus().getId());
+				viaje.setPrecio(v.getPrecio());
+				dtoViajes.add(viaje);
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		return dtoViajes;
+	}
+
 }

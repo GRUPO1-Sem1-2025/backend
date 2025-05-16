@@ -73,5 +73,6 @@ public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
 			    WHERE (fecha_inicio + hora_inicio) BETWEEN NOW() AND NOW() + INTERVAL '60 minutes'
 			""", nativeQuery = true)
 			List<Viaje> findViajesConInicioEnLosProximos60Minutos();
-
+		
+		List<Viaje> findByOmnibus_Id(int idOmnibus);
 }
