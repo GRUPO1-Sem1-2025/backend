@@ -25,6 +25,7 @@ import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuario;
+import com.example.Login.dto.DtoUsuarioPerfil;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
@@ -605,5 +606,22 @@ public class UsuarioService {
 		usuario.setRol(user.getRol());
 		usuario.setId(user.getId());
 		return usuario;
+	}
+
+	public boolean modificarPerfil(DtoUsuarioPerfil usuario) {
+		
+		Usuario user = new Usuario();
+		try{
+			Optional<Usuario> Ousuario = usuarioRepository.findById(usuario.getId());	
+			System.out.println("email: " + usuario.getEmail());
+			user = Ousuario.get();
+		}catch (Exception e) {
+			return false;
+		}
+		user.setApellido(usuario.getApellido());
+		user.setEmail(usuario.getEmail());
+		user.setNombre(usuario.getNombre());
+		usuarioRepository.save(user);		
+		return true;
 	}
 }
