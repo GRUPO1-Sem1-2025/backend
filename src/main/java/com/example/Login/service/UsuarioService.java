@@ -25,6 +25,7 @@ import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuario;
+import com.example.Login.dto.DtoUsuarioPerfil;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
@@ -461,6 +462,28 @@ public class UsuarioService {
 		emailService.enviarCorreo(para, asunto, mensaje);
 
 	}
+	
+	public void enviarMailAvisandoDeViaje(int idCompra) {
+		Optional<CompraPasaje> Ocompra = comprapasajerepository.findById(idCompra);
+		CompraPasaje compra = Ocompra.get();
+		Optional<Usuario> Ousuario = usuarioRepository.findByEmail(compra.getUsuario().getEmail());
+		Usuario usuario = Ousuario.get();
+		String email = usuario.getEmail();
+		int viajeId = compra.getViaje().getId();
+		Optional<Viaje> Oviaje = viajeRepository.findById(viajeId);
+		Viaje viaje = Oviaje.get();
+		String destino = viaje.getLocalidadDestino().getNombre();
+		Date fechaInicio = viaje.getFechaInicio();
+		LocalTime hora = viaje.getHoraInicio();
+		String para = email;
+		String asunto = "¡¡¡ Aviso, su viaje comienza en menos de una hora!!!";
+
+		String mensaje = String.format(
+				"Recuerde que usted tiene un viaje con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b> .", destino,
+				fechaInicio, hora);
+		emailService.enviarCorreo(para, asunto, mensaje);
+
+	}
 
 	public void cambiarEstadoCompra(int idCompra) {
 		CompraPasaje compra = new CompraPasaje();
@@ -583,5 +606,22 @@ public class UsuarioService {
 		usuario.setRol(user.getRol());
 		usuario.setId(user.getId());
 		return usuario;
+	}
+
+	public boolean modificarPerfil(DtoUsuarioPerfil usuario) {
+		
+		Usuario user = new Usuario();
+		try{
+			Optional<Usuario> Ousuario = usuarioRepository.findById(usuario.getId());	
+			System.out.println("email: " + usuario.getEmail());
+			user = Ousuario.get();
+		}catch (Exception e) {
+			return false;
+		}
+		user.setApellido(usuario.getApellido());
+		user.setEmail(usuario.getEmail());
+		user.setNombre(usuario.getNombre());
+		usuarioRepository.save(user);		
+		return true;
 	}
 }

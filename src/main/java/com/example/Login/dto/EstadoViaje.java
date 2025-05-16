@@ -4,5 +4,6 @@ public enum EstadoViaje {
     NUEVO,
 	EN_CURSO,
     FINALIZADO,
-    CANCELADO    
+    CANCELADO,
+    CERRADO
 }
