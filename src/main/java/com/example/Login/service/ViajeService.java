@@ -273,6 +273,7 @@ public class ViajeService {
 			vdf.setHoraFin(dto.getHoraFin());
 			vdf.setHoraInicio(dto.getHoraInicio());
 			vdf.setPrecioPasaje(dto.getPrecio());
+			vdf.setViajeId(dto.getId());
 			listaDto.add(vdf);
 		}
 		return listaDto;
