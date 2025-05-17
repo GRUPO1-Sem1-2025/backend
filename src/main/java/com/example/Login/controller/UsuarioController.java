@@ -5,10 +5,12 @@ import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
+import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoUsuario;
 import com.example.Login.dto.DtoUsuarioPerfil;
+import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
@@ -545,4 +547,20 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
+
+	@GetMapping("usuariosPorMes")
+	public List<DtoNewUsuariosPorMes> obtenerUsuariosPorMes() {
+		List<DtoNewUsuariosPorMes> resultado = new ArrayList<>();
+		resultado = usuarioService.obtenerUsuariosPorMes();
+		return resultado;
+	}
+	
+	@GetMapping("usuariosPorRol")
+	public List<DtoUsuariosPorRol> obtenerUsuariosPorRol() {
+		List<DtoUsuariosPorRol> resultado = new ArrayList<>();
+		resultado = usuarioService.obtenerUsuariosPorRol();
+		return resultado;
+	}
+	
+	
 }

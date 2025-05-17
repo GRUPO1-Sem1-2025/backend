@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.Login.dto.EstadoCompra;
+import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.model.Asiento;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
@@ -29,4 +30,6 @@ public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Inte
 	Optional<CompraPasaje> findById(Long compraId);
 	
 	List<CompraPasaje> findByViajeId(Long idViaje);
+	
+
 }
