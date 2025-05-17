@@ -23,9 +23,12 @@ import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
+import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuario;
 import com.example.Login.dto.DtoUsuarioPerfil;
+import com.example.Login.dto.DtoUsuariosPorRol;
+import com.example.Login.dto.DtoUsuariosPorRolQuery;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
@@ -629,4 +632,32 @@ public class UsuarioService {
 		usuarioRepository.save(user);		
 		return true;
 	}
+
+	public List<DtoNewUsuariosPorMes> obtenerUsuariosPorMes() {
+		List<DtoNewUsuariosPorMes> lista = usuarioRepository.contarUsuariosPorMes();
+		return lista;
+	}
+
+	public List<DtoUsuariosPorRol> obtenerUsuariosPorRol() {
+		List<DtoUsuariosPorRol> lista = new ArrayList<>();
+		List<DtoUsuariosPorRolQuery> consulta = usuarioRepository.usuariosPorRol();
+		
+		for(DtoUsuariosPorRolQuery query: consulta) {
+			DtoUsuariosPorRol dto = new DtoUsuariosPorRol();
+			dto.setCantidad(query.getCantidad());
+			switch(query.getRol()) {
+			case 100:
+				dto.setRol("Usuario final");
+				break;
+			case 200:
+				dto.setRol("Vendedor");
+				break;
+			case 300:
+				dto.setRol("Admin");
+				break;
+			}
+			lista.add(dto);
+		}
+
+		return lista;	}
 }

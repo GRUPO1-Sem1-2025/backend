@@ -306,4 +306,39 @@ public class CompraPasajeService {
 
 	    }
 	}
+
+	public List<DtoCompraPasaje> obtenerComprasPorViaje(long idViaje) {
+		List<CompraPasaje> listadoCompra = new ArrayList<>();
+		List<DtoCompraPasaje> dtoListadoCompra = new ArrayList<>();
+		try {
+			listadoCompra = compraPasajeRepository.findByViajeId(idViaje);
+			System.out.println("cantidad de compras: " + listadoCompra.size());
+			for(CompraPasaje cp: listadoCompra) {
+				System.out.println("Procesando compra con ID: " + cp.getId());
+			    System.out.println("Usuario: " + cp.getUsuario());
+			    System.out.println("Vendedor: " + cp.getVendedor());
+			    System.out.println("Viaje: " + cp.getViaje());
+				DtoCompraPasaje compra = new DtoCompraPasaje();
+				try {
+				compra.setUsuarioId(cp.getUsuario().getId());
+				compra.setVendedorId(cp.getVendedor().getId());
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				compra.setViajeId(cp.getViaje().getId());
+				compra.setEstadoCompra(cp.getEstadoCompra());
+				List<Integer> asientos = new ArrayList<>();
+				for(AsientoPorViaje apv: cp.getAsientos()) {
+					asientos.add(apv.getOmnibusAsiento().getAsiento().getId());
+				}
+				compra.setNumerosDeAsiento(asientos);
+				dtoListadoCompra.add(compra);
+			}
+		}catch (Exception e) {
+			e.printStackTrace(); // Esto te mostrará el error exacto en consola
+		}
+		System.out.println("cantidad de compras para controller: " + dtoListadoCompra.size());
+		// TODO Auto-generated method stub
+		return dtoListadoCompra;
+	}
 }
