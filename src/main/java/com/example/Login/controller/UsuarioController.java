@@ -133,11 +133,14 @@ public class UsuarioController {
 			if (usuarioEncontrado.getActivo() == true) {
 				if (!usuarioEncontrado.isContraseniaValida()) {
 					response.put("mensaje", "Debe de cambiar la contraseña para iniciar sesion");
-					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+					response.put("Login directo", "0");
+					return ResponseEntity.status(HttpStatus.OK).body(response);
 				}
 				if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
 					usuarioService.login(email, password);
-					return ResponseEntity.ok(Map.of("Mensaje", ok));
+					response.put("mensaje", "Se le envió a su correo un código para terminar con el proceso de autenticación");
+					response.put("Login directo", "1");
+					return ResponseEntity.status(HttpStatus.OK).body(response);
 				}
 			} else {
 				response.put("mensaje", "El usuario no se encuentra habilitado, pongase en contacto"

@@ -126,6 +126,7 @@ public class UsuarioService {
 		usuario.setActivo(true);
 		usuario.setFechaCreacion(LocalDate.now());
 		usuario.setCodigo(generarCodigo());
+		usuario.setContraseniaValida(true);
 		usuarioRepository.save(usuario);
 		// emailService.enviarCorreo(para, asunto, mensaje);
 
@@ -171,6 +172,7 @@ public class UsuarioService {
 		usuario.setFechaCreacion(LocalDate.now());
 		String password = usuario.getApellido() + usuario.getNombre() + "_2025";
 		usuario.setPassword(encriptarSHA256(password));
+		usuario.setContraseniaValida(false);
 
 		String para = usuario.getEmail();
 		String asunto = "Contrasenia de inicio de sesion";
