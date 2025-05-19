@@ -32,7 +32,7 @@ public class AsientoService {
 	
 	public String convertCsvToJson(MultipartFile file) throws Exception {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-		String line;
+		String line;		
 		List<Map<String, String>> dataList = new ArrayList<>();
 
 		try {
@@ -41,7 +41,7 @@ public class AsientoService {
 			    String[] values = line.split(":");
 
 			    if (values.length != 1) {
-			        throw new Exception("Formato incorrecto en el CSV. Cada fila debe tener 2 valores.");
+			        throw new Exception("Formato incorrecto en el CSV. Cada fila debe tener 1 valores.");
 			    }
 
 			    // Extraemos valores
@@ -52,18 +52,25 @@ public class AsientoService {
 			    Asiento asiento = asientoRepository.findById(nroAsiento).orElse(new Asiento());
 			    asiento.setNro(nroAsiento);
 
-			    asientoRepository.save(asiento);
-
-			    Map<String, String> row = new HashMap<>();
-			    row.put("nro", String.valueOf(nroAsiento));
-			    dataList.add(row);
-			
 				try{
-					asientoRepository.save(asiento);// save(asiento);
+					Optional<Asiento> Oasiento = asientoRepository.findByNro(nroAsiento);
+					
+					if(!Oasiento.isPresent()) {
+						Map<String, String> row = new HashMap<>(); // <-- aquí
+						row.put("nro", String.valueOf(values[0]));
+					    dataList.add(row);
+					    asientoRepository.save(asiento);// save(asiento);		
+					    System.out.println("El asiento " + values[0] + " fue registrado");
+					}else {
+						Map<String, String> row = new HashMap<>(); // <-- aquí
+						row.put("Error", "El asiento "+ String.valueOf(values[0] + " ya esta creado"));
+						dataList.add(row);
+						System.out.println("El asiento " + values[0] + " YA fue registrado");
+					}
+					
 				}catch (Exception e) {
-					// TODO: handle exception
+					System.out.println("El asiento " + values[0] + " NO se puede agregar, ya encuentra registrado");
 				}
-				System.out.println("El asiento " + values[0] + " fue registrado");
 			}
 
 			// Convertir la lista a formato JSON
