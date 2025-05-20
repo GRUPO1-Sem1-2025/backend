@@ -25,10 +25,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
+        return http
+                .csrf().disable()
                 .authorizeHttpRequests()
-                    .requestMatchers("/usuarios/registrarse").permitAll()  // Permitir acceso al login sin JWT
-                    .anyRequest().permitAll() // 💥 Permite acceso a todo sin token
+                .requestMatchers("/usuarios/login").permitAll()  // Permitir acceso al login sin JWT
+                .anyRequest().permitAll() // 💥 Permite acceso a todo sin token
                    // .anyRequest().authenticated()  // Requiere JWT para el resto de los endpoints
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Agregar filtro de autenticación JWT
