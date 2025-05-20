@@ -16,8 +16,9 @@ import com.example.Login.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+
 @RestController
-@RequestMapping("/asientos")
+@RequestMapping("asientos")
 @Tag(name = "Asientos", description = "API para gestionar asientos")
 public class AsientoController {
 	
@@ -27,8 +28,8 @@ public class AsientoController {
         this.asientoService = asientoService;
     }
     
-    @Autowired
-    private AsientoService fileConversionService;
+    //@Autowired
+    //private AsientoService fileConversionService;
     
 	@PostMapping("/crearAsientosMasivos")
 	public ResponseEntity<String> cargarAsientosMasivos(@RequestParam("file") MultipartFile file) {
@@ -38,7 +39,8 @@ public class AsientoController {
 
 		try {
 			// Llamamos al servicio para convertir el archivo a JSON
-			String json = fileConversionService.convertCsvToJson(file);
+			//String json = fileConversionService.convertCsvToJson(file);
+			String json = asientoService.convertCsvToJson(file);
 			return ResponseEntity.ok(json);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
