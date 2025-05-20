@@ -27,7 +27,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests()
-                    .requestMatchers("/usuarios/login").permitAll()  // Permitir acceso al login sin JWT
+                    .requestMatchers("/usuarios/registrarse").permitAll()  // Permitir acceso al login sin JWT
                     .anyRequest().permitAll() // 💥 Permite acceso a todo sin token
                    // .anyRequest().authenticated()  // Requiere JWT para el resto de los endpoints
                 .and()
