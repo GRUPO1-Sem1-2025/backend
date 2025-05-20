@@ -9,7 +9,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tecnobus
       SPRING_DATASOURCE_USERNAME: tecnoinf-grupo1
-      SPRING_DATASOURCE_PASSWORD: @ProyectoFinal2025
+      SPRING_DATASOURCE_PASSWORD: "@ProyectoFinal2025"
     depends_on:
       - db
 
@@ -21,7 +21,7 @@ services:
     environment:
       POSTGRES_DB: tecnobus
       POSTGRES_USER: tecnoinf-grupo1
-      POSTGRES_PASSWORD: @ProyectoFinal2025
+      POSTGRES_PASSWORD: "@ProyectoFinal2025"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
