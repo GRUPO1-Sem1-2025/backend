@@ -8,7 +8,7 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tecnobus
-      SPRING_DATASOURCE_USERNAME: tecnoinf-grupo1
+      SPRING_DATASOURCE_USERNAME: tecnoinf
       SPRING_DATASOURCE_PASSWORD: "@ProyectoFinal2025"
     depends_on:
       - db
@@ -20,7 +20,7 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_DB: tecnobus
-      POSTGRES_USER: tecnoinf-grupo1
+      POSTGRES_USER: tecnoinf
       POSTGRES_PASSWORD: "@ProyectoFinal2025"
     volumes:
       - postgres_data:/var/lib/postgresql/data
