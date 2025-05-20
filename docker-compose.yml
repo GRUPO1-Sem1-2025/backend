@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     container_name: springboot-app
@@ -9,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/usuario
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tecnobus
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
@@ -21,7 +19,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: usuario
+      POSTGRES_DB: tecnobus
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:

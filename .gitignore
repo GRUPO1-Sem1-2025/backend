@@ -30,3 +30,13 @@ target/m2e-wtp/web-resources/META-INF/maven/com.example/Login/pom.properties
 .settings/
 .vscode/
 target/
+
+# Archivos de Intellij Idea
+.idea/
+*.iml
+*.iws
+
+# Archivos de Compilacion
+/out/
+/target/
+/build/
