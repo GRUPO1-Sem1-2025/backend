@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.Login.dto.DtoDestinoMasVistos;
 import com.example.Login.dto.DtoLocalidad;
 import com.example.Login.model.Localidad;
 import com.example.Login.service.LocalidadService;
@@ -75,6 +76,11 @@ public class LocalidadController {
     public List<Localidad> obtenerLocalidadesActivas () {
         return localidadService.obtenerLocalidadesActivas();
         }
+    
+    @GetMapping("/localidadesMasVisitadas")
+    public List<DtoDestinoMasVistos> obtenerTop10DestinosConNombre(){
+    	return localidadService.obtenerTop10DestinosConNombre();
+    }
     
     
     }

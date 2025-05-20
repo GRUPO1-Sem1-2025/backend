@@ -5,9 +5,12 @@ import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
+import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoUsuario;
+import com.example.Login.dto.DtoUsuarioPerfil;
+import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
@@ -61,7 +64,8 @@ public class UsuarioController {
 
 	@PostMapping("/registrarse")
 	@Operation(summary = "Crear un usuario", description = "Agrega un nuevo usuario")
-	//public ResponseEntity<String> registrarse(@RequestBody DtoRegistrarse registrarse) {
+	// public ResponseEntity<String> registrarse(@RequestBody DtoRegistrarse
+	// registrarse) {
 	ResponseEntity<Map<String, String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
 		Map<String, String> response = new HashMap<>();
 		int rol = 100;
@@ -76,13 +80,14 @@ public class UsuarioController {
 		Optional<Usuario> user = usuarioService.buscarPorEmail(registrarse.getEmail());
 		if (user.isPresent()) {
 			response.put("mensaje", "El usuario ya se encuentra registrado con ese correo");
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);//"El usuario ya se encuentra registrado con ese correo");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);// "El usuario ya se encuentra registrado
+																				// con ese correo");
 		} else {
 			usuarioService.crearUsuario(registrarse);
 			usuarioService.enviarMailRegistrarse(registrarse);
-			response.put("mensaje", "Se le ha enviado un correo electrónico con un código para poder validar el registro");
-			return ResponseEntity.status(HttpStatus.CREATED)
-					.body(response);
+			response.put("mensaje",
+					"Se le ha enviado un correo electrónico con un código para poder validar el registro");
+			return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		}
 	}
 
@@ -128,11 +133,14 @@ public class UsuarioController {
 			if (usuarioEncontrado.getActivo() == true) {
 				if (!usuarioEncontrado.isContraseniaValida()) {
 					response.put("mensaje", "Debe de cambiar la contraseña para iniciar sesion");
-					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+					response.put("Login directo", "0");
+					return ResponseEntity.status(HttpStatus.OK).body(response);
 				}
 				if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
 					usuarioService.login(email, password);
-					return ResponseEntity.ok(Map.of("Mensaje", ok));
+					response.put("mensaje", "Se le envió a su correo un código para terminar con el proceso de autenticación");
+					response.put("Login directo", "1");
+					return ResponseEntity.status(HttpStatus.OK).body(response);
 				}
 			} else {
 				response.put("mensaje", "El usuario no se encuentra habilitado, pongase en contacto"
@@ -223,15 +231,18 @@ public class UsuarioController {
 
 			emailService.enviarCorreo(para, asunto, mensaje);
 			response.put("mensaje", "Se le ha enviado una contraseña temporal al correo ingresado");
-			return ResponseEntity.status(HttpStatus.OK).body(response);//"Se le ha enviado una contraseña temporal al correo ingresado");
+			return ResponseEntity.status(HttpStatus.OK).body(response);// "Se le ha enviado una contraseña temporal al
+																		// correo ingresado");
 		} else {
 			response.put("error", "No existe un usuario registrado con ese correo");
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);//"No existe un usuario registrado con ese correo");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);// "No existe un usuario registrado con
+																				// ese correo");
 		}
 	}
 
 	@PostMapping("/cambiarContrasenia")
-	public ResponseEntity<Map<String, String>> cambiarContrasenia(@RequestBody DtoCambiarContrasenia cambiarContrasenia) {
+	public ResponseEntity<Map<String, String>> cambiarContrasenia(
+			@RequestBody DtoCambiarContrasenia cambiarContrasenia) {
 		Map<String, String> response = new HashMap<>();
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(cambiarContrasenia.getEmail());
 		System.out.println("email: " + cambiarContrasenia.getEmail());// usuario.get().getEmail());
@@ -246,22 +257,22 @@ public class UsuarioController {
 					usuario.get().setPassword(nuevaContrasenia);
 					usuario.get().setContraseniaValida(true);
 					usuarioService.actualizar(usuario.get());
-					response.put("mensaje","Contraseña cambiada");// nuevaContrasenia)
+					response.put("mensaje", "Contraseña cambiada");// nuevaContrasenia)
 					return ResponseEntity.status(HttpStatus.OK).body(response);
 				} else {
-					response.put("mensaje","Las nuevas contraseñas no coinciden");// nuevaContrasenia)
+					response.put("mensaje", "Las nuevas contraseñas no coinciden");// nuevaContrasenia)
 					return ResponseEntity.status(HttpStatus.OK).body(response);
-					//return "Las nuevas contraseñas no coinciden";
+					// return "Las nuevas contraseñas no coinciden";
 				}
 			} else {
-				response.put("mensaje","La contraseña ingresada no coincide con la registrada en el sistema");// nuevaContrasenia)
+				response.put("mensaje", "La contraseña ingresada no coincide con la registrada en el sistema");// nuevaContrasenia)
 				return ResponseEntity.status(HttpStatus.OK).body(response);
-				//return "la contraseña ingresada no coincide con la registrada en el sistema";
+				// return "la contraseña ingresada no coincide con la registrada en el sistema";
 			}
 		} else {
-			response.put("mensaje","No existe el usuario ingresado");// nuevaContrasenia)
+			response.put("mensaje", "No existe el usuario ingresado");// nuevaContrasenia)
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			//return "No existe el usuario ingresado";
+			// return "No existe el usuario ingresado";
 		}
 	}
 
@@ -295,18 +306,19 @@ public class UsuarioController {
 				}
 			} else {
 				System.out.println("No existe el Rol ingresado");
-				response.put("mensaje","No existe el rol ingresado");// nuevaContrasenia)
+				response.put("mensaje", "No existe el rol ingresado");// nuevaContrasenia)
 				return ResponseEntity.status(HttpStatus.OK).body(response);// "no existe el rol ingresado";
 			}
 			usuarioService.actualizar(usuario.get());
 			System.out.print("Nuevo rol: " + usuario.get().getRol());
-			response.put("mensaje","Rol modificado");// nuevaContrasenia)
+			response.put("mensaje", "Rol modificado");// nuevaContrasenia)
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			//return "Rol modificado";
+			// return "Rol modificado";
 		}
-		response.put("mensaje","El correo ingresado no existe registrado en el sistema");// nuevaContrasenia)
+		response.put("mensaje", "El correo ingresado no existe registrado en el sistema");// nuevaContrasenia)
 		return ResponseEntity.status(HttpStatus.OK).body(response);
-		//return "El correo ingresado no existe registrado en el sistema";// + nuevoRol;
+		// return "El correo ingresado no existe registrado en el sistema";// +
+		// nuevoRol;
 	}
 
 	@PostMapping("/comprarPasaje")
@@ -341,8 +353,8 @@ public class UsuarioController {
 				usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			case CANCELADA:
-				response.put("mensaje", "No se pueden comprar pasajesa a viajes cancelados");
-				//usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
+				response.put("mensaje", "No se pueden comprar pasajesa a viajes cancelados o cerrados");
+				// usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}
 
@@ -384,42 +396,50 @@ public class UsuarioController {
 		case 1:
 			response.put("mensaje", "El vendedor ingresado no existe");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El Vendedor ingresado no existe");
+		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El
+		// Vendedor ingresado no existe");
 		case 2:
 			response.put("mensaje", "Uno de los asientos solicitados ya se encuentra reservado");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			//return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					//.body("Uno de los asientos solicitados ya se encuentra reservado");
+		// return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+		// .body("Uno de los asientos solicitados ya se encuentra reservado");
 		case 3:
 			usuarioService.enviarMailVenderPasaje(dtoVenderPasaje);
 			response.put("mensaje", "La venta ha sido realizada de forma correcta");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			//return ResponseEntity.status(HttpStatus.OK).body("La venta ha sido realizada de forma correcta");
+		// return ResponseEntity.status(HttpStatus.OK).body("La venta ha sido realizada
+		// de forma correcta");
 		case 4:
-			response.put("mensaje", "El vendedor ingresado no se encuentra habilitado, por lo tanto no puede realizar ventas");
+			response.put("mensaje",
+					"El vendedor ingresado no se encuentra habilitado, por lo tanto no puede realizar ventas");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		//	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				///	.body("El vendedor ingresado no se encuentra habilitado, por lo tanto no puede realizar ventas");
+		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		/// .body("El vendedor ingresado no se encuentra habilitado, por lo tanto no
+		// puede realizar ventas");
 		case 5:
 			response.put("mensaje", "El viaje ingresado no existe");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje ingresado no existe");
+		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje
+		// ingresado no existe");
 		case 6:
 			response.put("mensaje", "La compra ha sido reservada de forma exitosa");
-			//usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			
-			//return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada de forma correcta");
+
+		// return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada
+		// de forma correcta");
 		case 8:
 			response.put("mensaje", "Solo los vendedores pueden vender pasajes");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
-			//return ResponseEntity.status(HttpStatus.OK).body("Solo los vendedores pueden vender pasajes");
+		// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
+		// return ResponseEntity.status(HttpStatus.OK).body("Solo los vendedores pueden
+		// vender pasajes");
 
 		}
 		response.put("mensaje", "Error desconosido");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(//"Error desconocido");
+		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(//"Error
+		// desconocido");
 	}
 
 	@PostMapping("/cancelarCompra")
@@ -432,9 +452,10 @@ public class UsuarioController {
 			usuarioService.enviarMailCancelarCompra(idCompra);
 			response.put("mensaje", "La compra ha sido cancelada");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			//return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido cancelada");
+		// return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido
+		// cancelada");
 		case 2:
-					response.put("mensaje", "La compra no se puede cancelar porque ya se encuentra cancelada");
+			response.put("mensaje", "La compra no se puede cancelar porque ya se encuentra cancelada");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 //			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 //
@@ -442,11 +463,13 @@ public class UsuarioController {
 		case 3:
 			response.put("mensaje", "El id de compra ingresado no existe");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			//return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id de compra ingresado no existe");
+		// return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id de compra
+		// ingresado no existe");
 		}
 		response.put("mensaje", "Error desconocido");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
+		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error
+		// desconocido");
 	}
 
 	@PostMapping("/cambiarEstadoCompra")
@@ -455,12 +478,13 @@ public class UsuarioController {
 		usuarioService.cambiarEstadoCompra(idCompra);
 		response.put("mensaje", "Se cambió el estado de la compra");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
-		//return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado de la compra");
+		// return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado de la
+		// compra");
 	}
 
 	@PostMapping("/reenviarCodigo")
 	@Operation(summary = "Reenviar código para autenticar", description = "Retorna un codigo")
-	public ResponseEntity<Map<String, String>>  reenviarCodigo(String email) {
+	public ResponseEntity<Map<String, String>> reenviarCodigo(String email) {
 		Map<String, String> response = new HashMap<>();
 		int codigo = usuarioService.obtenerCodigo(email);
 
@@ -468,15 +492,18 @@ public class UsuarioController {
 			usuarioService.enviarMailReenviarCodigo(email);
 			response.put("mensaje", "Se le envió a su correo un código para terminar con el proceso de autenticación");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			//return ResponseEntity.status(HttpStatus.OK).body("Se le envió a su correo un código para terminar con el proceso de autenticación");
+			// return ResponseEntity.status(HttpStatus.OK).body("Se le envió a su correo un
+			// código para terminar con el proceso de autenticación");
 		} else if (codigo == 2) {
 			response.put("mensaje", "Usted no ha iniciado sesion aun, por favor inicie sesión en nuestro sistema");
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-			//return ResponseEntity.status(HttpStatus.UNAUTHORIZED)	Usted no ha iniciado sesion aun, por favor inicie sesion en nuestro sistema");
+			// return ResponseEntity.status(HttpStatus.UNAUTHORIZED) Usted no ha iniciado
+			// sesion aun, por favor inicie sesion en nuestro sistema");
 		} else {
 			response.put("mensaje", "Error desconocido");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-			//return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
+			// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error
+			// desconocido");
 		}
 	}
 
@@ -505,8 +532,38 @@ public class UsuarioController {
 	@GetMapping("/buscarUsuarioPorId")
 	public DtoUsuario buscarUsuariosPorId(@RequestParam int idUsuario) {
 		DtoUsuario dtousuario = new DtoUsuario();
-		dtousuario=usuarioService.buscarPorId(idUsuario);
+		dtousuario = usuarioService.buscarPorId(idUsuario);
 		return dtousuario;
 	}
 
+	@PostMapping("/modificarPerfil")
+	public ResponseEntity<Map<String, String>> modificarPerfil(@RequestBody DtoUsuarioPerfil usuario) {
+		System.out.println("emailController: " + usuario.getEmail());
+		Map<String, String> response = new HashMap<>();
+		boolean resultado = usuarioService.modificarPerfil(usuario);
+
+		if (resultado) {
+			response.put("mensaje", "Perfil modificado de forma exitosa");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			response.put("mensaje", "Usuario no encontrado");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
+	@GetMapping("usuariosPorMes")
+	public List<DtoNewUsuariosPorMes> obtenerUsuariosPorMes() {
+		List<DtoNewUsuariosPorMes> resultado = new ArrayList<>();
+		resultado = usuarioService.obtenerUsuariosPorMes();
+		return resultado;
+	}
+	
+	@GetMapping("usuariosPorRol")
+	public List<DtoUsuariosPorRol> obtenerUsuariosPorRol() {
+		List<DtoUsuariosPorRol> resultado = new ArrayList<>();
+		resultado = usuarioService.obtenerUsuariosPorRol();
+		return resultado;
+	}
+	
+	
 }

@@ -146,5 +146,14 @@ public class ViajeController {
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 		}
 	}
+	
+	@GetMapping("/obtenerViajesPorBus")
+	public List<DtoViaje> obtenerViajesPorBus(@RequestParam int idBus) {
+		List<DtoViaje> respuesta = new ArrayList<>();
+		respuesta = viajeService.obtenerViajesPorBus(idBus);
+		return respuesta;
+	}
+	
+	
 
 }

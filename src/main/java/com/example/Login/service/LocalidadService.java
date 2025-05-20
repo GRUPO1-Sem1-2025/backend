@@ -1,4 +1,5 @@
 package com.example.Login.service;
+import com.example.Login.dto.DtoDestinoMasVistos;
 import com.example.Login.dto.DtoLocalidad;
 import com.example.Login.model.Localidad;
 import com.example.Login.repository.LocalidadRepository;
@@ -107,5 +108,9 @@ public class LocalidadService {
 		}		
 		return localidadesActivas;
 	}
+	
+	 public List<DtoDestinoMasVistos> obtenerTop10DestinosConNombre() {
+	        return localidadRepository.findTop10DestinosConNombre();
+	    }
 
 }

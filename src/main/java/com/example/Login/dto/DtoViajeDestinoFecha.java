@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.time.LocalTime;
 
 public class DtoViajeDestinoFecha {
+	private int viajeId;
 	private int BusId;
 	private int cantAsientosDisponibles;
 	private LocalTime horaInicio;
@@ -17,13 +18,24 @@ public class DtoViajeDestinoFecha {
 	
 	
 	public DtoViajeDestinoFecha(int busId, int cantAsientosDisponibles, LocalTime horaInicio, LocalTime horaFin,
-			float precioPasaje) {
+			float precioPasaje, int viajeId) {
 		super();
 		BusId = busId;
 		this.cantAsientosDisponibles = cantAsientosDisponibles;
 		this.horaInicio = horaInicio;
 		this.horaFin = horaFin;
 		this.precioPasaje = precioPasaje;
+		this.viajeId = viajeId;
+	}
+
+
+	public int getViajeId() {
+		return viajeId;
+	}
+
+
+	public void setViajeId(int viajeId) {
+		this.viajeId = viajeId;
 	}
 
 

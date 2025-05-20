@@ -23,8 +23,12 @@ import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
 import com.example.Login.dto.DtoMisViajes;
+import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuario;
+import com.example.Login.dto.DtoUsuarioPerfil;
+import com.example.Login.dto.DtoUsuariosPorRol;
+import com.example.Login.dto.DtoUsuariosPorRolQuery;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
@@ -122,6 +126,7 @@ public class UsuarioService {
 		usuario.setActivo(true);
 		usuario.setFechaCreacion(LocalDate.now());
 		usuario.setCodigo(generarCodigo());
+		usuario.setContraseniaValida(true);
 		usuarioRepository.save(usuario);
 		// emailService.enviarCorreo(para, asunto, mensaje);
 
@@ -167,6 +172,7 @@ public class UsuarioService {
 		usuario.setFechaCreacion(LocalDate.now());
 		String password = usuario.getApellido() + usuario.getNombre() + "_2025";
 		usuario.setPassword(encriptarSHA256(password));
+		usuario.setContraseniaValida(false);
 
 		String para = usuario.getEmail();
 		String asunto = "Contrasenia de inicio de sesion";
@@ -461,6 +467,28 @@ public class UsuarioService {
 		emailService.enviarCorreo(para, asunto, mensaje);
 
 	}
+	
+	public void enviarMailAvisandoDeViaje(int idCompra) {
+		Optional<CompraPasaje> Ocompra = comprapasajerepository.findById(idCompra);
+		CompraPasaje compra = Ocompra.get();
+		Optional<Usuario> Ousuario = usuarioRepository.findByEmail(compra.getUsuario().getEmail());
+		Usuario usuario = Ousuario.get();
+		String email = usuario.getEmail();
+		int viajeId = compra.getViaje().getId();
+		Optional<Viaje> Oviaje = viajeRepository.findById(viajeId);
+		Viaje viaje = Oviaje.get();
+		String destino = viaje.getLocalidadDestino().getNombre();
+		Date fechaInicio = viaje.getFechaInicio();
+		LocalTime hora = viaje.getHoraInicio();
+		String para = email;
+		String asunto = "¡¡¡ Aviso, su viaje comienza en menos de una hora!!!";
+
+		String mensaje = String.format(
+				"Recuerde que usted tiene un viaje con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b> .", destino,
+				fechaInicio, hora);
+		emailService.enviarCorreo(para, asunto, mensaje);
+
+	}
 
 	public void cambiarEstadoCompra(int idCompra) {
 		CompraPasaje compra = new CompraPasaje();
@@ -509,7 +537,12 @@ public class UsuarioService {
 	public List<DtoMisCompras> obtenerMisCompras(String email) {
 		List<CompraPasaje> compras = comprapasajerepository.findAll();
 		List<DtoMisCompras> misCompras = new ArrayList<>();
-		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
+		int idUsuario = 0; 
+		try {
+			idUsuario = usuarioRepository.findByEmail(email).get().getId();
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 
 		for (CompraPasaje c : compras) {
 			if (c.getUsuario().getId() == idUsuario) {
@@ -584,4 +617,49 @@ public class UsuarioService {
 		usuario.setId(user.getId());
 		return usuario;
 	}
+
+	public boolean modificarPerfil(DtoUsuarioPerfil usuario) {
+		
+		Usuario user = new Usuario();
+		try{
+			Optional<Usuario> Ousuario = usuarioRepository.findById(usuario.getId());	
+			System.out.println("email: " + usuario.getEmail());
+			user = Ousuario.get();
+		}catch (Exception e) {
+			return false;
+		}
+		user.setApellido(usuario.getApellido());
+		user.setEmail(usuario.getEmail());
+		user.setNombre(usuario.getNombre());
+		usuarioRepository.save(user);		
+		return true;
+	}
+
+	public List<DtoNewUsuariosPorMes> obtenerUsuariosPorMes() {
+		List<DtoNewUsuariosPorMes> lista = usuarioRepository.contarUsuariosPorMes();
+		return lista;
+	}
+
+	public List<DtoUsuariosPorRol> obtenerUsuariosPorRol() {
+		List<DtoUsuariosPorRol> lista = new ArrayList<>();
+		List<DtoUsuariosPorRolQuery> consulta = usuarioRepository.usuariosPorRol();
+		
+		for(DtoUsuariosPorRolQuery query: consulta) {
+			DtoUsuariosPorRol dto = new DtoUsuariosPorRol();
+			dto.setCantidad(query.getCantidad());
+			switch(query.getRol()) {
+			case 100:
+				dto.setRol("Usuario final");
+				break;
+			case 200:
+				dto.setRol("Vendedor");
+				break;
+			case 300:
+				dto.setRol("Admin");
+				break;
+			}
+			lista.add(dto);
+		}
+
+		return lista;	}
 }
