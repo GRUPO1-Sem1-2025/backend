@@ -2,6 +2,7 @@ package com.example.Login.model;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.crypto.Data;
@@ -38,6 +39,9 @@ private Integer cod_empleado;
 @OneToMany(mappedBy = "usuario")
 private List<CompraPasaje> compraPasajes;
 
+@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Token> tokens;
+
 
 
 public Usuario() {
@@ -61,6 +65,7 @@ public Usuario(int id, String nombre, String apellido, Date fechaNac, String ema
 	this.rol = rol;
 	this.cod_empleado= cod_empleado;
 	this.contraseniaValida = contrasenia;
+	this.tokens = new ArrayList<>();
 }
 
 //Getters y Setters
@@ -146,7 +151,12 @@ public void setCod_empleado(Integer cod_empleado) {
 	this.cod_empleado = cod_empleado;
 }
 
+public List<Token> getTokens() {
+	return tokens;
+}
 
-
+public void setTokens(List<Token> tokens) {
+	this.tokens = tokens;
+}
 
 }
