@@ -32,8 +32,10 @@ import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.OmnibusAsiento;
 import com.example.Login.model.OmnibusAsientoViaje;
+import com.example.Login.model.Token;
 import com.example.Login.repository.LocalidadRepository;
 import com.example.Login.repository.OmnibusRepository;
+import com.example.Login.repository.TokenRepository;
 import com.example.Login.model.Viaje;
 
 @Service
@@ -56,6 +58,12 @@ public class ViajeService {
 
 	@Autowired
 	private OmnibusRepository omnibusRepository;
+
+	@Autowired
+	private TokenRepository tokenRepository;
+
+	@Autowired
+	private TokenService tokenService;
 
 	@Autowired
 	private CompraPasajeService compraPasajeService;
@@ -337,25 +345,43 @@ public class ViajeService {
 		return true;
 	}
 
-	@Scheduled(fixedRate = 600000) // cada 600 segundos
+	@Scheduled(fixedRate = 60000) // cada 60 segundos
 	public void cerrarViajes() {
 		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximos60Minutos();
 		System.out.println("Cantidad de viajes a cerrar: " + viajesACerrar.size());
+		List<String> tokenAEnviar = new ArrayList<>();
 		for (Viaje v : viajesACerrar) {
 			if (!v.getEstadoViaje().equals(EstadoViaje.CERRADO)) {
 				v.setEstadoViaje(EstadoViaje.CERRADO);
 				viajeRepository.save(v);
-				
+
 				// enviar mail a los compradores de pasajes para ese viaje
 				List<CompraPasaje> comprapasaje = new ArrayList<>();
 				comprapasaje = compraPasajeRepository.findByViajeId((long) v.getId());
 				System.out.println("cantidad de compras para ese viaje: " + comprapasaje.size());
 				System.out.println("");
 				System.out.println("El viaje de id " + v.getId() + " ha sido cerrado");
-				for(CompraPasaje cp: comprapasaje) {
+				for (CompraPasaje cp : comprapasaje) {
 					usuarioService.enviarMailAvisandoDeViaje(cp.getId().intValue());
+
+					// enviar pushNotifications
+					tokenAEnviar = tokenRepository.findTokensByUsuarioId(cp.getUsuario().getId());
+					String titulo = "Recordatorio de viaje proximo";
+					String mensaje = "Recuerde que usted tiene un viaje con destino a "
+							+ cp.getViaje().getLocalidadDestino() + " que sale en 1 hora aproximadamente";
+					for (String token : tokenAEnviar) {
+						try {
+							System.out.println("el usuario a enviar es el del id: " + cp.getUsuario().getId() +
+									" al dispositivo " + token);
+							//tokenService.enviarPushNotification(token, titulo, mensaje);
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+					// fin de enviar pushNotification
+
 				}
-			}else {
+			} else {
 				System.out.println("El viaje no se puede cerrar porque ya esta cerrado");
 			}
 		}
@@ -369,7 +395,7 @@ public class ViajeService {
 		List<Viaje> viajes = new ArrayList<>();
 		try {
 			viajes = viajeRepository.findByOmnibus_Id(idBus);
-			for(Viaje v: viajes) {
+			for (Viaje v : viajes) {
 				DtoViaje viaje = new DtoViaje();
 				viaje.setFechaFin(v.getFechaFin());
 				viaje.setFechaInicio(v.getFechaInicio());
@@ -382,7 +408,7 @@ public class ViajeService {
 				viaje.setPrecio(v.getPrecio());
 				dtoViajes.add(viaje);
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return dtoViajes;
