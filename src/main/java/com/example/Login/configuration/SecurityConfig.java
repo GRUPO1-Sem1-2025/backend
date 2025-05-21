@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll() // 💥 Permite acceso a todo sin token
                    // .anyRequest().authenticated()  // Requiere JWT para el resto de los endpoints
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Agregar filtro de autenticación JWT
+                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Agregar filtro de autenticación JWT
                 .formLogin().disable()
                 .build();
     }
