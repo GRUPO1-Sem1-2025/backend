@@ -15,30 +15,30 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-//    public void enviarCorreo(String para, String asunto, String cuerpo) {
-//        SimpleMailMessage mensaje = new SimpleMailMessage();
-//        mensaje.setFrom("grupo1sem12025@gmail.com");
-//        mensaje.setTo(para);
-//        mensaje.setSubject(asunto);
-//        mensaje.setText(cuerpo);
-//
-//        mailSender.send(mensaje);
-//    }
     public void enviarCorreo(String para, String asunto, String cuerpoHtml) {
         try {
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            helper.setFrom("grupo1sem12025@gmail.com");
+            helper.setFrom("grupo1sem12025@gmail.com"); // Asegurate de que esté verificado en SendGrid
             helper.setTo(para);
             helper.setSubject(asunto);
-            helper.setText(cuerpoHtml, true); // 👈 true indica que es HTML
+            helper.setText(cuerpoHtml, true); // 👈 true indica HTML
 
             mailSender.send(mensaje);
         } catch (MessagingException e) {
-            e.printStackTrace();
-            // Podés agregar logs o manejo más sofisticado
+            e.printStackTrace(); // o loguealo mejor
         }
     }
+//    public void enviarCorreo(String para, String asunto, String cuerpoHtml) {
+//    	 SimpleMailMessage mensaje = new SimpleMailMessage();
+//         mensaje.setTo(para);
+//         mensaje.setSubject(asunto);
+//         mensaje.setText(cuerpoHtml);
+//         mensaje.setFrom("grupo1sem12025@gmail.com"); // Opcional: debe estar verificado si usás un dominio propio
+//         
+//         mailSender.send(mensaje);
+//    	
+//    }
     
 }

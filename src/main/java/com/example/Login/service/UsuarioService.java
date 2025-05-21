@@ -302,8 +302,12 @@ public class UsuarioService {
 			String para = usuario.get().getEmail();
 			String asunto = "Código de autorización";
 			String mensaje = String.format(
-					"Bienvenido <b>%s</b> utilize el siguiente código <b>%s</b> para iniciar sesión en el sistema",
-					nombre, codigo);
+					"<p>Bienvenido <b>%s</b>,</p>"
+							  + "<p>Utilice el siguiente código <b>%s</b> para iniciar sesión en el sistema.</p>"
+							  + "<br>"
+							  + "<p>Saludos,</p>"
+							  + "<p><strong>Tecnobus</strong><br>"
+							  + "Uruguay<br>",nombre, codigo);
 
 			emailService.enviarCorreo(para, asunto, mensaje);
 

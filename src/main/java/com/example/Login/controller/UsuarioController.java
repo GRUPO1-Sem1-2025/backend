@@ -20,6 +20,7 @@ import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.service.CompraPasajeService;
 import com.example.Login.service.EmailService;
 import com.example.Login.service.GenerarContraseniaService;
+import com.example.Login.service.TokenService;
 import com.example.Login.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,7 +45,10 @@ import java.util.Optional;
 public class UsuarioController {
 
 	private final UsuarioService usuarioService;
-
+	
+	@Autowired
+	private TokenService tokenService;
+	
 	public UsuarioController(UsuarioService usuarioService) {
 		this.usuarioService = usuarioService;
 	}
@@ -563,6 +567,17 @@ public class UsuarioController {
 		List<DtoUsuariosPorRol> resultado = new ArrayList<>();
 		resultado = usuarioService.obtenerUsuariosPorRol();
 		return resultado;
+	}
+	
+	@PostMapping("/pobarPushNotification")
+	public void probarPushNotification(@RequestParam String token) {
+		String titulo = "prueba";
+		String cuerpo = "mensaje";
+		try{
+			tokenService.enviarPushNotification(token, titulo, cuerpo);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 	
 	
