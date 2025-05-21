@@ -1,6 +1,10 @@
 # Compiled class file
 *.class
 
+# Archivos de Proyecto
+*.project
+*.classpath
+
 # Log file
 *.log
 
@@ -23,9 +27,8 @@
 hs_err_pid*
 replay_pid*
 
-target/m2e-wtp/web-resources/META-INF/maven/com.example/Login/pom.properties
-
-.settings/org.eclipse.core.resources.prefs
+# Eclipse files
+.settings/
 
 .settings/
 .vscode/
