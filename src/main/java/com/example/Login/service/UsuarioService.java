@@ -444,6 +444,7 @@ public class UsuarioService {
 		Optional<Usuario> Ousuario = usuarioRepository.findByEmail(email);// Id(compraPasaje.getUsuarioId());
 		Usuario usuario = Ousuario.get();
 		int codigo = usuario.getCodigo();
+		System.out.println("codigo a reenviar: " + codigo);
 		String para = email;
 		String asunto = "Codigo de acceso";
 		String mensaje = String.format("utilize el siguiente código: <b>%s</b> para iniciar sesión en el sistema",
