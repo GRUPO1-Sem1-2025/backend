@@ -11,9 +11,11 @@ import org.springframework.stereotype.Repository;
 
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.DtoNewUsuariosPorMes;
+import com.example.Login.dto.DtoTotalPorMes;
 import com.example.Login.model.Asiento;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
+import com.example.Login.model.Viaje;
 
 @Repository
 public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Integer> {
@@ -31,5 +33,16 @@ public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Inte
 	
 	List<CompraPasaje> findByViajeId(Long idViaje);
 	
+	@Query("""
+		    SELECT new com.example.Login.dto.DtoTotalPorMes(
+		        FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM'),
+		        FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY'),
+		        SUM(c.total)
+		    )
+		    FROM CompraPasaje c
+		    GROUP BY FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM'), FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY')
+		    ORDER BY FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY'), FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM')
+		""")
+	List<DtoTotalPorMes> findTotalPorMes();
 
 }

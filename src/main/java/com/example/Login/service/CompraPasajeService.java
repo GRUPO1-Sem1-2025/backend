@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
+import com.example.Login.dto.DtoTotalPorMes;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
@@ -340,5 +341,9 @@ public class CompraPasajeService {
 		System.out.println("cantidad de compras para controller: " + dtoListadoCompra.size());
 		// TODO Auto-generated method stub
 		return dtoListadoCompra;
+	}
+	
+	public List<DtoTotalPorMes> TotalGanadoPorMes(){
+		return compraPasajeRepository.findTotalPorMes();
 	}
 }
