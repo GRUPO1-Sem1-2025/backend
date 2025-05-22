@@ -154,6 +154,9 @@ public class ViajeController {
 		return respuesta;
 	}
 	
-	
+	@GetMapping("/cantidadDeViajesCreados")
+	public int cantidadDeViajesCreados() {
+		return viajeService.cantidadDeViajesCreados();
+	}
 
 }
