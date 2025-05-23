@@ -6,9 +6,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Login.dto.DtoRegistrarse;
@@ -45,7 +47,27 @@ public class TokenController {
 		response.put("error", "Error Desconocido");
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
-		
 	
+//	@PostMapping("/enviarMsjPorToken")
+//	public void enviarMsjPorToken(@RequestParam String token) {
+//		String tiuloPrueba = "titulo";
+//		String msjPrueba = "mensaje";
+//		try{
+//			tokenService.enviarPushNotification(token,tiuloPrueba,msjPrueba);
+//		}catch (Exception e) {
+//			// TODO: handle exception
+//		}
+//	}	
+	
+	@PostMapping("/enviarMsjPorToken")
+	public void enviarMsjPorToken(@RequestBody DtoUsuarioToken token) {
+	    String tituloPrueba = "titulo";
+	    String msjPrueba = "mensaje";
+	    try {
+	        tokenService.enviarPushNotification(token.getToken(), tituloPrueba, msjPrueba);
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Podés loguear el error mejor aquí
+	    }
+	}
 
 }

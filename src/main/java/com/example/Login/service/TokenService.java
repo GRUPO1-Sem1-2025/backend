@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 //import com.google.api.client.http.HttpRequest;
 //import com.google.api.client.http.HttpResponse;
 import com.google.firebase.auth.FirebaseToken;
+import com.google.gson.JsonObject;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -62,19 +63,16 @@ public class TokenService {
 	}
 	
 	public void enviarPushNotification(String expoPushToken, String title, String body) throws IOException, InterruptedException {
-		String json = """
-	    {
-	      "to": "%s",
-	      "sound": "default",
-	      "title": "%s",
-	      "body": "%s"
-	    }
-	    """.formatted(expoPushToken, title, body);
+	    JsonObject json = new JsonObject();
+	    json.addProperty("to", expoPushToken);
+	    json.addProperty("sound", "default");
+	    json.addProperty("title", title);
+	    json.addProperty("body", body);
 
 	    HttpRequest request = HttpRequest.newBuilder()
 	        .uri(URI.create("https://exp.host/--/api/v2/push/send"))
 	        .header("Content-Type", "application/json")
-	        .POST(HttpRequest.BodyPublishers.ofString(json))
+	        .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
 	        .build();
 
 	    HttpClient client = HttpClient.newHttpClient();
@@ -82,6 +80,29 @@ public class TokenService {
 
 	    System.out.println("Expo response: " + response.body());
 	}
+	
+//	public void enviarPushNotification(String expoPushToken, String title, String body) throws IOException, InterruptedException {
+//		System.out.println("Entre para enviar la  notificacion");
+//		String json = """
+//	    {
+//	      "to": %s,
+//	      "sound": "default",
+//	      "title": %s,
+//	      "body": %s
+//	    }
+//	    """.formatted(expoPushToken, title, body);
+//
+//	    HttpRequest request = HttpRequest.newBuilder()
+//	        .uri(URI.create("https://exp.host/--/api/v2/push/send"))
+//	        .header("Content-Type", "application/json")
+//	        .POST(HttpRequest.BodyPublishers.ofString(json))
+//	        .build();
+//
+//	    HttpClient client = HttpClient.newHttpClient();
+//	    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//
+//	    System.out.println("Expo response: " + response.body());
+//	}
 	
 //	public void enviarPushNotification(DtoUsuarioToken dtoToken, String title, String body) throws IOException, InterruptedException {
 //		String expoPushToken = dtoToken.getToken();
