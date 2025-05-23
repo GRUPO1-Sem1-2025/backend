@@ -72,59 +72,7 @@ public class ViajeService {
 		this.usuarioService = usuarioService;
 	}
 
-//	public int crearViaje_viejo(DtoViaje dtoViaje) {
-//		Viaje nuevoViaje = new Viaje();
-//		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
-//		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
-//		Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());// getIdLocalidadOrigen().getId());
-//		Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());// .getId());
-//
-//		if (locOri.isPresent() && locDest.isPresent()) {
-//			if (locOri.get().getId() == locDest.get().getId()) {
-//				System.out.println("La ciudad de origen y destino no pueden ser las mismas");
-//				return 1;
-//			}
-//			if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
-//				System.out.println("estado origen: " + locOri.get().isActivo());
-//				System.out.println("estado destino: " + locDest.get().isActivo());
-//				System.out.println("Una de las ciudades no se encuentra disponible");
-//				return 2;
-//			}
-//
-//			Localidad localidadOrigen = locOri.get();
-//			Localidad localidadDestino = locDest.get();
-//
-//			nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
-//			nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
-//			nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
-//			nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
-//			nuevoViaje.setLocalidadOrigen(localidadOrigen);
-//			nuevoViaje.setLocalidadDestino(localidadDestino);
-//			nuevoViaje.setPrecio(dtoViaje.getPrecio());
-//			nuevoViaje.setOmnibus(null);
-//			nuevoViaje.setAsientosPorViaje(null);
-//			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
-//
-//			viajeRepository.save(nuevoViaje);
-//			return 3;
-//		}
-//		System.out.println("Una de las ciudads ingresadas no existe en el sistema");
-//		return 4;
-//	}
-
 	public int crearViaje(DtoViaje dtoViaje) {
-//		Date fechaInicio = dtoViaje.getFechaInicio();
-//		Date fechaFin = dtoViaje.getFechaFin();
-//		LocalTime horaInicio = dtoViaje.getHoraInicio();
-//		LocalTime horaFin = dtoViaje.getHoraFin();	
-//
-//		Duration duracion = Duration.between(horaInicio,horaFin);	
-//
-//		long horas = duracion.toHours();
-//        long minutos = duracion.toMinutesPart();
-//        
-//        String demora = horas + " horas y " + minutos + " minutos";
-//        System.out.println("Duración: " + demora);
 
 		Viaje nuevoViaje = new Viaje();
 
