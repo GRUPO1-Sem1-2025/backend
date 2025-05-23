@@ -372,9 +372,17 @@ public class ViajeService {
 					for (String token : tokenAEnviar) { // son los tokens del usuario al que se le va a enviar el mail
 						// por cada usuario (dentro del for anterior, se ejecuta este for
 						try {
-							System.out.println("el usuario a enviar es el del id: " + cp.getUsuario().getId() +
+							System.out.println("");
+							System.out.println("");
+							System.out.println("");
+							System.out.println("");
+							System.out.println("el usuario a enviar es el del id: " + cp.getUsuario().getEmail() +
 									" al dispositivo " + token);
 							tokenService.enviarPushNotification(token, titulo, mensaje);
+							System.out.println("");
+							System.out.println("");
+							System.out.println("");
+							System.out.println("");
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
