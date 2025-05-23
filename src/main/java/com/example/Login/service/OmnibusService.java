@@ -206,5 +206,9 @@ public class OmnibusService {
 		}
 		return null;
 	}
+	
+	public int obtenerCantidadDeBus() {
+		return omnibusRepository.findAll().size();
+	}
 		
 }
