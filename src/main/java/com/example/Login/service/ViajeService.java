@@ -374,7 +374,7 @@ public class ViajeService {
 						try {
 							System.out.println("el usuario a enviar es el del id: " + cp.getUsuario().getId() +
 									" al dispositivo " + token);
-							//tokenService.enviarPushNotification(token, titulo, mensaje);
+							tokenService.enviarPushNotification(token, titulo, mensaje);
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
