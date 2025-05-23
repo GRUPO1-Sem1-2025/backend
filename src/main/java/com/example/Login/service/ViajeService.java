@@ -414,5 +414,9 @@ public class ViajeService {
 		}
 		return dtoViajes;
 	}
+	
+	public int cantidadDeViajesCreados() {
+		return viajeRepository.findAll().size();
+	}
 
 }

@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
+import com.example.Login.dto.DtoCantidadPorRol;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
@@ -667,4 +668,8 @@ public class UsuarioService {
 		}
 
 		return lista;	}
+	
+	public List<DtoCantidadPorRol> cantidadPorRol() {
+		return usuarioRepository.contarUsuariosPorRol();
+	}
 }

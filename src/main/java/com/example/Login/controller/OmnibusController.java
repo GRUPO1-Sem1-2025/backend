@@ -55,22 +55,21 @@ public class OmnibusController {
 		Omnibus bus = new Omnibus();
 		bus.setCant_asientos(dtoBus.getCant_asientos());
 		bus.setMarca(dtoBus.getMarca());
-		bus.setActivo(true);//dtoBus.isActivo());
+		bus.setActivo(true);// dtoBus.isActivo());
 		Map<String, String> response = new HashMap<>();
-		
+
 		try {
 			Optional<Omnibus> Obus = omnibusrepository.findByMatricula(dtoBus.getMatricula());
-			if(!Obus.isPresent()) {
+			if (!Obus.isPresent()) {
 				bus.setMatricula(dtoBus.getMatricula());
-			}else {
+			} else {
 				response.put("mensaje", "Ya existe un omnibus ingresado con esa matricula");
 				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 			}
+		} catch (Exception e) {
+
 		}
-		catch (Exception e) {
-			
-		}
-		
+
 		long totalAsientos = bus.getCant_asientos();
 		long asientosDisponibles = asientoRepository.count();
 		boolean estadoAsiento = true;
@@ -144,31 +143,36 @@ public class OmnibusController {
 		response.put("mensaje", "Error desconocido");
 		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 	}
-	
+
 	@PostMapping("/cambiarEstadoBus")
 	@Operation(summary = "Se cambia el estado de un omnibus para darlo de baja", description = "se marca el bus como en desuso")
-	public ResponseEntity<String> cambiarEstadoBus(int busId){
+	public ResponseEntity<String> cambiarEstadoBus(int busId) {
 		int resultado = omnibusService.cambiarEstadoBus(busId);
-		
-		switch(resultado) {
-		case 1:return ResponseEntity.status(HttpStatus.OK).body("Se deshabilito el Omnibus");
-		case 2:return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Se habilito el Omnibus");
-		case 3:return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No existe un omnibus con ese id");
-		case 4:return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El omnibus esta asignado"+
-				" a algun viaje activo, por lo tanto no puede ser deshabilitado");
+
+		switch (resultado) {
+		case 1:
+			return ResponseEntity.status(HttpStatus.OK).body("Se deshabilito el Omnibus");
+		case 2:
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Se habilito el Omnibus");
+		case 3:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No existe un omnibus con ese id");
+		case 4:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+					"El omnibus esta asignado" + " a algun viaje activo, por lo tanto no puede ser deshabilitado");
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
-		
-		
-		
-	}
-	
-	
-	@GetMapping("/obtenerOmnibusPorMatricula")
-	public DtoBus obtenerOmnibusPorMatricula(@RequestParam String matricula) {
-	DtoBus bus = new DtoBus();
-	bus = omnibusService.obtenerOmnibusPorMatricula(matricula);
-	return bus;
+
 	}
 
+	@GetMapping("/obtenerOmnibusPorMatricula")
+	public DtoBus obtenerOmnibusPorMatricula(@RequestParam String matricula) {
+		DtoBus bus = new DtoBus();
+		bus = omnibusService.obtenerOmnibusPorMatricula(matricula);
+		return bus;
+	}
+
+	@GetMapping("/obtenerCantidadDeOmnibus")
+	public int obtenerCantidadDeOmnibus() {
+		return omnibusService.obtenerCantidadDeBus();
+	}
 }
