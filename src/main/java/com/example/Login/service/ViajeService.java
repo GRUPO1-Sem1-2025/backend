@@ -72,59 +72,7 @@ public class ViajeService {
 		this.usuarioService = usuarioService;
 	}
 
-//	public int crearViaje_viejo(DtoViaje dtoViaje) {
-//		Viaje nuevoViaje = new Viaje();
-//		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
-//		System.out.println("idOrigen: " + dtoViaje.getIdLocalidadOrigen());
-//		Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());// getIdLocalidadOrigen().getId());
-//		Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());// .getId());
-//
-//		if (locOri.isPresent() && locDest.isPresent()) {
-//			if (locOri.get().getId() == locDest.get().getId()) {
-//				System.out.println("La ciudad de origen y destino no pueden ser las mismas");
-//				return 1;
-//			}
-//			if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
-//				System.out.println("estado origen: " + locOri.get().isActivo());
-//				System.out.println("estado destino: " + locDest.get().isActivo());
-//				System.out.println("Una de las ciudades no se encuentra disponible");
-//				return 2;
-//			}
-//
-//			Localidad localidadOrigen = locOri.get();
-//			Localidad localidadDestino = locDest.get();
-//
-//			nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
-//			nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
-//			nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
-//			nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
-//			nuevoViaje.setLocalidadOrigen(localidadOrigen);
-//			nuevoViaje.setLocalidadDestino(localidadDestino);
-//			nuevoViaje.setPrecio(dtoViaje.getPrecio());
-//			nuevoViaje.setOmnibus(null);
-//			nuevoViaje.setAsientosPorViaje(null);
-//			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
-//
-//			viajeRepository.save(nuevoViaje);
-//			return 3;
-//		}
-//		System.out.println("Una de las ciudads ingresadas no existe en el sistema");
-//		return 4;
-//	}
-
 	public int crearViaje(DtoViaje dtoViaje) {
-//		Date fechaInicio = dtoViaje.getFechaInicio();
-//		Date fechaFin = dtoViaje.getFechaFin();
-//		LocalTime horaInicio = dtoViaje.getHoraInicio();
-//		LocalTime horaFin = dtoViaje.getHoraFin();	
-//
-//		Duration duracion = Duration.between(horaInicio,horaFin);	
-//
-//		long horas = duracion.toHours();
-//        long minutos = duracion.toMinutesPart();
-//        
-//        String demora = horas + " horas y " + minutos + " minutos";
-//        System.out.println("Duración: " + demora);
 
 		Viaje nuevoViaje = new Viaje();
 
@@ -348,7 +296,7 @@ public class ViajeService {
 	@Scheduled(fixedRate = 60000) // cada 60 segundos
 	public void cerrarViajes() {
 		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximos60Minutos();
-		System.out.println("Cantidad de viajes a cerrar: " + viajesACerrar.size());
+		//System.out.println("Cantidad de viajes a cerrar: " + viajesACerrar.size());
 		List<String> tokenAEnviar = new ArrayList<>();
 		for (Viaje v : viajesACerrar) {
 			if (!v.getEstadoViaje().equals(EstadoViaje.CERRADO)) {
@@ -358,8 +306,8 @@ public class ViajeService {
 				// enviar mail a los compradores de pasajes para ese viaje
 				List<CompraPasaje> comprapasaje = new ArrayList<>();
 				comprapasaje = compraPasajeRepository.findByViajeId((long) v.getId());
-				System.out.println("cantidad de compras para ese viaje: " + comprapasaje.size());
-				System.out.println("");
+//				System.out.println("cantidad de compras para ese viaje: " + comprapasaje.size());
+//				System.out.println("");
 				System.out.println("El viaje de id " + v.getId() + " ha sido cerrado");
 				for (CompraPasaje cp : comprapasaje) {
 					usuarioService.enviarMailAvisandoDeViaje(cp.getId().intValue());
@@ -373,16 +321,11 @@ public class ViajeService {
 						// por cada usuario (dentro del for anterior, se ejecuta este for
 						try {
 							System.out.println("");
-							System.out.println("");
-							System.out.println("");
-							System.out.println("");
-							System.out.println("el usuario a enviar es el del id: " + cp.getUsuario().getEmail() +
+							System.out.println("el usuario a enviar es el del correo: " + cp.getUsuario().getEmail() +
 									" al dispositivo " + token);
 							tokenService.enviarPushNotification(token, titulo, mensaje);
-							System.out.println("");
-							System.out.println("");
-							System.out.println("");
-							System.out.println("");
+//							System.out.println("");
+//							System.out.println("");
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
@@ -391,7 +334,7 @@ public class ViajeService {
 
 				}
 			} else {
-				System.out.println("El viaje no se puede cerrar porque ya esta cerrado");
+				//System.out.println("El viaje no se puede cerrar porque ya esta cerrado");
 			}
 		}
 	}
