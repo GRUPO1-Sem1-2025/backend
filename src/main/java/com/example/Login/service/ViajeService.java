@@ -368,7 +368,7 @@ public class ViajeService {
 					tokenAEnviar = tokenRepository.findTokensByUsuarioId(cp.getUsuario().getId());
 					String titulo = "Recordatorio de viaje proximo";
 					String mensaje = "Recuerde que usted tiene un viaje con destino a "
-							+ cp.getViaje().getLocalidadDestino() + " que sale en 1 hora aproximadamente";
+							+ cp.getViaje().getLocalidadDestino().getNombre() + " que sale en 1 hora aproximadamente";
 					for (String token : tokenAEnviar) { // son los tokens del usuario al que se le va a enviar el mail
 						// por cada usuario (dentro del for anterior, se ejecuta este for
 						try {
