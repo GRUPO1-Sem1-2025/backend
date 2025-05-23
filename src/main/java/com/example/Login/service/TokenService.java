@@ -77,11 +77,8 @@ public class TokenService {
 
 	    HttpClient client = HttpClient.newHttpClient();
 	    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-	    System.out.println("");
-	    System.out.println("");
 	    System.out.println("Token: " + expoPushToken);
 	    System.out.println("Expo response: " + response.body());
-	    System.out.println("");
 	    System.out.println("");
 	}
 	

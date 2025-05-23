@@ -348,7 +348,7 @@ public class ViajeService {
 	@Scheduled(fixedRate = 60000) // cada 60 segundos
 	public void cerrarViajes() {
 		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximos60Minutos();
-		System.out.println("Cantidad de viajes a cerrar: " + viajesACerrar.size());
+		//System.out.println("Cantidad de viajes a cerrar: " + viajesACerrar.size());
 		List<String> tokenAEnviar = new ArrayList<>();
 		for (Viaje v : viajesACerrar) {
 			if (!v.getEstadoViaje().equals(EstadoViaje.CERRADO)) {
@@ -358,8 +358,8 @@ public class ViajeService {
 				// enviar mail a los compradores de pasajes para ese viaje
 				List<CompraPasaje> comprapasaje = new ArrayList<>();
 				comprapasaje = compraPasajeRepository.findByViajeId((long) v.getId());
-				System.out.println("cantidad de compras para ese viaje: " + comprapasaje.size());
-				System.out.println("");
+//				System.out.println("cantidad de compras para ese viaje: " + comprapasaje.size());
+//				System.out.println("");
 				System.out.println("El viaje de id " + v.getId() + " ha sido cerrado");
 				for (CompraPasaje cp : comprapasaje) {
 					usuarioService.enviarMailAvisandoDeViaje(cp.getId().intValue());
@@ -373,16 +373,11 @@ public class ViajeService {
 						// por cada usuario (dentro del for anterior, se ejecuta este for
 						try {
 							System.out.println("");
-							System.out.println("");
-							System.out.println("");
-							System.out.println("");
-							System.out.println("el usuario a enviar es el del id: " + cp.getUsuario().getEmail() +
+							System.out.println("el usuario a enviar es el del correo: " + cp.getUsuario().getEmail() +
 									" al dispositivo " + token);
 							tokenService.enviarPushNotification(token, titulo, mensaje);
-							System.out.println("");
-							System.out.println("");
-							System.out.println("");
-							System.out.println("");
+//							System.out.println("");
+//							System.out.println("");
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
@@ -391,7 +386,7 @@ public class ViajeService {
 
 				}
 			} else {
-				System.out.println("El viaje no se puede cerrar porque ya esta cerrado");
+				//System.out.println("El viaje no se puede cerrar porque ya esta cerrado");
 			}
 		}
 	}

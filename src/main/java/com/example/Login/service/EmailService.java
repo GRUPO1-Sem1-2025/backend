@@ -43,8 +43,7 @@ public class EmailService {
 	 * ///
 	 */
 
-	public void enviarCorreo(String para, String asunto, String cuerpoHtml) {// public static void main(String[] args)
-		System.out.println("Entre para enviar el correo de reenviar codigo");																		// throws IOException {
+	public void enviarCorreo(String para, String asunto, String cuerpoHtml) {// public static void main(String[] args)																		// throws IOException {
 		Email from = new Email("grupo1sem12025@gmail.com");
 		// String subject = "Hola desde SendGrid";
 		String subject = asunto;// "Hola desde SendGrid";
