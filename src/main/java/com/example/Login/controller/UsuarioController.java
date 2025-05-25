@@ -17,6 +17,7 @@ import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
+import com.example.Login.dto.categoriaUsuario;
 import com.example.Login.model.Usuario;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.service.CompraPasajeService;
@@ -74,7 +75,7 @@ public class UsuarioController {
 	// public ResponseEntity<String> registrarse(@RequestBody DtoRegistrarse
 	// registrarse) {
 	ResponseEntity<Map<String, String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
-		
+
 		Map<String, String> response = new HashMap<>();
 		int rol = 100;
 		int id = 0;
@@ -92,7 +93,7 @@ public class UsuarioController {
 																				// con ese correo");
 		} else {
 			int resultado = usuarioService.registrarse(registrarse);
-			if (resultado == 1) {				
+			if (resultado == 1) {
 				usuarioService.enviarMailRegistrarse(registrarse);
 				response.put("mensaje",
 						"Se le ha enviado un correo electrónico con un código para poder validar el registro");
@@ -338,6 +339,41 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 		// return "El correo ingresado no existe registrado en el sistema";// +
 		// nuevoRol;
+	}
+
+	@PostMapping("/cambiarCategoria")
+	public ResponseEntity<Map<String, String>> cambiarCategoria(@RequestParam String email,
+			@RequestParam String categoria) {
+		Map<String, String> response = new HashMap<>();
+		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
+
+		if (usuario.isPresent()) {
+			System.out.println("categoria actual: " + usuario.get().getCategoria());
+			if (categoria.equals("GENERAL")) {
+				usuario.get().setCategoria(categoriaUsuario.GENERAL);
+				usuarioService.actualizar(usuario.get());
+				response.put("mensaje", "Categoria cambiada con exito");
+				System.out.println("Nueva categoria: " + usuario.get().getCategoria());
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			} else if (categoria.equals("ESTUDIANTE")) {
+				usuario.get().setCategoria(categoriaUsuario.ESTUDIANTE);
+				usuarioService.actualizar(usuario.get());
+				response.put("mensaje", "Categoria cambiada con exito");
+				System.out.println("Nueva categoria: " + usuario.get().getCategoria());
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			} else if (categoria.equals("JUBILADO")) {
+				usuario.get().setCategoria(categoriaUsuario.JUBILADO);
+				usuarioService.actualizar(usuario.get());
+				response.put("mensaje", "Categoria cambiada con exito");
+				System.out.println("Nueva categoria: " + usuario.get().getCategoria());
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			} else {
+				System.out.println("Categoria invalida");
+			}
+			System.out.println("Nueva categoria: " + usuario.get().getCategoria());
+		}
+		response.put("mensaje", "Categoria invalida");
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
 	@PostMapping("/comprarPasaje")
