@@ -299,11 +299,9 @@ public class CompraPasajeService {
 		    	long idCompra = compra.getId();
 		    	transactionalService.eliminarCompra(idCompra);
 		    	System.out.println("Eliminando reservas vencidas: " + vencidas.size());
-		    }
-	        //System.out.println("Eliminando reservas vencidas: " + vencidas.size());
-	        //compraPasajeRepository.deleteAll(vencidas);
+		    }	
 	    }else {
-	        System.out.println("No existen reservas para eliminar que cumplan con la condición: " + vencidas.size());
+	      
 
 	    }
 	}
