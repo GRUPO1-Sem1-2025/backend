@@ -145,15 +145,18 @@ public class UsuarioService {
 		usuario.setFechaCreacion(LocalDate.now());
 		usuario.setCodigo(generarCodigo());
 		usuario.setContraseniaValida(true);
-		if (edad < 60 && categoria.equals(categoria.JUBILADO)) {
-			System.out.println("El usuario dice que es jubilado pero tiene menos de 60 anios");
-			return 0;
-		} else {
-			System.out.println("El usuario NO esta jubilado");
-			usuario.setCategoria(categoria);
-			usuarioRepository.save(usuario);
-			return 1;
-		}
+		usuario.setCategoria(categoriaUsuario.GENERAL);
+		usuarioRepository.save(usuario);
+		return 1;
+		
+//		if (edad < 60 && categoria.equals(categoria.JUBILADO)) {
+//			System.out.println("El usuario dice que es jubilado pero tiene menos de 60 anios");
+//			return 0;
+//		} else {
+//			System.out.println("El usuario NO esta jubilado");
+//			usuario.setCategoria(categoria);
+//			
+//		}
 
 		// usuarioRepository.save(usuario);
 		// emailService.enviarCorreo(para, asunto, mensaje);
