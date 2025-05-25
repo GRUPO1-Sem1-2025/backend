@@ -347,7 +347,7 @@ public class UsuarioController {
 		Map<String, String> response = new HashMap<>();
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
 
-		if (usuario.isPresent()) {
+		if (usuario.isPresent() && usuario.get().getRol() == 100) {
 			System.out.println("categoria actual: " + usuario.get().getCategoria());
 			if (categoria.equals("GENERAL")) {
 				usuario.get().setCategoria(categoriaUsuario.GENERAL);
@@ -369,11 +369,13 @@ public class UsuarioController {
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			} else {
 				System.out.println("Categoria invalida");
+				response.put("mensaje", "Categoria invalida");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}
-			System.out.println("Nueva categoria: " + usuario.get().getCategoria());
+		}else {
+			response.put("mensaje", "Solo se le puede cambiar la categoria si el usuario es USUARIO FINAL");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
-		response.put("mensaje", "Categoria invalida");
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
 	@PostMapping("/comprarPasaje")
