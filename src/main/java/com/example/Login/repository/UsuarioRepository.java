@@ -1,6 +1,6 @@
 package com.example.Login.repository;
 
-import com.example.Login.dto.DtoCantidadPorRol;
+import com.example.Login.dto.DtoCantidadPorRolQuery;
 import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoUsuariosPorRolQuery;
 import com.example.Login.model.Usuario;
@@ -39,9 +39,9 @@ import java.util.Optional;
 		@Query("SELECT new com.example.Login.dto.DtoUsuariosPorRolQuery(u.rol, COUNT(u)) FROM Usuario u GROUP BY u.rol")
 		List<DtoUsuariosPorRolQuery> usuariosPorRol();
 		
-		@Query("SELECT new com.example.Login.dto.DtoCantidadPorRol(u.rol, COUNT(u)) " +
+		@Query("SELECT new com.example.Login.dto.DtoCantidadPorRolQuery(u.rol, COUNT(u)) " +
 		           "FROM Usuario u WHERE u.rol > 100 GROUP BY u.rol")
-		    List<DtoCantidadPorRol> contarUsuariosPorRol();	  
+		    List<DtoCantidadPorRolQuery> contarUsuariosPorRol();	  
   }
   
   

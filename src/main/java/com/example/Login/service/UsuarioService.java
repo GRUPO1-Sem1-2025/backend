@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
 import com.example.Login.dto.DtoCantidadPorRol;
+import com.example.Login.dto.DtoCantidadPorRolQuery;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
@@ -719,6 +720,30 @@ public class UsuarioService {
 	}
 
 	public List<DtoCantidadPorRol> cantidadPorRol() {
-		return usuarioRepository.contarUsuariosPorRol();
+		List<DtoCantidadPorRol> listado = new ArrayList<>();
+		List<DtoCantidadPorRolQuery> listadoQuery = usuarioRepository.contarUsuariosPorRol();
+		
+		for(DtoCantidadPorRolQuery cprq: listadoQuery) {
+			String rol = null;
+			DtoCantidadPorRol cantidad = new DtoCantidadPorRol();
+			Integer rols = cprq.getRol();
+			
+			switch(rols) {
+			case 100:
+				rol = "Usuario_final";
+				break;
+			case 200:
+				rol = "Vendedor";
+				break;
+			case 300:
+				rol="Admin";
+				break;
+			}
+			cantidad.setRol(rol);
+			cantidad.setCantidad(cprq.getCantidad());
+			
+			listado.add(cantidad);
+		}
+		return listado;
 	}
 }

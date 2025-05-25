@@ -1,20 +1,20 @@
 package com.example.Login.dto;
 
-public class DtoCantidadPorRol {
-	private String rol;
+public class DtoCantidadPorRolQuery {
+	private Integer rol;
     private Long cantidad;
-    public DtoCantidadPorRol() {
+    public DtoCantidadPorRolQuery() {
     	
     }
-	public DtoCantidadPorRol(String rol, Long cantidad) {
+	public DtoCantidadPorRolQuery(Integer rol, Long cantidad) {
 		super();
 		this.rol = rol;
 		this.cantidad = cantidad;
 	}
-	public String getRol() {
+	public Integer getRol() {
 		return rol;
 	}
-	public void setRol(String rol) {
+	public void setRol(Integer rol) {
 		this.rol = rol;
 	}
 	public Long getCantidad() {
