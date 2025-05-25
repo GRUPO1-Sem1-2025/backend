@@ -74,7 +74,7 @@ public class UsuarioController {
 	// public ResponseEntity<String> registrarse(@RequestBody DtoRegistrarse
 	// registrarse) {
 	ResponseEntity<Map<String, String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
-		int resultado = 0;
+		
 		Map<String, String> response = new HashMap<>();
 		int rol = 100;
 		int id = 0;
@@ -91,8 +91,8 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);// "El usuario ya se encuentra registrado
 																				// con ese correo");
 		} else {
-			if (resultado == 1) {
-				resultado = usuarioService.registrarse(registrarse);
+			int resultado = usuarioService.registrarse(registrarse);
+			if (resultado == 1) {				
 				usuarioService.enviarMailRegistrarse(registrarse);
 				response.put("mensaje",
 						"Se le ha enviado un correo electrónico con un código para poder validar el registro");
