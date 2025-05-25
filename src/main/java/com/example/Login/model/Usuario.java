@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.xml.crypto.Data;
 
+import com.example.Login.dto.categoriaUsuario;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -21,7 +23,7 @@ private String nombre;
 private String apellido;
 private Date fechaNac;
 private String email;
-private String categoria;
+private categoriaUsuario categoria;
 private String ci;
 private LocalDate fechaCreacion;
 //hasta aca
@@ -48,7 +50,7 @@ public Usuario() {
 	
 }
 
-public Usuario(int id, String nombre, String apellido, Date fechaNac, String email, String categoria, String ci,
+public Usuario(int id, String nombre, String apellido, Date fechaNac, String email, categoriaUsuario categoria, String ci,
 		LocalDate fechaCreacion, String password, boolean activo, int rol, int cod_empleado, Boolean contrasenia) {
 	super();
 	this.id = id;
@@ -99,10 +101,10 @@ public Date getFechaNac() {
 public void setFechaNac(Date fechaNacimiento) {
 	this.fechaNac = fechaNacimiento;
 }
-public String getCategoria() {
+public categoriaUsuario getCategoria() {
 	return categoria;
 }
-public void setCategoria(String categoria) {
+public void setCategoria(categoriaUsuario categoria) {
 	this.categoria = categoria;
 }
 public String getCi() {

@@ -6,7 +6,7 @@ public class DtoCrearCuenta {
 	private String nombre;
 	private String apellido;
 	private String rol;
-	private String categoria;
+	private categoriaUsuario categoria;
 	private String email;
 	private String ci;
 	private Date fechaNac;
@@ -14,7 +14,7 @@ public class DtoCrearCuenta {
 	public DtoCrearCuenta() {
 		
 	}
-	public DtoCrearCuenta(String nombre, String apellido, String email,String rol, String categoria, String ci, Date fechaNac) {
+	public DtoCrearCuenta(String nombre, String apellido, String email,String rol, categoriaUsuario categoria, String ci, Date fechaNac) {
 		super();
 		this.nombre = nombre;
 		this.apellido = apellido;
@@ -49,10 +49,10 @@ public class DtoCrearCuenta {
 	public void setRol(String rol) {
 		this.rol = rol;
 	}
-	public String getCategoria() {
+	public categoriaUsuario getCategoria() {
 		return categoria;
 	}
-	public void setCategoria(String categoria) {
+	public void setCategoria(categoriaUsuario categoria) {
 		this.categoria = categoria;
 	}
 	public String getCi() {
