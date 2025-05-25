@@ -15,7 +15,7 @@ public class DtoUsuario {
 	private String apellido;
 	private Date fechaNac;
 	private String email;
-	private String categoria;
+	private categoriaUsuario categoria;
 	private String ci;
 	private boolean activo;
 	private int rol; //100 USUAIO FINAL 200 VENDEDOR 300 ADMIN
@@ -24,7 +24,7 @@ public class DtoUsuario {
 	public DtoUsuario() {
 		
 	}
-	public DtoUsuario(int id, String nombre, String apellido, Date fechaNac, String email, String categoria, String ci,
+	public DtoUsuario(int id, String nombre, String apellido, Date fechaNac, String email, categoriaUsuario categoria, String ci,
 			boolean activo, int rol, Integer cod_empleado) {
 		super();
 		this.id = id;
@@ -68,10 +68,10 @@ public class DtoUsuario {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getCategoria() {
+	public categoriaUsuario getCategoria() {
 		return categoria;
 	}
-	public void setCategoria(String categoria) {
+	public void setCategoria(categoriaUsuario categoria) {
 		this.categoria = categoria;
 	}
 	public String getCi() {

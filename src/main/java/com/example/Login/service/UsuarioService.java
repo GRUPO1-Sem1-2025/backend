@@ -33,6 +33,7 @@ import com.example.Login.dto.DtoUsuariosPorRolQuery;
 import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
+import com.example.Login.dto.categoriaUsuario;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
@@ -51,6 +52,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -116,9 +118,23 @@ public class UsuarioService {
 	}
 
 	// Guardar usuario con contraseña encriptada
-	public void crearUsuario(DtoRegistrarse registrarse) {
+	public int registrarse(DtoRegistrarse registrarse) {
 		System.out.println("Entre al usuario service");
+
+		LocalDate fechaNacimiento = registrarse.getFecha_nac();
+		LocalDate fechaActual = LocalDate.now();
+		int edad = Period.between(fechaNacimiento, fechaActual).getYears();
+
 		Usuario usuario = new Usuario();
+		if (registrarse.getCi() == "") {
+			return 2;
+		} else {
+			usuario.setCi(registrarse.getCi());
+		}
+		categoriaUsuario categoria = registrarse.getCategoria();
+		System.out.println("categoria: " + categoria);
+		System.out.println("edad: " + edad);
+		usuario.setCategoria(categoria);
 		usuario.setNombre(registrarse.getNombre());
 		usuario.setApellido(registrarse.getApellido());
 		usuario.setEmail(registrarse.getEmail());
@@ -128,7 +144,17 @@ public class UsuarioService {
 		usuario.setFechaCreacion(LocalDate.now());
 		usuario.setCodigo(generarCodigo());
 		usuario.setContraseniaValida(true);
-		usuarioRepository.save(usuario);
+		if (edad < 60 && categoria.equals(categoria.JUBILADO)) {
+			System.out.println("El usuario dice que es jubilado pero tiene menos de 60 anios");
+			return 0;
+		} else {
+			System.out.println("El usuario NO esta jubilado");
+			usuario.setCategoria(categoria);
+			usuarioRepository.save(usuario);
+			return 1;
+		}
+
+		// usuarioRepository.save(usuario);
 		// emailService.enviarCorreo(para, asunto, mensaje);
 
 	}
@@ -255,7 +281,19 @@ public class UsuarioService {
 				} else {
 					user.setActivo(false);
 				}
-				user.setCategoria(values[6]);
+				String categoria = values[6];
+				switch (categoria) {
+				case "GENERAL":
+					user.setCategoria(categoriaUsuario.GENERAL);
+					break;
+				case "JUBILADO":
+					user.setCategoria(categoriaUsuario.JUBILADO);
+					break;
+				case "ESTUDIANTE":
+					user.setCategoria(categoriaUsuario.ESTUDIANTE);
+					break;
+				}
+				// user.setCategoria(values[6]);
 				user.setCi(values[7]);
 				user.setFechaCreacion(LocalDate.now());
 
@@ -302,13 +340,9 @@ public class UsuarioService {
 			int codigo = usuario.get().getCodigo();
 			String para = usuario.get().getEmail();
 			String asunto = "Código de autorización";
-			String mensaje = String.format(
-					"<p>Bienvenido <b>%s</b>,</p>"
-							  + "<p>Utilice el siguiente código <b>%s</b> para iniciar sesión en el sistema.</p>"
-							  + "<br>"
-							  + "<p>Saludos,</p>"
-							  + "<p><strong>Tecnobus</strong><br>"
-							  + "Uruguay<br>",nombre, codigo);
+			String mensaje = String.format("<p>Bienvenido <b>%s</b>,</p>"
+					+ "<p>Utilice el siguiente código <b>%s</b> para iniciar sesión en el sistema.</p>" + "<br>"
+					+ "<p>Saludos,</p>" + "<p><strong>Tecnobus</strong><br>" + "Uruguay<br>", nombre, codigo);
 
 			emailService.enviarCorreo(para, asunto, mensaje);
 
@@ -473,7 +507,7 @@ public class UsuarioService {
 		emailService.enviarCorreo(para, asunto, mensaje);
 
 	}
-	
+
 	public void enviarMailAvisandoDeViaje(int idCompra) {
 		Optional<CompraPasaje> Ocompra = comprapasajerepository.findById(idCompra);
 		CompraPasaje compra = Ocompra.get();
@@ -490,8 +524,8 @@ public class UsuarioService {
 		String asunto = "¡¡¡ Aviso, su viaje comienza en menos de una hora!!!";
 
 		String mensaje = String.format(
-				"Recuerde que usted tiene un viaje con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b> .", destino,
-				fechaInicio, hora);
+				"Recuerde que usted tiene un viaje con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b> .",
+				destino, fechaInicio, hora);
 		emailService.enviarCorreo(para, asunto, mensaje);
 
 	}
@@ -543,10 +577,10 @@ public class UsuarioService {
 	public List<DtoMisCompras> obtenerMisCompras(String email) {
 		List<CompraPasaje> compras = comprapasajerepository.findAll();
 		List<DtoMisCompras> misCompras = new ArrayList<>();
-		int idUsuario = 0; 
+		int idUsuario = 0;
 		try {
 			idUsuario = usuarioRepository.findByEmail(email).get().getId();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
@@ -613,6 +647,20 @@ public class UsuarioService {
 		}
 		usuario.setActivo(user.getActivo());
 		usuario.setApellido(user.getApellido());
+
+		// categoriaUsuario categoria = user.getCategoria();
+//		switch (categoria){
+//		case "GENERAL":
+//			user.setCategoria(categoriaUsuario.GENERAL);
+//			break;
+//		case "JUBILADO":
+//			user.setCategoria(categoriaUsuario.JUBILADO);
+//			break;
+//		case "ESTUDIANTE":
+//			user.setCategoria(categoriaUsuario.ESTUDIANTE);
+//			break;
+//		}
+
 		usuario.setCategoria(user.getCategoria());
 		usuario.setCi(user.getCi());
 		usuario.setCod_empleado(user.getCod_empleado());
@@ -625,19 +673,19 @@ public class UsuarioService {
 	}
 
 	public boolean modificarPerfil(DtoUsuarioPerfil usuario) {
-		
+
 		Usuario user = new Usuario();
-		try{
-			Optional<Usuario> Ousuario = usuarioRepository.findById(usuario.getId());	
+		try {
+			Optional<Usuario> Ousuario = usuarioRepository.findById(usuario.getId());
 			System.out.println("email: " + usuario.getEmail());
 			user = Ousuario.get();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 		user.setApellido(usuario.getApellido());
 		user.setEmail(usuario.getEmail());
 		user.setNombre(usuario.getNombre());
-		usuarioRepository.save(user);		
+		usuarioRepository.save(user);
 		return true;
 	}
 
@@ -649,11 +697,11 @@ public class UsuarioService {
 	public List<DtoUsuariosPorRol> obtenerUsuariosPorRol() {
 		List<DtoUsuariosPorRol> lista = new ArrayList<>();
 		List<DtoUsuariosPorRolQuery> consulta = usuarioRepository.usuariosPorRol();
-		
-		for(DtoUsuariosPorRolQuery query: consulta) {
+
+		for (DtoUsuariosPorRolQuery query : consulta) {
 			DtoUsuariosPorRol dto = new DtoUsuariosPorRol();
 			dto.setCantidad(query.getCantidad());
-			switch(query.getRol()) {
+			switch (query.getRol()) {
 			case 100:
 				dto.setRol("Usuario final");
 				break;
@@ -667,8 +715,9 @@ public class UsuarioService {
 			lista.add(dto);
 		}
 
-		return lista;	}
-	
+		return lista;
+	}
+
 	public List<DtoCantidadPorRol> cantidadPorRol() {
 		return usuarioRepository.contarUsuariosPorRol();
 	}

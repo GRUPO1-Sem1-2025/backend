@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,10 +47,10 @@ import java.util.Optional;
 public class UsuarioController {
 
 	private final UsuarioService usuarioService;
-	
+
 	@Autowired
 	private TokenService tokenService;
-	
+
 	public UsuarioController(UsuarioService usuarioService) {
 		this.usuarioService = usuarioService;
 	}
@@ -72,6 +73,7 @@ public class UsuarioController {
 	// public ResponseEntity<String> registrarse(@RequestBody DtoRegistrarse
 	// registrarse) {
 	ResponseEntity<Map<String, String>> registrarse(@RequestBody DtoRegistrarse registrarse) {
+		int resultado = 0;
 		Map<String, String> response = new HashMap<>();
 		int rol = 100;
 		int id = 0;
@@ -88,11 +90,21 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);// "El usuario ya se encuentra registrado
 																				// con ese correo");
 		} else {
-			usuarioService.crearUsuario(registrarse);
-			usuarioService.enviarMailRegistrarse(registrarse);
-			response.put("mensaje",
-					"Se le ha enviado un correo electrónico con un código para poder validar el registro");
-			return ResponseEntity.status(HttpStatus.CREATED).body(response);
+			if (resultado == 1) {
+				resultado = usuarioService.registrarse(registrarse);
+				usuarioService.enviarMailRegistrarse(registrarse);
+				response.put("mensaje",
+						"Se le ha enviado un correo electrónico con un código para poder validar el registro");
+				return ResponseEntity.status(HttpStatus.CREATED).body(response);
+			} else if (resultado == 0) {
+				response.put("mensaje",
+						"No se le puede asignar la categoria de JUBILADO ya que usted tiene menos de 60 anios");
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			} else {
+				response.put("mensaje", "La cedula no puede estar vacia");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			}
+
 		}
 	}
 
@@ -143,7 +155,8 @@ public class UsuarioController {
 				}
 				if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
 					usuarioService.login(email, password);
-					response.put("mensaje", "Se le envió a su correo un código para terminar con el proceso de autenticación");
+					response.put("mensaje",
+							"Se le envió a su correo un código para terminar con el proceso de autenticación");
 					response.put("Login directo", "1");
 					return ResponseEntity.status(HttpStatus.OK).body(response);
 				}
@@ -562,29 +575,28 @@ public class UsuarioController {
 		resultado = usuarioService.obtenerUsuariosPorMes();
 		return resultado;
 	}
-	
+
 	@GetMapping("usuariosPorRol")
 	public List<DtoUsuariosPorRol> obtenerUsuariosPorRol() {
 		List<DtoUsuariosPorRol> resultado = new ArrayList<>();
 		resultado = usuarioService.obtenerUsuariosPorRol();
 		return resultado;
 	}
-	
+
 	@PostMapping("/pobarPushNotification")
 	public void probarPushNotification(@RequestParam String token) {
 		String titulo = "prueba";
 		String cuerpo = "mensaje";
-		try{
+		try {
 			tokenService.enviarPushNotification(token, titulo, cuerpo);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
-	
-	@GetMapping("/cantidadUsuarios-rolesCreadosPorAdmin") 
-	List<DtoCantidadPorRol> cantidadPorRol(){
+
+	@GetMapping("/cantidadUsuarios-rolesCreadosPorAdmin")
+	List<DtoCantidadPorRol> cantidadPorRol() {
 		return usuarioService.cantidadPorRol();
 	}
-	
-	
+
 }
