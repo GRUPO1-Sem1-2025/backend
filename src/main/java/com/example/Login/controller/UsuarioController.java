@@ -2,6 +2,7 @@ package com.example.Login.controller;
 
 import com.example.Login.dto.DtoCambiarContrasenia;
 import com.example.Login.dto.DtoCantidadPorRol;
+import com.example.Login.dto.DtoCantidadPorRolQuery;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCrearCuenta;
 import com.example.Login.dto.DtoMisCompras;
