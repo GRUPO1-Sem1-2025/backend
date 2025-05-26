@@ -234,29 +234,15 @@ public class UsuarioController {
 	@PostMapping("/resetearcontrasenia")
 	public ResponseEntity<Map<String, String>> resetearContrasenia(@RequestParam String para) {
 		Map<String, String> response = new HashMap<>();
-		String asunto = "Nueva contraseña temporal";
-		Optional<Usuario> usuario = usuarioService.buscarPorEmail(para);
 
-		if (usuario.isPresent()) {
+		int resultado = usuarioService.resetearContraseña(para);
 
-			// Nueva contraseña aleatoria
-			String contrasenia = GenerarContraseniaService.generarContraseniaAleatoria();
-
-			String mensaje = "Su nueva contraseñia temporal es la siguiente: " + contrasenia;
-
-			// Setear nueva contraseña encriptada
-			usuario.get().setPassword(usuarioService.encriptarSHA256(contrasenia));
-			usuario.get().setContraseniaValida(false);
-			usuarioService.actualizar(usuario.get());
-
-			emailService.enviarCorreo(para, asunto, mensaje);
-			response.put("mensaje", "Se le ha enviado una contraseña temporal al correo ingresado");
-			return ResponseEntity.status(HttpStatus.OK).body(response);// "Se le ha enviado una contraseña temporal al
-																		// correo ingresado");
-		} else {
+		if (resultado == 0) {
 			response.put("error", "No existe un usuario registrado con ese correo");
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);// "No existe un usuario registrado con
-																				// ese correo");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		} else {
+			response.put("Mensaje", "Se le ha enviado por correo una nueva contraseña temporal");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}
 	}
 
@@ -300,45 +286,50 @@ public class UsuarioController {
 	public ResponseEntity<Map<String, String>> cambiarRol(@RequestParam String email, @RequestParam String rol) {
 		Map<String, String> response = new HashMap<>();
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
+		int resultado = usuarioService.cambiarRol(email, rol);
 
-		if (usuario.isPresent()) {
-			System.out.println("Rol actual: " + usuario.get().getRol());
-			if (rol.equals("User")) {
-				usuario.get().setRol(100);
-				usuario.get().setCod_empleado(null);
-			} else if (rol.equals("Vendedor")) {
-				usuario.get().setRol(200);
-				if (usuario.get().getCod_empleado() == 0) {
-					try {
-						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado() + 1);
-					} catch (Exception e) {
-						usuario.get().setCod_empleado(100);
-					}
-				}
-			} else if (rol.equals("Admin")) {
-				usuario.get().setRol(300);
-				if (usuario.get().getCod_empleado() == 0) {
-					try {
-						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado() + 1);
-					} catch (Exception e) {
-						usuario.get().setCod_empleado(100);
-					}
-				}
-			} else {
-				System.out.println("No existe el Rol ingresado");
-				response.put("mensaje", "No existe el rol ingresado");// nuevaContrasenia)
-				return ResponseEntity.status(HttpStatus.OK).body(response);// "no existe el rol ingresado";
-			}
-			usuarioService.actualizar(usuario.get());
+//		if (usuario.isPresent()) {
+//			System.out.println("Rol actual: " + usuario.get().getRol());
+//			if (rol.equals("User")) {
+//				usuario.get().setRol(100);
+//				usuario.get().setCod_empleado(null);
+//			} else if (rol.equals("Vendedor")) {
+//				usuario.get().setRol(200);
+//				if (usuario.get().getCod_empleado() == 0) {
+//					try {
+//						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado() + 1);
+//					} catch (Exception e) {
+//						usuario.get().setCod_empleado(100);
+//					}
+//				}
+//			} else if (rol.equals("Admin")) {
+//				usuario.get().setRol(300);
+//				if (usuario.get().getCod_empleado() == 0) {
+//					try {
+//						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado() + 1);
+//					} catch (Exception e) {
+//						usuario.get().setCod_empleado(100);
+//					}
+//				}
+//			} else {
+//				System.out.println("No existe el Rol ingresado");
+		switch (resultado) {
+		case 0:
+			response.put("mensaje", "No existe el rol ingresado");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		// break;
+		case 1:
 			System.out.print("Nuevo rol: " + usuario.get().getRol());
-			response.put("mensaje", "Rol modificado");// nuevaContrasenia)
+			response.put("mensaje", "Rol modificado");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			// return "Rol modificado";
+		// break;
+		case 2:
+			response.put("mensaje", "El correo ingresado no existe registrado en el sistema");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		// break;
 		}
-		response.put("mensaje", "El correo ingresado no existe registrado en el sistema");// nuevaContrasenia)
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-		// return "El correo ingresado no existe registrado en el sistema";// +
-		// nuevoRol;
+		response.put("error", "Error desconocido");
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
 	@PostMapping("/cambiarCategoria")
@@ -372,7 +363,7 @@ public class UsuarioController {
 				response.put("mensaje", "Categoria invalida");
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}
-		}else {
+		} else {
 			response.put("mensaje", "Solo se le puede cambiar la categoria si el usuario es USUARIO FINAL");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}

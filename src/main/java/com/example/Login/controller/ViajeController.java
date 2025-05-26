@@ -112,10 +112,7 @@ public class ViajeController {
 	@Operation(summary = "obtenerViajesPorFechaYDestino", description = "obtenerViajesPorFechaYDestino")
 	public ResponseEntity<List<DtoViajeDestinoFecha>> obtenerViajesPorFechaYDestino(@RequestParam int locOrigen,
 			@RequestParam int locDestino, @RequestParam Date fechaInicio, @RequestParam Date fechaFin) {
-		System.out.println("Cdestino: " + locOrigen);// dtoVDF.getIdLocalidadDestino());
-		System.out.println("Corigen: " + locDestino);// dtoVDF.getIdLocalidadOrigen());
-		System.out.println("Cinicio: " + fechaInicio);// dtoVDF.getFechaInicio());// IdLocalidadOrigen());
-		System.out.println("Cfin: " + fechaFin);// dtoVDF.getFechaFin());// IdLocalidadOrigen());
+		
 		DtoViaje dtoVDF = new DtoViaje();
 		dtoVDF.setFechaFin(fechaFin);
 		dtoVDF.setFechaInicio(fechaInicio);
