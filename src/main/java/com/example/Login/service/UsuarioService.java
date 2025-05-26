@@ -148,7 +148,7 @@ public class UsuarioService {
 		usuario.setCategoria(categoriaUsuario.GENERAL);
 		usuarioRepository.save(usuario);
 		return 1;
-		
+
 //		if (edad < 60 && categoria.equals(categoria.JUBILADO)) {
 //			System.out.println("El usuario dice que es jubilado pero tiene menos de 60 anios");
 //			return 0;
@@ -725,13 +725,13 @@ public class UsuarioService {
 	public List<DtoCantidadPorRol> cantidadPorRol() {
 		List<DtoCantidadPorRol> listado = new ArrayList<>();
 		List<DtoCantidadPorRolQuery> listadoQuery = usuarioRepository.contarUsuariosPorRol();
-		
-		for(DtoCantidadPorRolQuery cprq: listadoQuery) {
+
+		for (DtoCantidadPorRolQuery cprq : listadoQuery) {
 			String rol = null;
 			DtoCantidadPorRol cantidad = new DtoCantidadPorRol();
 			Integer rols = cprq.getRol();
-			
-			switch(rols) {
+
+			switch (rols) {
 			case 100:
 				rol = "Usuario_final";
 				break;
@@ -739,14 +739,110 @@ public class UsuarioService {
 				rol = "Vendedor";
 				break;
 			case 300:
-				rol="Admin";
+				rol = "Admin";
 				break;
 			}
 			cantidad.setRol(rol);
 			cantidad.setCantidad(cprq.getCantidad());
-			
+
 			listado.add(cantidad);
 		}
 		return listado;
 	}
+
+	public int resetearContraseña(String email) {
+		String asunto = "Nueva contraseña temporal";
+		Optional<Usuario> usuario = buscarPorEmail(email);
+
+		if (usuario.isPresent()) {
+
+			// Nueva contraseña aleatoria
+			String contrasenia = GenerarContraseniaService.generarContraseniaAleatoria();
+
+			String mensaje = "Su nueva contraseñia temporal es la siguiente: " + contrasenia;
+
+			// Setear nueva contraseña encriptada
+			usuario.get().setPassword(encriptarSHA256(contrasenia));
+			usuario.get().setContraseniaValida(false);
+			actualizar(usuario.get());
+
+			emailService.enviarCorreo(email, asunto, mensaje);
+			return 1;
+		}
+		return 0;
+	}
+
+	public int cambiarRol(String email, String rol) {
+
+		Optional<Usuario> usuario = buscarPorEmail(email);
+		try {
+			System.out.println("Rol actual: " + usuario.get().getRol());
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+
+//		if (usuario.isPresent()) {
+//			System.out.println("Rol actual: " + usuario.get().getRol());
+//			if (rol.equals("User")) {
+//				usuario.get().setRol(100);
+//				usuario.get().setCod_empleado(null);
+//				actualizar(usuario.get());
+//			} else if (rol.equals("Vendedor")) {
+//				usuario.get().setRol(200);
+//				if (usuario.get().getCod_empleado() == 0) {
+//					try {
+//						usuario.get().setCod_empleado(usuarioRepository.findMaxCodEmpleado() + 1);
+//					} catch (Exception e) {
+//						usuario.get().setCod_empleado(100);
+//					}
+//				}
+//				actualizar(usuario.get());
+//			} else if (rol.equals("Admin")) {
+//				usuario.get().setRol(300);
+//				if (usuario.get().getCod_empleado() == 0) {
+//					try {
+//						usuario.get().setCod_empleado(usuarioRepository.findMaxCodEmpleado() + 1);
+//					} catch (Exception e) {
+//						usuario.get().setCod_empleado(100);
+//					}
+//				}
+//				actualizar(usuario.get());
+//			} else {
+//				System.out.println("No existe el Rol ingresado");
+//				return 0;
+//			}
+//			return 1;
+//		}
+		if (usuario.isPresent()) {
+		    System.out.println("Rol actual: " + usuario.get().getRol());
+
+		    if (rol.equals("User")) {
+		        usuario.get().setRol(100);
+		        usuario.get().setCod_empleado(null);
+		        actualizar(usuario.get());
+
+		    } else if (rol.equals("Vendedor") || rol.equals("Admin")) {
+		        usuario.get().setRol(rol.equals("Vendedor") ? 200 : 300);
+
+		        Integer codEmpleado = usuario.get().getCod_empleado();
+		        if (codEmpleado == null || codEmpleado == 0) {
+		            try {
+		                usuario.get().setCod_empleado(usuarioRepository.findMaxCodEmpleado() + 1);
+		            } catch (Exception e) {
+		                usuario.get().setCod_empleado(100);
+		            }
+		        }
+
+		        actualizar(usuario.get());
+
+		    } else {
+		        System.out.println("No existe el Rol ingresado");
+		        return 0;
+		    }
+
+		    return 1;
+		}
+		return 2;
+	}
+
 }
