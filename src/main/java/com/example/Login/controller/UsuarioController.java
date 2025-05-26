@@ -136,6 +136,17 @@ public class UsuarioController {
 		return usuario.map(ResponseEntity::ok) // Si el usuario existe, devolver 200 OK
 				.orElseGet(() -> ResponseEntity.notFound().build()); // Si no existe, devolver 404
 	}
+	
+	@GetMapping("/emails/")
+	@Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
+	public DtoUsuario buscarPorEmails(@RequestParam String email) {
+		DtoUsuario usuario = usuarioService.buscarPorEmails(email);
+		
+		if(usuario == null) {
+			return null;
+		}			
+		return usuario;
+	}
 
 	// 🔹 Recibe email y password en el cuerpo de la petición (POST)
 	@PostMapping("/login")

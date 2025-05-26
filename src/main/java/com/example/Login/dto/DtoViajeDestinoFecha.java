@@ -11,6 +11,7 @@ public class DtoViajeDestinoFecha {
 	private LocalTime horaFin;
 	private float precioPasaje;
 	private Date fechaFin;
+	private Date fechaInicio;
 	
 
 	public DtoViajeDestinoFecha() {
@@ -19,7 +20,7 @@ public class DtoViajeDestinoFecha {
 	
 	
 	public DtoViajeDestinoFecha(int busId, int cantAsientosDisponibles, LocalTime horaInicio, LocalTime horaFin,
-			float precioPasaje, int viajeId, Date fechaFin) {
+			float precioPasaje, int viajeId, Date fechaFin, Date fechaInicio) {
 		super();
 		BusId = busId;
 		this.cantAsientosDisponibles = cantAsientosDisponibles;
@@ -28,6 +29,17 @@ public class DtoViajeDestinoFecha {
 		this.precioPasaje = precioPasaje;
 		this.viajeId = viajeId;
 		this.fechaFin = fechaFin;
+		this.fechaInicio = fechaInicio;
+	}
+
+
+	public Date getFechaInicio() {
+		return fechaInicio;
+	}
+
+
+	public void setFechaInicio(Date fechaInicio) {
+		this.fechaInicio = fechaInicio;
 	}
 
 
