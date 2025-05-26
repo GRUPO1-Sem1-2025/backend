@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.dto.DtoCompraPasaje;
+import com.example.Login.dto.DtoTipoDeCompra;
 import com.example.Login.dto.DtoTotalPorMes;
 import com.example.Login.repository.CompraPasajeRepository;
 import com.example.Login.service.CompraPasajeService;
@@ -39,5 +40,10 @@ public class ComprasController {
 	@GetMapping("/obtenerTotalPorMesAnio")
 	public List<DtoTotalPorMes> TotalGanadoPorMesAnio(){
 		return compraPasajeService.TotalGanadoPorMes();
+	}
+	
+	@GetMapping("/comprasPorTipo")
+	public List<DtoTipoDeCompra> comprasPorTipo(){
+		return compraPasajeService.comprasPorTipo();// contarPorTipoVenta();
 	}
 }

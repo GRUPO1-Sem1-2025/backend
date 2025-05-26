@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.DtoNewUsuariosPorMes;
+import com.example.Login.dto.DtoTipoDeCompra;
 import com.example.Login.dto.DtoTotalPorMes;
 import com.example.Login.model.Asiento;
 import com.example.Login.model.AsientoPorViaje;
@@ -44,5 +45,10 @@ public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Inte
 		    ORDER BY FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY'), FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM')
 		""")
 	List<DtoTotalPorMes> findTotalPorMes();
-
+	
+//	@Query("SELECT c.tipo_venta, COUNT(c) FROM CompraPasaje c GROUP BY c.tipo_venta")
+//	List<DtoTipoDeCompra> contarPorTipoVenta();
+	
+	@Query("SELECT new com.example.Login.dto.DtoTipoDeCompra(c.tipo_venta, COUNT(c)) FROM CompraPasaje c GROUP BY c.tipo_venta")
+	List<DtoTipoDeCompra> contarPorTipoVenta();
 }
