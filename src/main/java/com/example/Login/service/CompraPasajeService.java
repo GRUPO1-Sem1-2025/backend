@@ -171,8 +171,18 @@ public class CompraPasajeService {
 		//compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
 		compra.setTotal(total);
 		compra.setAsientos(asientosReservados);
+		
+		// obtengo la última compra
+		Optional<CompraPasaje> ultimoId = compraPasajeRepository.findTopByOrderByIdDesc();
+		CompraPasaje aux = ultimoId.get();
+		//fin
+		
 		compraPasajeRepository.save(compra);
-
+		
+		//cargo el siguiente id de compra para mostrar
+		asientosOcupados.setIdCompra((int) (aux.getId() + 1));
+		//fin
+		
 		for (AsientoPorViaje apv : asientosReservados) {
 			asientoPorViajeRepository.save(apv);
 		}
