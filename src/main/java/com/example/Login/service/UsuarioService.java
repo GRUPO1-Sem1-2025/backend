@@ -845,4 +845,26 @@ public class UsuarioService {
 		return 2;
 	}
 
+	public DtoUsuario buscarPorEmails(String email) {
+		Usuario u = new Usuario();
+		DtoUsuario usuario = new DtoUsuario();
+		try{
+			Optional<Usuario> user = usuarioRepository.findByEmail(email);
+			u = user.get();
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		usuario.setActivo(u.getActivo());
+		usuario.setApellido(u.getApellido());
+		usuario.setCategoria(u.getCategoria());
+		usuario.setCi(u.getCi());
+		usuario.setCod_empleado(u.getCod_empleado());
+		usuario.setEmail(u.getEmail());
+		usuario.setFechaNac(u.getFechaNac());
+		usuario.setNombre(u.getNombre());
+		usuario.setRol(u.getRol());
+		return usuario;
+	}
+
 }

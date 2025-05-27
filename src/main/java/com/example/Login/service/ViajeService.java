@@ -230,6 +230,7 @@ public class ViajeService {
 			vdf.setHoraInicio(dto.getHoraInicio());
 			vdf.setPrecioPasaje(dto.getPrecio());
 			vdf.setViajeId(dto.getId());
+			vdf.setFechaInicio(dto.getFechaInicio());
 			vdf.setFechaFin(dto.getFechaFin());
 			listaDto.add(vdf);
 		}
