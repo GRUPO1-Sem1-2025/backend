@@ -401,6 +401,7 @@ public class UsuarioController {
 						"La compra ha sido reservada de forma exitosa. Recurede"
 								+ " que tiene 10 minutos para completar el proceso de compra, de lo contrario su "
 								+ "reserva sera cancelada de forma automatica");
+				response.put("idCompra",resultado.getIdCompra());
 				usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			case CANCELADA:
@@ -500,7 +501,7 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/cambiarEstadoCompra")
-	public ResponseEntity<Map<String, String>> cambiarEstadoCompra(@RequestParam int idCompra) {
+	public ResponseEntity<Map<String, String>> cambiarEstadoCompra(@RequestBody int idCompra) {
 		Map<String, String> response = new HashMap<>();
 		usuarioService.cambiarEstadoCompra(idCompra);
 		response.put("mensaje", "Se cambió el estado de la compra");

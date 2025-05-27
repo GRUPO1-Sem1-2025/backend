@@ -51,4 +51,6 @@ public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Inte
 	
 	@Query("SELECT new com.example.Login.dto.DtoTipoDeCompra(c.tipo_venta, COUNT(c)) FROM CompraPasaje c GROUP BY c.tipo_venta")
 	List<DtoTipoDeCompra> contarPorTipoVenta();
+	
+	Optional<CompraPasaje> findTopByOrderByIdDesc();
 }
