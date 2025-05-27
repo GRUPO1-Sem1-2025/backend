@@ -58,6 +58,9 @@ public class CompraPasaje {
     
     private String tipo_venta;
     
+    @Column(nullable = true)
+    private int descuentoAplicado;
+    
     private EstadoCompra estadoCompra;
     
     public CompraPasaje() {
@@ -65,7 +68,7 @@ public class CompraPasaje {
     }
 
 	public CompraPasaje(Long id, EstadoCompra estado, Usuario usuario, Usuario vendedor, Viaje viaje, List<AsientoPorViaje> asientos,
-			LocalDateTime fechaHoraCompra, int cat_pasajes, float total, String tipo_venta) {
+			LocalDateTime fechaHoraCompra, int cat_pasajes, float total, String tipo_venta, int descuentoAplicado) {
 		this.id = id;
 		this.usuario = usuario;
 		this.vendedor = vendedor;
@@ -76,6 +79,17 @@ public class CompraPasaje {
 		this.total = total;
 		this.estadoCompra = estado;
 		this.tipo_venta = tipo_venta;
+		this.descuentoAplicado = descuentoAplicado;
+	}
+	
+	
+
+	public int getDescuentoAplicado() {
+		return descuentoAplicado;
+	}
+
+	public void setDescuentoAplicado(int descuentoAplicado) {
+		this.descuentoAplicado = descuentoAplicado;
 	}
 
 	public Long getId() {

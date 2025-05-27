@@ -18,10 +18,12 @@ import com.example.Login.dto.DtoVenderPasaje;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
+import com.example.Login.model.Categoria;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
 import com.example.Login.model.Viaje;
 import com.example.Login.repository.AsientoPorViajeRepository;
+import com.example.Login.repository.CategoriaRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.repository.ViajeRepository;
@@ -49,6 +51,9 @@ public class CompraPasajeService {
 
 	@Autowired
 	private ViajeRepository viajeRepository;
+	
+	@Autowired
+	private CategoriaRepository categoriaRepository;
 
     CompraPasajeService(SecurityFilterChain securityFilterChain) {
         this.securityFilterChain = securityFilterChain;
@@ -59,6 +64,9 @@ public class CompraPasajeService {
 		Usuario usuario = new Usuario();
 		Viaje viaje = new Viaje();
 		
+	
+		int descuento = 0;
+		
 		List <Integer> asientosOcupado = new ArrayList<>();
 		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
 		DtoRespuestaCompraPasaje asientosOcupados = new DtoRespuestaCompraPasaje();
@@ -67,6 +75,13 @@ public class CompraPasajeService {
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findById(request.getUsuarioId());
 			usuario = Ousuario.get();
+			try {
+				Optional<Categoria> Ocategoria = categoriaRepository.findBynombreCategoria(usuario.getCategoria().name());
+				System.out.println("Encontre la categoria: "+ Ocategoria.get().getNombreCategoria());
+				descuento = Ocategoria.get().getDescuento();
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
 			
 			if (usuario.getRol()!= 100) {
 				return asientosOcupados;
@@ -99,6 +114,8 @@ public class CompraPasajeService {
 		}
 		compra.setUsuario(usuario);
 		compra.setVendedor(vendedor);
+		compra.setDescuentoAplicado(descuento);
+		System.out.println("Descuento aplicado = " + descuento);
 		
 		EstadoViaje ev = viaje.getEstadoViaje();
 		switch (ev) {
@@ -149,9 +166,10 @@ public class CompraPasajeService {
 		default:
 			System.out.println("Estado desconocido: " + estado);
 		}
-
 		compra.setCat_pasajes(asientosReservados.size());
-		compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
+		float total = (compra.getCat_pasajes() * viaje.getPrecio()) - (compra.getCat_pasajes() * viaje.getPrecio()*descuento/100);
+		//compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
+		compra.setTotal(total);
 		compra.setAsientos(asientosReservados);
 		compraPasajeRepository.save(compra);
 

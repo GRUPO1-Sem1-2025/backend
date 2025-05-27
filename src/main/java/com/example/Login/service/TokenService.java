@@ -68,6 +68,7 @@ public class TokenService {
 	    json.addProperty("sound", "default");
 	    json.addProperty("title", title);
 	    json.addProperty("body", body);
+	    json.addProperty("priority", "high");
 
 	    HttpRequest request = HttpRequest.newBuilder()
 	        .uri(URI.create("https://exp.host/--/api/v2/push/send"))
