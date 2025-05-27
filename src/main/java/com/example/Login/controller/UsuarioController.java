@@ -501,7 +501,7 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/cambiarEstadoCompra")
-	public ResponseEntity<Map<String, String>> cambiarEstadoCompra(@RequestParam int idCompra) {
+	public ResponseEntity<Map<String, String>> cambiarEstadoCompra(@RequestBody int idCompra) {
 		Map<String, String> response = new HashMap<>();
 		usuarioService.cambiarEstadoCompra(idCompra);
 		response.put("mensaje", "Se cambió el estado de la compra");
