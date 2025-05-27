@@ -129,14 +129,6 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
 	}
 
-	@GetMapping("/email/{email}")
-	@Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
-	public ResponseEntity<Usuario> buscarPorEmail(@PathVariable String email) {
-		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
-		return usuario.map(ResponseEntity::ok) // Si el usuario existe, devolver 200 OK
-				.orElseGet(() -> ResponseEntity.notFound().build()); // Si no existe, devolver 404
-	}
-	
 	@GetMapping("/emails/")
 	@Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
 	public DtoUsuario buscarPorEmails(@RequestParam String email) {

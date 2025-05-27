@@ -854,7 +854,7 @@ public class UsuarioService {
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+		usuario.setId(u.getId());
 		usuario.setActivo(u.getActivo());
 		usuario.setApellido(u.getApellido());
 		usuario.setCategoria(u.getCategoria());
