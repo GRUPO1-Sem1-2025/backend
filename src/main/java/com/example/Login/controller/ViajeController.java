@@ -57,19 +57,19 @@ public class ViajeController {
 		switch (respuesta) {
 		case 1:
 			response.put("mensaje", "La ciudad de origen y destino no pueden ser las mismas");
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 		case 2:
 			response.put("mensaje", "Una de las ciudades no se encuentra disponible");
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		case 3:
 			response.put("mensaje", "Viaje registrado exitosamente");
-			return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
+			return ResponseEntity.status(HttpStatus.OK).body(response); // ✅ 201 - Creado
 		case 4:
 			response.put("mensaje", "Una de las ciudads ingresadas no existe en el sistema");
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
 		}
 		response.put("mensaje", "Error Desconcido");
-		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); //
 	}
 
 	@PostMapping("/agregarBusAViaje")

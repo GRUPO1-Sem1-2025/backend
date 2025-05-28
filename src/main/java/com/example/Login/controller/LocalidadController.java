@@ -53,7 +53,7 @@ public class LocalidadController {
     	localidadService.crearLocalidad(dtoLocalidad);
     	// 🔹 Prepara la respuesta exitosa
         response.put("mensaje", "Localidad registrada exitosamente");
-        return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
+        return ResponseEntity.status(HttpStatus.OK).body(response); // ✅ 201 - Creado
     }
     
     @PostMapping("/crearLocalidadMasivas")
