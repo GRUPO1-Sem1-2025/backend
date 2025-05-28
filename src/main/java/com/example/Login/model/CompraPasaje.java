@@ -59,7 +59,7 @@ public class CompraPasaje {
     private String tipo_venta;
     
     @Column(nullable = true)
-    private int descuentoAplicado;
+    private int descuentoAplicado = 0;
     
     private EstadoCompra estadoCompra;
     

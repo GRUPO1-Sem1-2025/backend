@@ -98,11 +98,11 @@ public class OmnibusController {
 				}
 			}
 			response.put("mensaje", "Bus registrado exitosamente");
-			return ResponseEntity.status(HttpStatus.CREATED).body(response); // 201 - Creado
+			return ResponseEntity.status(HttpStatus.OK).body(response); // 201 - Creado
 		} else {
 			response.put("mensaje", "El Bus no se puede crear con esa candidad de asientos, debe de tener menos de "
 					+ asientosDisponibles + " asientos");
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
 
@@ -134,14 +134,14 @@ public class OmnibusController {
 			case 2:
 				response.put("mensaje",
 						"No existe una localidad llamada " + cargarLocalidad.getNombreLocalidad() + " en el sistema");
-				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}
 		} else {
 			response.put("mensaje", "No existe un omnibus que contenga ese ID");
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 		response.put("mensaje", "Error desconocido");
-		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
 	@PostMapping("/cambiarEstadoBus")
@@ -153,11 +153,11 @@ public class OmnibusController {
 		case 1:
 			return ResponseEntity.status(HttpStatus.OK).body("Se deshabilito el Omnibus");
 		case 2:
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Se habilito el Omnibus");
+			return ResponseEntity.status(HttpStatus.OK).body("Se habilito el Omnibus");
 		case 3:
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No existe un omnibus con ese id");
 		case 4:
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
 					"El omnibus esta asignado" + " a algun viaje activo, por lo tanto no puede ser deshabilitado");
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");

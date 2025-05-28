@@ -52,6 +52,9 @@ public class UsuarioController {
 
 	@Autowired
 	private TokenService tokenService;
+	
+	@Autowired
+	private EmailService emailService;
 
 	public UsuarioController(UsuarioService usuarioService) {
 		this.usuarioService = usuarioService;
@@ -168,7 +171,7 @@ public class UsuarioController {
 			} else {
 				response.put("mensaje", "El usuario no se encuentra habilitado, pongase en contacto"
 						+ " con un administrador para que lo habilite");
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}
 		}
 		response.put("mensaje", "Credenciales incorrectas");
@@ -231,8 +234,7 @@ public class UsuarioController {
 		return usuarioService.verCantidadUsuarios();
 	}
 
-	@Autowired
-	private EmailService emailService;
+	
 
 	@PostMapping("/resetearcontrasenia")
 	public ResponseEntity<Map<String, String>> resetearContrasenia(@RequestParam String para) {
@@ -270,17 +272,17 @@ public class UsuarioController {
 					return ResponseEntity.status(HttpStatus.OK).body(response);
 				} else {
 					response.put("mensaje", "Las nuevas contraseñas no coinciden");// nuevaContrasenia)
-					return ResponseEntity.status(HttpStatus.OK).body(response);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 					// return "Las nuevas contraseñas no coinciden";
 				}
 			} else {
 				response.put("mensaje", "La contraseña ingresada no coincide con la registrada en el sistema");// nuevaContrasenia)
-				return ResponseEntity.status(HttpStatus.OK).body(response);
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 				// return "la contraseña ingresada no coincide con la registrada en el sistema";
 			}
 		} else {
 			response.put("mensaje", "No existe el usuario ingresado");// nuevaContrasenia)
-			return ResponseEntity.status(HttpStatus.OK).body(response);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			// return "No existe el usuario ingresado";
 		}
 	}
@@ -319,7 +321,7 @@ public class UsuarioController {
 		switch (resultado) {
 		case 0:
 			response.put("mensaje", "No existe el rol ingresado");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		// break;
 		case 1:
 			System.out.print("Nuevo rol: " + usuario.get().getRol());
@@ -368,7 +370,7 @@ public class UsuarioController {
 			}
 		} else {
 			response.put("mensaje", "Solo se le puede cambiar la categoria si el usuario es USUARIO FINAL");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 
@@ -407,7 +409,7 @@ public class UsuarioController {
 			case CANCELADA:
 				response.put("mensaje", "No se pueden comprar pasajesa a viajes cancelados o cerrados");
 				// usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			}
 
 		}
@@ -428,7 +430,7 @@ public class UsuarioController {
 		// Vendedor ingresado no existe");
 		case 2:
 			response.put("mensaje", "Uno de los asientos solicitados ya se encuentra reservado");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		// return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 		// .body("Uno de los asientos solicitados ya se encuentra reservado");
 		case 3:
@@ -440,7 +442,7 @@ public class UsuarioController {
 		case 4:
 			response.put("mensaje",
 					"El vendedor ingresado no se encuentra habilitado, por lo tanto no puede realizar ventas");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 		/// .body("El vendedor ingresado no se encuentra habilitado, por lo tanto no
 		// puede realizar ventas");
@@ -490,7 +492,7 @@ public class UsuarioController {
 //					.body("La compra no se puede cancelar porque ya se encuentra cancelada");
 		case 3:
 			response.put("mensaje", "El id de compra ingresado no existe");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 		// return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id de compra
 		// ingresado no existe");
 		}
