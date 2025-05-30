@@ -175,4 +175,13 @@ public class OmnibusController {
 	public int obtenerCantidadDeOmnibus() {
 		return omnibusService.obtenerCantidadDeBus();
 	}
+	
+	@GetMapping("/obtenerOmnibusPorId")
+	public DtoBus obtenerOmnibusPorId(@RequestParam int idBus) {
+		DtoBus bus = new DtoBus();
+		bus = omnibusService.obtenerOmnibusPorId(idBus);
+		return bus;
+	}
+	
+	
 }
