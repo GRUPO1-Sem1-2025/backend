@@ -218,4 +218,25 @@ public class OmnibusService {
 		return omnibusRepository.findAll().size();
 	}
 
+	public DtoBus obtenerOmnibusPorId(int idBus) {
+		DtoBus bus = new DtoBus();
+		Omnibus Bus = new Omnibus();
+		try {
+			Optional<Omnibus> Obus = omnibusRepository.findById(idBus);
+			if (Obus.isPresent()) {
+				Bus = Obus.get();
+				bus.setActivo(Bus.isActivo());
+				bus.setCant_asientos(Bus.getAsientos().size());
+				bus.setId(Bus.getId());
+				bus.setMarca(Bus.getMarca());
+				bus.setMatricula(Bus.getMatricula());
+				bus.setLocalidad_actual(Bus.getLocalidad());
+				return bus;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+	}
+
 }
