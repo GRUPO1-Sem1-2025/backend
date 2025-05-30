@@ -167,6 +167,12 @@ public class CompraPasajeService {
 			System.out.println("Estado desconocido: " + estado);
 		}
 		compra.setCat_pasajes(asientosReservados.size());
+		
+		System.out.println("Asientos a comprar: " + asientosReservados.size());
+		if(asientosReservados.size() > 5) {			
+			asientosOcupados.setAsientosComprados(asientosReservados.size());
+			return asientosOcupados;
+		}
 		asientosOcupados.setAsientosComprados(asientosReservados.size());
 		float total = (compra.getCat_pasajes() * viaje.getPrecio()) - (compra.getCat_pasajes() * viaje.getPrecio()*descuento/100);
 		//compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());

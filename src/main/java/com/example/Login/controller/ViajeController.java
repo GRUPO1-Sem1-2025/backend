@@ -2,6 +2,8 @@ package com.example.Login.controller;
 
 import com.example.Login.dto.DtoCalificacion;
 import com.example.Login.dto.DtoCalificarViaje;
+import com.example.Login.dto.DtoCompraViaje;
+import com.example.Login.dto.DtoTipoDeCompra;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeCompleto;
 import com.example.Login.dto.DtoViajeDestinoFecha;
@@ -184,6 +186,11 @@ public class ViajeController {
 		List<DtoViajeCompleto> respuesta = new ArrayList<>();
 		respuesta = viajeService.obtenerViajes();
 		return respuesta;
+	}
+	
+	@GetMapping("/obtenerCompraViaje")
+	public DtoCompraViaje obtenerCompraViaje(@RequestParam int idViaje, @RequestParam int idCompra, @RequestParam int idUsuario){
+		return viajeService.obtenerCompraViaje(idViaje, idCompra, idUsuario);
 	}
 
 }

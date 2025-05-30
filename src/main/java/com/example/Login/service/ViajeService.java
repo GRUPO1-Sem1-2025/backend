@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.ToIntFunction;
 
 import com.example.Login.repository.ViajeRepository;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.jsonwebtoken.lang.Collections;
 
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.example.Login.dto.DtoCalificacion;
 import com.example.Login.dto.DtoCalificarViaje;
 import com.example.Login.dto.DtoCompraPasaje;
+import com.example.Login.dto.DtoCompraViaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeCompleto;
 import com.example.Login.dto.DtoViajeDestinoFecha;
@@ -67,7 +69,7 @@ public class ViajeService {
 
 	@Autowired
 	private TokenService tokenService;
-	
+
 	@Autowired
 	private CompraPasajeService compraPasajeService;
 
@@ -430,7 +432,9 @@ public class ViajeService {
 	public List<DtoViajeCompleto> obtenerViajes() {
 		List<DtoViajeCompleto> viajes = new ArrayList<>();
 		List<Viaje> total = viajeRepository.findAll();
-
+		int asientosOcupados = 0;
+		int asientosLibres = 0;
+		int totalAsientos = 0;
 		for (Viaje v : total) {
 			String localidadOrigen = null;
 			String localidadDestino = null;
@@ -447,12 +451,84 @@ public class ViajeService {
 				Optional<Localidad> OlocalidadD = localidadRepository.findById(v.getLocalidadDestino().getId());
 				nuevo.setIdLocalidadDestino(OlocalidadD.get().getNombre());
 				nuevo.setIdLocalidadOrigen(OlocalidadO.get().getNombre());
+				asientosLibres = asientosDisponibles(v.getId()).size();
+				totalAsientos = v.getOmnibus().getCant_asientos();
+				asientosOcupados = totalAsientos-asientosLibres;
+				nuevo.setAsientosOcupados(asientosOcupados);
 				viajes.add(nuevo);
 			} catch (Exception e) {
 			}
 
 		}
 		return viajes;
+	}
+
+	public DtoCompraViaje obtenerCompraViaje(int idViaje, int idCompra, int idUsuario) {
+		// List<DtoCompraViaje> resultado = new ArrayList<>();
+		System.out.println("idCompra = " + idCompra);
+		System.out.println("idViaje = " + idViaje);
+		System.out.println("idUsuario = " + idUsuario);
+		DtoCompraViaje cv = new DtoCompraViaje();
+//		// datos del viaje
+		String localidadDestinoDepartamento = null;
+		String localidadDestinoLocalidad = null;
+		String localidadOrigenDepaartamento = null;
+		String localidadOrigenLocalidad = null;
+		LocalTime horaInicio = null;
+		LocalTime horaFin = null;
+		Date fechaInicio = null;
+		Date fechaFin = null;
+		int idOmnibus = 0;
+//
+//		// datos de la compra
+//		int cantidadAsientos;
+//		float precio;
+//		int descuento;
+//		
+		try {
+			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
+			localidadDestinoDepartamento = Oviaje.get().getLocalidadDestino().getDepartamento();
+			localidadDestinoLocalidad = Oviaje.get().getLocalidadDestino().getNombre();
+			localidadOrigenDepaartamento = Oviaje.get().getLocalidadOrigen().getDepartamento();
+			localidadOrigenLocalidad = Oviaje.get().getLocalidadOrigen().getNombre();
+			horaInicio = Oviaje.get().getHoraInicio();
+			horaFin = Oviaje.get().getHoraFin();
+			fechaInicio = Oviaje.get().getFechaInicio();
+			fechaFin = Oviaje.get().getFechaFin();
+			idOmnibus = Oviaje.get().getOmnibus().getId();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		cv.setFechaFin(fechaFin);
+		cv.setFechaInicio(fechaInicio);
+		cv.setLocalidadDestinoLocalidad(localidadDestinoLocalidad);
+		cv.setLocalidadDestinoNombre(localidadDestinoDepartamento);
+		cv.setLocalidadOrigenLocalidad(localidadOrigenLocalidad);
+		cv.setLocalidadOrigenNombre(localidadOrigenDepaartamento);
+		cv.setHoraInicio(horaInicio);
+		cv.setHoraFin(horaFin);
+		cv.setFechaFin(fechaFin);
+		cv.setFechaInicio(fechaInicio);
+		cv.setIdOmnibus(idOmnibus);
+		try {
+			List<CompraPasaje> listadoCompras = compraPasajeRepository.findByViajeId((long) idViaje);
+
+			for (CompraPasaje cp : listadoCompras) {
+//				System.out.println("idCompra Listado = " + cp.getId());
+//				System.out.println("idCompra = " + idCompra);
+//				System.out.println("");
+				if (cp.getId() == idCompra) {
+					System.out.println("encontre la compra");
+					cv.setCantidadAsientos(cp.getCat_pasajes());
+					cv.setPrecio(cp.getTotal());
+					cv.setDescuento(cp.getDescuentoAplicado());
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		return cv;
 	}
 
 }
