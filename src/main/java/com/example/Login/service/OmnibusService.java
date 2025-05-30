@@ -123,14 +123,16 @@ public class OmnibusService {
 		System.out.println("Cantidad totales: " + omnibusTotales.size());
 
 		for (Omnibus omnibus : omnibusTotales) {
-			if (omnibus.isActivo()) {
-				DtoBus bus = new DtoBus();
-				bus.setId(omnibus.getId());
-				bus.setActivo(true);
-				bus.setCant_asientos(omnibus.getCant_asientos());
-				bus.setMarca(omnibus.getMarca());
-				omnibusActivos.add(bus);
-			}
+			// if (omnibus.isActivo()) {
+			DtoBus bus = new DtoBus();
+			bus.setMatricula(omnibus.getMatricula());
+			bus.setId(omnibus.getId());
+			bus.setActivo(omnibus.isActivo());
+			bus.setCant_asientos(omnibus.getCant_asientos());
+			bus.setMarca(omnibus.getMarca());
+			bus.setLocalidad_actual(omnibus.getLocalidad());
+			omnibusActivos.add(bus);
+			// }
 		}
 		return omnibusActivos;
 	}
@@ -169,22 +171,27 @@ public class OmnibusService {
 		if (cantidadOmnibusAsignadosAViaje == 0 || cantidadViajesActivosParaBus == 0) {
 
 			if (Obus.isPresent()) {
+				System.out.println("Encontre el bus");
 				Omnibus bus = Obus.get();
 				// verificar si existen viajes activos para ese bus
 				if (bus.isActivo()) {
+					System.out.println("Estado del bus: " + bus.isActivo());
 					bus.setActivo(false);
 					omnibusRepository.save(bus);
+					System.out.println("Estado del bus: " + bus.isActivo());
 					return 1;
 				} else {
+					System.out.println("Estado del bus: " + bus.isActivo());
 					bus.setActivo(true);
 					omnibusRepository.save(bus);
+					System.out.println("Estado del bus: " + bus.isActivo());
 					return 2;
 				}
 			}
 			return 3;
-		} else {			
+		} else {
 			return 4;
-	}
+		}
 	}
 
 	public DtoBus obtenerOmnibusPorMatricula(String matricula) {
@@ -192,7 +199,7 @@ public class OmnibusService {
 		Omnibus Bus = new Omnibus();
 		try {
 			Optional<Omnibus> Obus = omnibusRepository.findByMatricula(matricula);
-			if(Obus.isPresent()){
+			if (Obus.isPresent()) {
 				Bus = Obus.get();
 				bus.setActivo(Bus.isActivo());
 				bus.setCant_asientos(Bus.getAsientos().size());
@@ -200,15 +207,15 @@ public class OmnibusService {
 				bus.setMarca(Bus.getMarca());
 				bus.setMatricula(matricula);
 				return bus;
-			}			
-		}catch (Exception e) {
+			}
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return null;
 	}
-	
+
 	public int obtenerCantidadDeBus() {
 		return omnibusRepository.findAll().size();
 	}
-		
+
 }

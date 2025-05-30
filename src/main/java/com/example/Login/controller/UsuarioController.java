@@ -379,13 +379,17 @@ public class UsuarioController {
 		DtoRespuestaCompraPasaje resultado = comprarPasajeService.comprarPasaje(dtoComprarPasaje);
 		EstadoCompra estado = resultado.getEstado();
 		List<Integer> asientos = new ArrayList<>();
+		Map<String, Object> response = new HashMap<>();
+		
+		if(resultado.getAsientosComprados() > 5) {
+			response.put("error", "No se pueden comprar más de 5 pasajes por viaje");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 		try {
 			asientos = resultado.getAsientosOcupados();
 		} catch (Exception e) {
 			// TODO: handle exception
-		}
-
-		Map<String, Object> response = new HashMap<>();
+		}		
 
 		if (!resultado.getAsientosOcupados().isEmpty()) {
 			// Map<String, Object> response = new HashMap<>();

@@ -6,18 +6,30 @@ public class DtoBus {
 	private String matricula;
 	private int cant_asientos;
 	private boolean activo;
+	private String localidad_actual;
 	
 	public DtoBus() {
 		
 	}
 	
-	public DtoBus(int id, String marca, String matricula, int cant_asientos, boolean activo) {
+	public DtoBus(int id, String marca, String matricula, int cant_asientos, boolean activo, String localidad_actual) {
 		super();
 		this.id = id;
 		this.matricula = matricula;
 		this.marca = marca;
 		this.cant_asientos = cant_asientos;
 		this.activo = activo;
+		this.localidad_actual = localidad_actual;
+	}
+
+	
+	
+	public String getLocalidad_actual() {
+		return localidad_actual;
+	}
+
+	public void setLocalidad_actual(String localidad_actual) {
+		this.localidad_actual = localidad_actual;
 	}
 
 	public int getId() {
