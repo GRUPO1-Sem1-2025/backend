@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.example.Login.dto.DtoCalificacion;
+import com.example.Login.dto.DtoCalificarViaje;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeDestinoFecha;
@@ -364,6 +366,63 @@ public class ViajeService {
 	
 	public int cantidadDeViajesCreados() {
 		return viajeRepository.findAll().size();
+	}
+	
+	public int calificarViaje(DtoCalificarViaje dtoCalificar) {
+	    int idViaje = dtoCalificar.getIdViaje();
+	    int calificacion = dtoCalificar.getCalificacion();
+	    String comentario = dtoCalificar.getComentario();
+
+	    System.out.println("comentario: " + comentario);
+	    System.out.println("viaje: " + idViaje);
+
+	    try {
+	        Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
+	        if (Oviaje.isPresent()) {
+	            Viaje viaje = Oviaje.get();
+
+	            List<String> comentarios = viaje.getComentarios();
+	            if (comentarios == null) {
+	                comentarios = new ArrayList<>();
+	            }
+
+	            System.out.println("comentarios Actuales = " + comentarios.size());
+
+	            comentarios.add(comentario);
+	            viaje.setComentarios(comentarios);
+
+	            System.out.println("Entre para obtener los comentarios y agregar los nuevos: Nuevos:" + viaje.getComentarios().size());
+	            System.out.println("calificacion Actual: " + viaje.getCalificacion() );
+	            viaje.setCalificacion(viaje.getCalificacion() + calificacion);
+	            System.out.println("calificacion Nueva: " + viaje.getCalificacion() );
+
+	            viajeRepository.save(viaje); // ✅ PERSISTE LOS CAMBIOS
+
+	            return 1;
+	        } else {
+	            System.out.println("No se encontró el viaje con id: " + idViaje);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Para que puedas ver el error si ocurre algo
+	    }
+
+	    return 0;
+	}
+
+	public DtoCalificacion verCalificacionYComentariosDeViaje(int idViaje) {
+		System.out.println("entre al service de verCalificacionComentario");
+		DtoCalificacion resultado = new DtoCalificacion();
+		List<String>comentarios = new ArrayList<>();
+		
+		try {
+			Optional<Viaje>Oviaje = viajeRepository.findById(idViaje);
+			System.out.println("encontre el viaje");
+			resultado.setCalificacion(Oviaje.get().getCalificacion());
+			resultado.setComentarios(Oviaje.get().getComentarios());			
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		return resultado;
 	}
 
 }

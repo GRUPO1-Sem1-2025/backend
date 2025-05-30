@@ -1,5 +1,7 @@
 package com.example.Login.controller;
 
+import com.example.Login.dto.DtoCalificacion;
+import com.example.Login.dto.DtoCalificarViaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.model.AsientoPorViaje;
@@ -112,7 +114,7 @@ public class ViajeController {
 	@Operation(summary = "obtenerViajesPorFechaYDestino", description = "obtenerViajesPorFechaYDestino")
 	public ResponseEntity<List<DtoViajeDestinoFecha>> obtenerViajesPorFechaYDestino(@RequestParam int locOrigen,
 			@RequestParam int locDestino, @RequestParam Date fechaInicio, @RequestParam Date fechaFin) {
-		
+
 		DtoViaje dtoVDF = new DtoViaje();
 		dtoVDF.setFechaFin(fechaFin);
 		dtoVDF.setFechaInicio(fechaInicio);
@@ -133,27 +135,47 @@ public class ViajeController {
 	@GetMapping("/cancelarViaje")
 	public ResponseEntity<Map<String, String>> cancelarViaje(@RequestParam Long idViaje) {
 		Map<String, String> response = new HashMap<>();
-		
-		if(viajeService.cancelarViaje(idViaje)) {
-			response.put("mensaje",
-					"El viaje fue cancelado de forma correcta.");
+
+		if (viajeService.cancelarViaje(idViaje)) {
+			response.put("mensaje", "El viaje fue cancelado de forma correcta.");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-		}else {
+		} else {
 			response.put("mensaje", "No se puede cancelar el viaje porque no existe o ya esta cancelado.");
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 		}
 	}
-	
+
 	@GetMapping("/obtenerViajesPorBus")
 	public List<DtoViaje> obtenerViajesPorBus(@RequestParam int idBus) {
 		List<DtoViaje> respuesta = new ArrayList<>();
 		respuesta = viajeService.obtenerViajesPorBus(idBus);
 		return respuesta;
 	}
-	
+
 	@GetMapping("/cantidadDeViajesCreados")
 	public int cantidadDeViajesCreados() {
 		return viajeService.cantidadDeViajesCreados();
+	}
+
+	@PostMapping("/calificarViaje")
+	public ResponseEntity<Map<String, String>> calificarViaje(@RequestBody DtoCalificarViaje dtoCalificar) {
+		
+		Map<String, String> response = new HashMap<>();
+		int resultado = viajeService.calificarViaje(dtoCalificar);
+
+		if (resultado == 1) {
+			response.put("mensaje", "Viaje calificado de forma correcta");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			response.put("error", "Viaje no calificado");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+	
+	@GetMapping("/verCalificacionComentario")
+	public DtoCalificacion verCalificacionYComentariosDeViaje(@RequestParam int idViaje) {
+		System.out.println("entre al controlador de verCalificacionComentario");
+		return viajeService.verCalificacionYComentariosDeViaje(idViaje);
 	}
 
 }
