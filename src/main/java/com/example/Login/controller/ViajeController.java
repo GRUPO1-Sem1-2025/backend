@@ -217,5 +217,11 @@ public class ViajeController {
 		return resultado;
 	}
 	
+	@GetMapping("/obtenerViajeMejorCalificados")
+	public List<DtoViajeCompleto> obtenerViajeMejorCalificados() {
+		List<DtoViajeCompleto> resultado = new ArrayList<>();		
+		resultado = viajeService.obtenerViajeMejorCalificados();
+		return resultado;
+	}
 
 }

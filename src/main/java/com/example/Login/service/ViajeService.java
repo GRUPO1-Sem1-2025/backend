@@ -552,6 +552,7 @@ public class ViajeService {
 			resultado.setIdLocalidadOrigen(viaje.getLocalidadOrigen().getNombre());
 			resultado.setPrecio(viaje.getPrecio());
 			resultado.setIdOmnibus(viaje.getOmnibus().getId());
+			resultado.setCalificacion(viaje.getCalificacion());
 			int asientosLibres = asientosDisponibles(viaje.getId()).size();
 			int totalAsientos = viaje.getOmnibus().getCant_asientos();
 			resultado.setAsientosOcupados(totalAsientos - asientosLibres);
@@ -598,6 +599,35 @@ public class ViajeService {
 				}
 			}
 		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return resultado;
+	}
+
+	public List<DtoViajeCompleto> obtenerViajeMejorCalificados() {
+		List<Integer> listadoObtenido = new ArrayList<>();
+		List<DtoViajeCompleto> resultado = new ArrayList<>();
+		try {
+			listadoObtenido = viajeRepository.findTop5IdsByCalificacionDesc();
+			
+			for(Integer i: listadoObtenido){
+				DtoViajeCompleto viaje = new DtoViajeCompleto();
+				viaje = obtenerViajeId(i);
+				System.out.println("viajeId: " + viaje.getId());
+				
+				  if (viaje == null) {
+				        System.out.println("❌ No se encontró viaje con ID: " + i);
+				        continue;
+				    }
+
+				    System.out.println("✅ viajeId: " + viaje.getId() + ", calificación: " + viaje.getCalificacion());
+				
+				if(viaje.getCalificacion() > 0) {
+				resultado.add(viaje);
+				}
+			}
+			
+		}catch (Exception e) {
 			// TODO: handle exception
 		}
 		return resultado;

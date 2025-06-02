@@ -75,4 +75,7 @@ public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
 			List<Viaje> findViajesConInicioEnLosProximos60Minutos();
 		
 		List<Viaje> findByOmnibus_Id(int idOmnibus);
+		
+		@Query(value = "SELECT id FROM viaje ORDER BY calificacion DESC LIMIT 5", nativeQuery = true)
+	    List<Integer> findTop5IdsByCalificacionDesc();
 }
