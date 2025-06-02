@@ -103,6 +103,9 @@ public class ViajeController {
 			case 3:
 				response.put("mensaje", "Ocurrió un error inesperado al asignar el ómnibus al viaje.");
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			case 5:
+				response.put("mensaje", "No se puede asignar el omnibus, dado que el mismo se encuentra inactivo");
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			default:
 				response.put("mensaje", "Resultado desconocido.");
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -192,5 +195,27 @@ public class ViajeController {
 	public DtoCompraViaje obtenerCompraViaje(@RequestParam int idViaje, @RequestParam int idCompra, @RequestParam int idUsuario){
 		return viajeService.obtenerCompraViaje(idViaje, idCompra, idUsuario);
 	}
+	
+	@GetMapping("/obtenerViajeId")
+	public DtoViajeCompleto obtenerViajeId(@RequestParam int idViaje) {
+		DtoViajeCompleto resultado = new DtoViajeCompleto();		
+		resultado = viajeService.obtenerViajeId(idViaje);
+		return resultado;
+	}
+	
+	@GetMapping("/obtenerViajePorDestino")
+	public List<DtoViajeCompleto> obtenerViajePorDestino(@RequestParam String destino) {
+		List<DtoViajeCompleto> resultado = new ArrayList<>();		
+		resultado = viajeService.obtenerViajePorDestino(destino);
+		return resultado;
+	}
+	
+	@GetMapping("/obtenerViajePorOrigen")
+	public List<DtoViajeCompleto> obtenerViajePorOrigen(@RequestParam String origen) {
+		List<DtoViajeCompleto> resultado = new ArrayList<>();		
+		resultado = viajeService.obtenerViajePorOrigen(origen);
+		return resultado;
+	}
+	
 
 }
