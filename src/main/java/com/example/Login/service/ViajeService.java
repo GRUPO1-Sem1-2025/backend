@@ -116,6 +116,69 @@ public class ViajeService {
 		return 4;
 	}
 
+	public int crearViajeConBus(DtoViaje dtoViaje) {
+
+		Viaje nuevoViaje = new Viaje();
+
+		Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());
+		Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());
+
+		if (locOri.isPresent() && locDest.isPresent()) {
+			if (locOri.get().getId() == locDest.get().getId()) {
+				System.out.println("La ciudad de origen y destino no pueden ser las mismas");
+				return 1;
+			}
+
+			if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
+				System.out.println("Una de las ciudades no se encuentra disponible");
+				return 2;
+			}
+
+			nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
+			nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
+			nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
+			nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
+			nuevoViaje.setLocalidadOrigen(locOri.get());
+			nuevoViaje.setLocalidadDestino(locDest.get());
+			nuevoViaje.setPrecio(dtoViaje.getPrecio());
+			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
+			nuevoViaje.setAsientosPorViaje(new ArrayList<>());
+			viajeRepository.save(nuevoViaje);			
+
+			// buscar omnibus
+			Omnibus bus = new Omnibus();
+			try {
+				Optional<Omnibus> Obus = omnibusRepository.findById(dtoViaje.getIdOmnibus());
+				bus = Obus.get();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			// obtener id del ultimo viaje
+			Viaje viaje = new Viaje();
+			int ultimoId = viajeRepository.findUltimoId();
+			System.out.println("UltimoIdIngresado: " + ultimoId);
+			
+			try {
+				Optional<Viaje> Oviaje = viajeRepository.findById(ultimoId);				
+				viaje = Oviaje.get();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			try{
+				if(asignarOmnibusAViaje(bus, viaje)==1) {;				
+				return 3;
+				}
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
+			return 5;
+		}
+
+		System.out.println("Una de las ciudades ingresadas no existe");
+		return 4;
+	}
+
 	public int asignarOmnibusAViaje_vieja(Omnibus omnibus, Viaje viaje) {
 		int resultado = 0;
 		Localidad localidadOrigen = viaje.getLocalidadOrigen();
