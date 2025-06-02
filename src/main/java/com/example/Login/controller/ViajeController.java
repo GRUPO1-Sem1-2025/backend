@@ -172,7 +172,11 @@ public class ViajeController {
 		if (resultado == 1) {
 			response.put("mensaje", "Viaje calificado de forma correcta");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-		} else {
+		}else if(resultado == 2) {
+			response.put("error", "La calificación debe de estar entre 1 y 5");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+		else {
 			response.put("error", "Viaje no calificado");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}

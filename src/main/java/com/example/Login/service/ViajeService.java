@@ -384,7 +384,10 @@ public class ViajeService {
 
 		System.out.println("comentario: " + comentario);
 		System.out.println("viaje: " + idViaje);
-
+		if (calificacion == 0 || calificacion > 5) {
+			System.out.println("La calificación debe de estar entre 1 y 5");
+			return 2;
+		}
 		try {
 			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
 			if (Oviaje.isPresent()) {
@@ -396,10 +399,10 @@ public class ViajeService {
 				}
 
 				System.out.println("comentarios Actuales = " + comentarios.size());
-
-				comentarios.add(comentario);
-				viaje.setComentarios(comentarios);
-
+				if (!comentario.equals("")) {
+					comentarios.add(comentario);
+					viaje.setComentarios(comentarios);
+				}
 				System.out.println("Entre para obtener los comentarios y agregar los nuevos: Nuevos:"
 						+ viaje.getComentarios().size());
 				System.out.println("calificacion Actual: " + viaje.getCalificacion());
@@ -608,26 +611,18 @@ public class ViajeService {
 		List<Integer> listadoObtenido = new ArrayList<>();
 		List<DtoViajeCompleto> resultado = new ArrayList<>();
 		try {
-			listadoObtenido = viajeRepository.findTop5IdsByCalificacionDesc();
-			
-			for(Integer i: listadoObtenido){
+
+			listadoObtenido = viajeRepository.findTop5IdsByCalificacion();
+
+			for (Integer i : listadoObtenido) {
 				DtoViajeCompleto viaje = new DtoViajeCompleto();
 				viaje = obtenerViajeId(i);
-				System.out.println("viajeId: " + viaje.getId());
-				
-				  if (viaje == null) {
-				        System.out.println("❌ No se encontró viaje con ID: " + i);
-				        continue;
-				    }
-
-				    System.out.println("✅ viajeId: " + viaje.getId() + ", calificación: " + viaje.getCalificacion());
-				
-				if(viaje.getCalificacion() > 0) {
-				resultado.add(viaje);
+				if (viaje.getCalificacion() > 0) {
+					resultado.add(viaje);
 				}
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return resultado;
