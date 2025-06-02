@@ -76,6 +76,35 @@ public class ViajeController {
 		response.put("mensaje", "Error Desconcido");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); //
 	}
+	
+	@PostMapping("/crearViajeConBus")
+	@Operation(summary = "Crear un viaje", description = "Agrega un nuevo viaje")
+	public ResponseEntity<Map<String, String>> crearViajeConBus(@RequestBody DtoViaje dtoViaje) {
+
+		int respuesta = viajeService.crearViajeConBus(dtoViaje);
+		Map<String, String> response = new HashMap<>();
+
+		switch (respuesta) {
+		case 1:
+			response.put("mensaje", "La ciudad de origen y destino no pueden ser las mismas");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+		case 2:
+			response.put("mensaje", "Una de las ciudades no se encuentra disponible");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		case 3:
+			response.put("mensaje", "Viaje registrado exitosamente");
+			return ResponseEntity.status(HttpStatus.OK).body(response); // ✅ 201 - Creado
+		case 4:
+			response.put("mensaje", "Una de las ciudads ingresadas no existe en el sistema");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
+		case 5:
+			response.put("error", "El bus no existe o se encuentra en una ciudad distinta +"
+					+ " a la ciudad de donde parte el viaje");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
+		}
+		response.put("mensaje", "Error Desconcido");
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); //
+	}
 
 	@PostMapping("/agregarBusAViaje")
 	@Operation(summary = "Asignar bus a viaje", description = "Agrega un bus a un viaje")
@@ -172,7 +201,11 @@ public class ViajeController {
 		if (resultado == 1) {
 			response.put("mensaje", "Viaje calificado de forma correcta");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-		} else {
+		}else if(resultado == 2) {
+			response.put("error", "La calificación debe de estar entre 1 y 5");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+		else {
 			response.put("error", "Viaje no calificado");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
@@ -217,5 +250,11 @@ public class ViajeController {
 		return resultado;
 	}
 	
+	@GetMapping("/obtenerViajeMejorCalificados")
+	public List<DtoViajeCompleto> obtenerViajeMejorCalificados() {
+		List<DtoViajeCompleto> resultado = new ArrayList<>();		
+		resultado = viajeService.obtenerViajeMejorCalificados();
+		return resultado;
+	}
 
 }
