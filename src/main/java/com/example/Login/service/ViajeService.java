@@ -173,6 +173,12 @@ public class ViajeService {
 			Optional<Omnibus> busOpt = omnibusRepository.findById(omnibus.getId());
 
 			if (busOpt.isPresent()) {
+
+				if (!busOpt.get().isActivo()) {
+					System.out.println("No se le puede asigar el bus, porque el mismo esta inactivo");
+					resultado = 5;
+					return resultado;
+				}
 				Omnibus bus = busOpt.get();
 				System.out.println(" Omnibus localidad: " + bus.getLocalidad());
 				System.out.println(" Localidad localidad: " + loc.get().getNombre());
@@ -453,7 +459,7 @@ public class ViajeService {
 				nuevo.setIdLocalidadOrigen(OlocalidadO.get().getNombre());
 				asientosLibres = asientosDisponibles(v.getId()).size();
 				totalAsientos = v.getOmnibus().getCant_asientos();
-				asientosOcupados = totalAsientos-asientosLibres;
+				asientosOcupados = totalAsientos - asientosLibres;
 				nuevo.setAsientosOcupados(asientosOcupados);
 				viajes.add(nuevo);
 			} catch (Exception e) {
@@ -529,6 +535,72 @@ public class ViajeService {
 		}
 
 		return cv;
+	}
+
+	public DtoViajeCompleto obtenerViajeId(int idViaje) {
+		DtoViajeCompleto resultado = new DtoViajeCompleto();
+
+		try {
+			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
+			Viaje viaje = Oviaje.get();
+			resultado.setFechaFin(viaje.getFechaFin());
+			resultado.setFechaInicio(viaje.getFechaInicio());
+			resultado.setHoraFin(viaje.getHoraFin());
+			resultado.setHoraInicio(viaje.getHoraInicio());
+			resultado.setId(viaje.getId());
+			resultado.setIdLocalidadDestino(viaje.getLocalidadDestino().getNombre());
+			resultado.setIdLocalidadOrigen(viaje.getLocalidadOrigen().getNombre());
+			resultado.setPrecio(viaje.getPrecio());
+			resultado.setIdOmnibus(viaje.getOmnibus().getId());
+			int asientosLibres = asientosDisponibles(viaje.getId()).size();
+			int totalAsientos = viaje.getOmnibus().getCant_asientos();
+			resultado.setAsientosOcupados(totalAsientos - asientosLibres);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		return resultado;
+	}
+
+	public List<DtoViajeCompleto> obtenerViajePorDestino(String destino) {
+		List<DtoViajeCompleto> resultado = new ArrayList<>();
+		List<Viaje> listadoViaje = viajeRepository.findAll();
+		int idViaje = 0;
+
+		try {
+			for (Viaje v : listadoViaje) {
+				DtoViajeCompleto viaje = new DtoViajeCompleto();
+
+				if (v.getLocalidadDestino().getNombre().equals(destino)) {
+					idViaje = v.getId();
+					viaje = obtenerViajeId(idViaje);
+					resultado.add(viaje);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return resultado;
+	}
+
+	public List<DtoViajeCompleto> obtenerViajePorOrigen(String origen) {
+		List<DtoViajeCompleto> resultado = new ArrayList<>();
+		List<Viaje> listadoViaje = viajeRepository.findAll();
+		int idViaje = 0;
+
+		try {
+			for (Viaje v : listadoViaje) {
+				DtoViajeCompleto viaje = new DtoViajeCompleto();
+				if (v.getLocalidadOrigen().getNombre().equals(origen)) {
+					idViaje = v.getId();
+					viaje = obtenerViajeId(idViaje);
+					resultado.add(viaje);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return resultado;
 	}
 
 }
