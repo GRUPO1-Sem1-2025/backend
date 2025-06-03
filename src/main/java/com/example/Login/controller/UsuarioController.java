@@ -207,6 +207,21 @@ public class UsuarioController {
 		response.put("error", "No existe el usuario");
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
+	
+	@PostMapping("/activarUsuario")
+	public ResponseEntity<Map<String, String>> activarUsuario(@RequestParam String email) {
+
+		Optional<Usuario> user = usuarioService.buscarPorEmail(email);
+		Map<String, String> response = new HashMap<>();
+
+		if (user.isPresent()) {
+			response.put("mensaje", "El usuario ha sido activado");
+			usuarioService.activarUsuario(user);// borrarUsuario(usuario);
+			return ResponseEntity.ok(response);
+		}
+		response.put("error", "No existe el usuario");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	}
 
 	@Autowired
 	private UsuarioService fileConversionService;
