@@ -895,4 +895,11 @@ public class UsuarioService {
 		return usuario;
 	}
 
+	public void activarUsuario(Optional<Usuario> user) {
+		Usuario u = user.get();
+		u.setActivo(true);
+		usuarioRepository.save(u);
+		//return u;		
+	}
+
 }
