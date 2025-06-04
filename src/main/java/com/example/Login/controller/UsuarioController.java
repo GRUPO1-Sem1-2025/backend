@@ -158,14 +158,14 @@ public class UsuarioController {
 			if (usuarioEncontrado.getActivo() == true) {
 				if (!usuarioEncontrado.isContraseniaValida()) {
 					response.put("mensaje", "Debe de cambiar la contraseña para iniciar sesion");
-					response.put("Login directo", "0");
+					response.put("Login_directo", "0");
 					return ResponseEntity.status(HttpStatus.OK).body(response);
 				}
 				if (usuarioService.encriptarSHA256(password).equals(usuarioEncontrado.getPassword())) {
 					usuarioService.login(email, password);
 					response.put("mensaje",
 							"Se le envió a su correo un código para terminar con el proceso de autenticación");
-					response.put("Login directo", "1");
+					response.put("Login_directo", "1");
 					return ResponseEntity.status(HttpStatus.OK).body(response);
 				}
 			} else {

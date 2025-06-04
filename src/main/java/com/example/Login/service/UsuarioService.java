@@ -369,9 +369,10 @@ public class UsuarioService {
 		}
 		int id = usuario.getId();
 		int rol = usuario.getRol();
+		String nombre = usuario.getNombre();
 		// int id = usuario.get().getId();
 		if (usuario.getCodigo() == codigo) {
-			return jwtService.generateToken(email, rol, id);
+			return jwtService.generateToken(email, rol, id, nombre);
 		} else {
 			System.out.println("El código ingresado no coincide con el enviado por email");
 			return null;
@@ -388,9 +389,9 @@ public class UsuarioService {
 		return usuarioRepository.count();
 	}
 
-	public String obtenerToken(String email, int rol, int id) {
+	public String obtenerToken(String email, int rol, int id, String nombre) {
 		String token = null;
-		token = jwtService.generateToken(email, rol, id);
+		token = jwtService.generateToken(email, rol, id, nombre);
 		return token;
 	}
 
@@ -625,6 +626,7 @@ public class UsuarioService {
 					System.out.println("compraId: " + c.getId());
 					compra.setEstadoCompra(c.getEstadoCompra());
 					compra.setViajeId(c.getViaje().getId());
+					compra.setCompraId(c.getId().intValue());
 					List<Integer> asientos = new ArrayList<>();
 					for (AsientoPorViaje apv : c.getAsientos()) {
 						asientos.add(apv.getOmnibusAsiento().getAsiento().getId());
@@ -633,7 +635,7 @@ public class UsuarioService {
 					compra.setEstadoCompra(c.getEstadoCompra());
 					misCompras.add(compra);
 				default:
-					System.out.println("Estado desconocido: " + estado);
+					System.out.println("Estado compra: " + estado);
 				}
 			}
 		}
