@@ -6,16 +6,18 @@ public class DtoMisCompras {
 	private int viajeId;
     private List<Integer> numerosDeAsiento;
     EstadoCompra estadoCompra;
+    private int compraId;
     
     public DtoMisCompras() {
     	
     }
     
-	public DtoMisCompras(int viajeId, List<Integer> numerosDeAsiento, EstadoCompra estadoCompra) {
+	public DtoMisCompras(int viajeId, List<Integer> numerosDeAsiento, EstadoCompra estadoCompra, int compraId) {
 		super();
 		this.viajeId = viajeId;
 		this.numerosDeAsiento = numerosDeAsiento;
 		this.estadoCompra = estadoCompra;
+		this.compraId = compraId;
 	}
 	public int getViajeId() {
 		return viajeId;
@@ -34,6 +36,14 @@ public class DtoMisCompras {
 	}
 	public void setEstadoCompra(EstadoCompra estadoCompra) {
 		this.estadoCompra = estadoCompra;
+	}
+
+	public int getCompraId() {
+		return compraId;
+	}
+
+	public void setCompraId(int compraId) {
+		this.compraId = compraId;
 	}
     
     

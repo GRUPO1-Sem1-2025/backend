@@ -98,7 +98,7 @@ public class ViajeController {
 			response.put("mensaje", "Una de las ciudads ingresadas no existe en el sistema");
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
 		case 5:
-			response.put("error", "El bus no existe o se encuentra en una ciudad distinta +"
+			response.put("error", "El bus no existe o se encuentra en una ciudad distinta 	"
 					+ " a la ciudad de donde parte el viaje");
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
 		}
