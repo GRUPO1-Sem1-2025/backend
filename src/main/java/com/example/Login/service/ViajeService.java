@@ -418,6 +418,7 @@ public class ViajeService {
 					Omnibus omnibus = v.getOmnibus();
 					System.out.println("id del bus a habilitar al cerrar el viaje: " + omnibus.getId());
 					omnibus.setSePuedeUtilizar(true);
+					omnibus.setLocalidadActual(v.getLocalidadDestino().getNombre());
 					omnibusRepository.save(omnibus);
 				} catch (Exception e) {
 					// TODO: handle exception
