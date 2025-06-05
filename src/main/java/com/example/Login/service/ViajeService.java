@@ -143,33 +143,39 @@ public class ViajeService {
 			nuevoViaje.setPrecio(dtoViaje.getPrecio());
 			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
 			nuevoViaje.setAsientosPorViaje(new ArrayList<>());
-			viajeRepository.save(nuevoViaje);			
+			viajeRepository.save(nuevoViaje);
 
 			// buscar omnibus
 			Omnibus bus = new Omnibus();
 			try {
 				Optional<Omnibus> Obus = omnibusRepository.findById(dtoViaje.getIdOmnibus());
 				bus = Obus.get();
+				if (!bus.isSePuedeUtilizar()) {
+					System.out.println(
+							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
+					return 6;
+				}
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
-			
+
 			// obtener id del ultimo viaje
 			Viaje viaje = new Viaje();
 			int ultimoId = viajeRepository.findUltimoId();
 			System.out.println("UltimoIdIngresado: " + ultimoId);
-			
+
 			try {
-				Optional<Viaje> Oviaje = viajeRepository.findById(ultimoId);				
+				Optional<Viaje> Oviaje = viajeRepository.findById(ultimoId);
 				viaje = Oviaje.get();
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
-			try{
-				if(asignarOmnibusAViaje(bus, viaje)==1) {;				
-				return 3;
+			try {
+				if (asignarOmnibusAViaje(bus, viaje) == 1) {
+					;
+					return 3;
 				}
-			}catch (Exception e) {
+			} catch (Exception e) {
 				// TODO: handle exception
 			}
 			return 5;
@@ -237,6 +243,13 @@ public class ViajeService {
 
 			if (busOpt.isPresent()) {
 
+				if (!busOpt.get().isSePuedeUtilizar()) {
+					System.out.println(
+							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
+					resultado = 6;
+					return resultado;
+				}
+
 				if (!busOpt.get().isActivo()) {
 					System.out.println("No se le puede asigar el bus, porque el mismo esta inactivo");
 					resultado = 5;
@@ -260,7 +273,7 @@ public class ViajeService {
 						apv.setReservado(false); // al inicio, todos libres
 						viaje.getAsientosPorViaje().add(apv);
 					}
-
+					bus.setSePuedeUtilizar(false);
 					viajeRepository.save(viaje);
 					resultado = 1; // éxito
 
@@ -346,6 +359,13 @@ public class ViajeService {
 				return false;
 			}
 			viaje.setEstadoViaje(EstadoViaje.CANCELADO);
+
+			try {
+				viaje.getOmnibus().setSePuedeUtilizar(true);
+				System.out.println("id del bus a habilitar: " + viaje.getOmnibus().getId());
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 			viajeRepository.save(viaje);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -376,6 +396,16 @@ public class ViajeService {
 		for (Viaje v : viajesACerrar) {
 			if (!v.getEstadoViaje().equals(EstadoViaje.CERRADO)) {
 				v.setEstadoViaje(EstadoViaje.CERRADO);
+				
+				try {
+					Omnibus omnibus = v.getOmnibus();
+					System.out.println("id del bus a habilitar al cerrar el viaje: " + omnibus.getId());
+					omnibus.setSePuedeUtilizar(true);
+					omnibusRepository.save(omnibus);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 				viajeRepository.save(v);
 
 				// enviar mail a los compradores de pasajes para ese viaje
