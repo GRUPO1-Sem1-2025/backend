@@ -101,6 +101,9 @@ public class ViajeController {
 			response.put("error", "El bus no existe o se encuentra en una ciudad distinta 	"
 					+ " a la ciudad de donde parte el viaje");
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
+		case 6:
+			response.put("mensaje", "No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 		response.put("mensaje", "Error Desconcido");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); //
@@ -134,6 +137,9 @@ public class ViajeController {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			case 5:
 				response.put("mensaje", "No se puede asignar el omnibus, dado que el mismo se encuentra inactivo");
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			case 6:
+				response.put("mensaje", "No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			default:
 				response.put("mensaje", "Resultado desconocido.");

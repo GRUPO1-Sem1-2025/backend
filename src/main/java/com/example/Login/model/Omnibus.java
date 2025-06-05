@@ -36,13 +36,17 @@ public class Omnibus {
     @Column(unique = true)
     private String matricula;
     private String localidadActual;
+    
+    //se agrega para manejar la disponibilidad de asignacion para un viaje
+    @Column(nullable = true)
+    private Boolean sePuedeUtilizar = true;
 	
 	// constructor
 	public Omnibus() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Omnibus(int id, String marca, String matricula, boolean activo, List<OmnibusAsiento> omnibusAsientos, int cant_asientos, String localidad) {
+	public Omnibus(int id, String marca, String matricula, boolean activo, List<OmnibusAsiento> omnibusAsientos, int cant_asientos, String localidad, Boolean sePuedeUtilizar) {
 		super();
 		this.id = id;
 		this.marca = marca;
@@ -51,6 +55,7 @@ public class Omnibus {
 		this.omnibusAsientos = omnibusAsientos;
 		this.cant_asientos = cant_asientos;
 		this.localidadActual = localidad;
+		this.sePuedeUtilizar = sePuedeUtilizar;
 	}
 
 	// set and get
@@ -122,6 +127,16 @@ public class Omnibus {
 	public void setLocalidadActual(String localidadActual) {
 		this.localidadActual = localidadActual;
 	}
+
+	public Boolean isSePuedeUtilizar() {
+		return sePuedeUtilizar;
+	}
+
+	public void setSePuedeUtilizar(Boolean sePuedeUtilizar) {
+		this.sePuedeUtilizar = sePuedeUtilizar;
+	}
+	
+	
 
 	
 
