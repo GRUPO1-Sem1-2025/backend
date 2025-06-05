@@ -81,4 +81,7 @@ public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
 		
 		@Query("SELECT MAX(v.id) FROM Viaje v")
 		Integer findUltimoId();  // En un repositorio que extiende JpaRepository
+		
+		@Query("SELECT v FROM Viaje v WHERE v.omnibus.id = :omnibusId")
+	    List<Viaje> findByOmnibusId(@Param("omnibusId") int omnibusId);
 }
