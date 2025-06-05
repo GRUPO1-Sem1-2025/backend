@@ -250,18 +250,28 @@ public class ViajeService {
 
 			if (busOpt.isPresent()) {
 
-				if (!busOpt.get().isSePuedeUtilizar()) {
+				if (!busOpt.get().isSePuedeUtilizar() || omnibusDisponible(busOpt.get().getId(),viaje.getFechaInicio(),viaje.getHoraInicio()) == false) {
 					System.out.println(
 							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
 					resultado = 6;
 					return resultado;
 				}
+				
+//				if(omnibusDisponible(busOpt.get().getId(),viaje.getFechaInicio(),viaje.getHoraInicio()) == false){
+//					System.out.println(
+//							"No se le puede asigar el bus, porque el viaje coincide con otro que ya tiene el bus asignado");
+//					resultado = 6;
+//					return resultado;
+//				}
 
 				if (!busOpt.get().isActivo()) {
 					System.out.println("No se le puede asigar el bus, porque el mismo esta inactivo");
 					resultado = 5;
 					return resultado;
 				}
+				
+				
+				
 				Omnibus bus = busOpt.get();
 				System.out.println(" Omnibus localidad: " + bus.getLocalidad());
 				System.out.println(" Localidad localidad: " + loc.get().getNombre());
