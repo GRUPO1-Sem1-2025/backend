@@ -155,6 +155,13 @@ public class ViajeService {
 							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
 					return 6;
 				}
+				
+				if(omnibusDisponible(bus.getId(),nuevoViaje.getFechaInicio(),nuevoViaje.getHoraInicio()) == false){
+					System.out.println(
+							"No se le puede asigar el bus, porque el viaje coincide con otro que ya tiene el bus asignado");
+					return 6;
+				}
+				
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -720,5 +727,56 @@ public class ViajeService {
 		}
 		return resultado;
 	}
+	
+	
+	public boolean omnibusDisponible(int idBus, Date fechaInicio, LocalTime horaInicio) {
+		System.out.println("Entre a omnibusDisponible");
+	    List<Viaje> viajes = new ArrayList<>();
+	    int viajesEncontrados = 0;
+
+	    try {
+	        viajes = viajeRepository.findByOmnibusId(idBus);
+	        System.out.println("Cantidad de viajes = " + viajes.size());
+	        for (Viaje v : viajes) {
+	        	System.out.println("");
+	        	System.out.println("");
+	        	System.out.println("fecha ingresada: " + fechaInicio);
+	        	System.out.println("fechainicio sistema: " + v.getFechaInicio());
+	        	System.out.println("fechaFin sistema: " + v.getFechaFin());
+	        	System.out.println("hora ingresada: " + horaInicio);
+	        	System.out.println("hora sistema fin: " + v.getHoraFin());
+	        	System.out.println("");
+	        	System.out.println("");
+	            // Suponiendo que v.getFechaInicio() y v.getFechaFin() son también de tipo java.util.Date
+	            if (fechaInicio.after(v.getFechaInicio()) && fechaInicio.before(v.getFechaFin())) {
+	                viajesEncontrados++;
+	                System.out.println("No se puede asignar ese bus porque la fecha de inicio coincide con el " +
+	                        "periodo de viaje al cual está asignado ese bus");
+	            }
+
+	            // Suponiendo que v.getHoraFin() es de tipo LocalTime
+	            if (fechaInicio.equals(v.getFechaFin()) && horaInicio.isBefore(v.getHoraFin())) {
+	                viajesEncontrados++;
+	                System.out.println("No se puede asignar ese bus porque la fecha de inicio coincide con el " +
+	                        "periodo de viaje al cual está asignado ese bus");
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Para ver qué sucede si hay un error
+	    }
+
+	    if (viajesEncontrados == 0) {
+	        System.out.println("Viajes encontrados: " + viajesEncontrados);
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
+	
+	
+	
+	
+	
+	
 
 }

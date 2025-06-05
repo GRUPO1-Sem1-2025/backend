@@ -146,22 +146,27 @@ public class OmnibusController {
 
 	@PostMapping("/cambiarEstadoBus")
 	@Operation(summary = "Se cambia el estado de un omnibus para darlo de baja", description = "se marca el bus como en desuso")
-	public ResponseEntity<String> cambiarEstadoBus(int busId) {
+	public ResponseEntity<Map<String, String>> cambiarEstadoBus(int busId) {
+		Map<String, String> response = new HashMap<>();
 		int resultado = omnibusService.cambiarEstadoBus(busId);
 
 		switch (resultado) {
 		case 1:
-			return ResponseEntity.status(HttpStatus.OK).body("Se deshabilito el Omnibus");
+			response.put("mensaje", "Se deshabilito el Omnibus");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		case 2:
-			return ResponseEntity.status(HttpStatus.OK).body("Se habilito el Omnibus");
+			response.put("mensaje", "Se habilito el Omnibus");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+			
 		case 3:
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No existe un omnibus con ese id");
+			response.put("mensaje", "No existe un omnibus con ese id");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		case 4:
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
-					"El omnibus esta asignado" + " a algun viaje activo, por lo tanto no puede ser deshabilitado");
+			response.put("mensaje", "El omnibus esta asignado a algun viaje activo, por lo tanto no puede ser deshabilitado");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error desconocido");
-
+		response.put("mensaje", "Error desconocido");
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
 	@GetMapping("/obtenerOmnibusPorMatricula")
