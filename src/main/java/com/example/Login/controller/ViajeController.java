@@ -141,6 +141,9 @@ public class ViajeController {
 			case 6:
 				response.put("mensaje", "No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			case 7:
+				response.put("mensaje", "No se puede asigar el bus, porque no dispone de los asientos libres necesarios");
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			default:
 				response.put("mensaje", "Resultado desconocido.");
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
