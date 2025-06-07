@@ -584,6 +584,7 @@ public class ViajeService {
 				nuevo.setId(v.getId());
 				nuevo.setIdOmnibus(v.getOmnibus().getId());
 				nuevo.setPrecio(v.getPrecio());
+				nuevo.setEstadoViaje(v.getEstadoViaje());
 				Optional<Localidad> OlocalidadO = localidadRepository.findById(v.getLocalidadOrigen().getId());
 				Optional<Localidad> OlocalidadD = localidadRepository.findById(v.getLocalidadDestino().getId());
 				nuevo.setIdLocalidadDestino(OlocalidadD.get().getNombre());

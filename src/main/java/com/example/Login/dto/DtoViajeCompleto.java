@@ -22,12 +22,13 @@ public class DtoViajeCompleto {
 	private int idOmnibus;
 	private int asientosOcupados;
 	private int calificacion;
+	private EstadoViaje estadoViaje;
 	
 	public DtoViajeCompleto() {
 		
 	}
 	public DtoViajeCompleto(float precio, Date fechaInicio, Date fechaFin, int id, LocalTime horaInicio,
-			LocalTime horaFin, String idLocalidadOrigen, String idLocalidadDestino, int idOmnibus, int asientosOcupados, int calificacion) {
+			LocalTime horaFin, String idLocalidadOrigen, String idLocalidadDestino, int idOmnibus, int asientosOcupados, int calificacion, EstadoViaje estadoViaje) {
 		super();
 		this.precio = precio;
 		this.fechaInicio = fechaInicio;
@@ -40,6 +41,7 @@ public class DtoViajeCompleto {
 		this.idOmnibus = idOmnibus;
 		this.asientosOcupados = asientosOcupados;
 		this.calificacion = calificacion;
+		this.estadoViaje = estadoViaje;
 	}
 	public float getPrecio() {
 		return precio;
@@ -106,6 +108,12 @@ public class DtoViajeCompleto {
 	}
 	public void setCalificacion(int calificacion) {
 		this.calificacion = calificacion;
+	}
+	public EstadoViaje getEstadoViaje() {
+		return estadoViaje;
+	}
+	public void setEstadoViaje(EstadoViaje estadoViaje) {
+		this.estadoViaje = estadoViaje;
 	}
 	
 	

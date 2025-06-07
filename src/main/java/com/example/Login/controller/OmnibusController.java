@@ -105,6 +105,72 @@ public class OmnibusController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
+	
+	@PostMapping("/crearOmnibusConLocalidad")
+	@Operation(summary = "Crear un bus", description = "Agrega un bus")
+	public ResponseEntity<Map<String, String>> crearOmnibusConLocalidad(@RequestBody DtoBus dtoBus) {
+		Omnibus bus = new Omnibus();
+		bus.setCant_asientos(dtoBus.getCant_asientos());
+		bus.setMarca(dtoBus.getMarca());
+		bus.setActivo(true);// dtoBus.isActivo());
+		Map<String, String> response = new HashMap<>();
+
+		try {
+			Optional<Omnibus> Obus = omnibusrepository.findByMatricula(dtoBus.getMatricula());
+			if (!Obus.isPresent()) {
+				bus.setMatricula(dtoBus.getMatricula());
+			} else {
+				response.put("mensaje", "Ya existe un omnibus ingresado con esa matricula");
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+			}
+		} catch (Exception e) {
+
+		}
+
+		long totalAsientos = bus.getCant_asientos();
+		long asientosDisponibles = asientoRepository.count();
+		boolean estadoAsiento = true;
+		int i;
+
+		if (totalAsientos < asientosDisponibles) {
+			omnibusService.crearOmnibus(bus);
+			
+			//Agregar Localidad
+			DtoCargarLocalidad cargarLocalidad = new DtoCargarLocalidad();
+			cargarLocalidad.setNombreLocalidad(dtoBus.getLocalidad_actual());
+			System.out.println("localidad_actual: " + dtoBus.getLocalidad_actual());
+			cargarLocalidad.setId_bus(omnibusrepository.findUltimoId());
+			asignarLocalidadAOmnibus(cargarLocalidad);			
+			// fin Agregar Localidad
+			
+			for (i = 1; i <= totalAsientos; i++) {
+				System.out.println("valor de i " + i);
+
+				try {
+					Optional<Asiento> a = asientoRepository.findByNro(i);
+					if (a != null && a.isPresent()) {
+						Asiento asiento = a.get();
+						System.out.println("Asiento encontrado con nro: " + i + " (id=" + a.get().getId() + ")");
+						omnibusService.asignarAsientoAOmnibus(bus, asiento, estadoAsiento);
+						System.out.println("Asiento agregado correctamente");
+						response.put("mensaje", "Asiento agregado correctamente");
+					} else {
+						System.out.println("Asiento no encontrado");
+						response.put("mensaje", "Asiento no encontrado");
+					}
+				} catch (Exception e) {
+					System.out.println("Error en iteración i=" + i + ": " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			response.put("mensaje", "Bus registrado exitosamente");
+			return ResponseEntity.status(HttpStatus.OK).body(response); // 201 - Creado
+		} else {
+			response.put("mensaje", "El Bus no se puede crear con esa candidad de asientos, debe de tener menos de "
+					+ asientosDisponibles + " asientos");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
 
 	@GetMapping("/obtenerOmnibusActivos")
 	@Operation(summary = "Obtener omnibus activos", description = "Retorna los omnibus activos")
