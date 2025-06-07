@@ -155,13 +155,13 @@ public class ViajeService {
 							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
 					return 6;
 				}
-				
-				if(omnibusDisponible(bus.getId(),nuevoViaje.getFechaInicio(),nuevoViaje.getHoraInicio()) == false){
+
+				if (omnibusDisponible(bus.getId(), nuevoViaje.getFechaInicio(), nuevoViaje.getHoraInicio()) == false) {
 					System.out.println(
 							"No se le puede asigar el bus, porque el viaje coincide con otro que ya tiene el bus asignado");
 					return 6;
 				}
-				
+
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -244,19 +244,30 @@ public class ViajeService {
 		int resultado = 0;
 		Localidad localidadOrigen = viaje.getLocalidadOrigen();
 		Optional<Localidad> loc = localidadRepository.findByNombre(localidadOrigen.getNombre());
+		int cantidaAsientosVendidos = cantidadAsientosVendidos((long) (viaje.getId()));
+		System.out.println("asientosVendidos " + cantidaAsientosVendidos);
+		int asientosDelBus = omnibus.getCant_asientos();
+		System.out.println("asientosDelBus " + asientosDelBus);
 
 		try {
 			Optional<Omnibus> busOpt = omnibusRepository.findById(omnibus.getId());
 
 			if (busOpt.isPresent()) {
+				
+				if(cantidaAsientosVendidos > asientosDelBus) {
+					System.out.println("No se puede asigar el bus, porque no dispone de los asientos libres necesarios");
+					resultado = 7;
+					return resultado;
+				}
 
-				if (!busOpt.get().isSePuedeUtilizar() || omnibusDisponible(busOpt.get().getId(),viaje.getFechaInicio(),viaje.getHoraInicio()) == false) {
+				if (!busOpt.get().isSePuedeUtilizar() || omnibusDisponible(busOpt.get().getId(), viaje.getFechaInicio(),
+						viaje.getHoraInicio()) == false) {
 					System.out.println(
 							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
 					resultado = 6;
 					return resultado;
 				}
-				
+
 //				if(omnibusDisponible(busOpt.get().getId(),viaje.getFechaInicio(),viaje.getHoraInicio()) == false){
 //					System.out.println(
 //							"No se le puede asigar el bus, porque el viaje coincide con otro que ya tiene el bus asignado");
@@ -269,9 +280,7 @@ public class ViajeService {
 					resultado = 5;
 					return resultado;
 				}
-				
-				
-				
+
 				Omnibus bus = busOpt.get();
 				System.out.println(" Omnibus localidad: " + bus.getLocalidad());
 				System.out.println(" Localidad localidad: " + loc.get().getNombre());
@@ -413,16 +422,17 @@ public class ViajeService {
 		for (Viaje v : viajesACerrar) {
 			if (!v.getEstadoViaje().equals(EstadoViaje.CERRADO)) {
 				v.setEstadoViaje(EstadoViaje.CERRADO);
-				
+
 				try {
 					Omnibus omnibus = v.getOmnibus();
 					System.out.println("id del bus a habilitar al cerrar el viaje: " + omnibus.getId());
 					omnibus.setSePuedeUtilizar(true);
+					omnibus.setLocalidadActual(v.getLocalidadDestino().getNombre());
 					omnibusRepository.save(omnibus);
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
-				
+
 				viajeRepository.save(v);
 
 				// enviar mail a los compradores de pasajes para ese viaje
@@ -536,12 +546,20 @@ public class ViajeService {
 		System.out.println("entre al service de verCalificacionComentario");
 		DtoCalificacion resultado = new DtoCalificacion();
 		List<String> comentarios = new ArrayList<>();
-
+		
 		try {
 			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
-			System.out.println("encontre el viaje");
-			resultado.setCalificacion(Oviaje.get().getCalificacion());
-			resultado.setComentarios(Oviaje.get().getComentarios());
+//			System.out.println("encontre el viaje");
+			
+			int cantidadComentarios = Oviaje.get().getComentarios().size();
+			resultado.setCalificacion(Oviaje.get().getCalificacion()/cantidadComentarios);
+			
+			for(String c:Oviaje.get().getComentarios()) {
+				if (!c.equals("")) {
+					comentarios.add(c);
+				}
+			}
+			resultado.setComentarios(comentarios);//Oviaje.get().getComentarios());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -566,6 +584,7 @@ public class ViajeService {
 				nuevo.setId(v.getId());
 				nuevo.setIdOmnibus(v.getOmnibus().getId());
 				nuevo.setPrecio(v.getPrecio());
+				nuevo.setEstadoViaje(v.getEstadoViaje());
 				Optional<Localidad> OlocalidadO = localidadRepository.findById(v.getLocalidadOrigen().getId());
 				Optional<Localidad> OlocalidadD = localidadRepository.findById(v.getLocalidadDestino().getId());
 				nuevo.setIdLocalidadDestino(OlocalidadD.get().getNombre());
@@ -737,56 +756,57 @@ public class ViajeService {
 		}
 		return resultado;
 	}
-	
-	
+
 	public boolean omnibusDisponible(int idBus, Date fechaInicio, LocalTime horaInicio) {
 		System.out.println("Entre a omnibusDisponible");
-	    List<Viaje> viajes = new ArrayList<>();
-	    int viajesEncontrados = 0;
+		List<Viaje> viajes = new ArrayList<>();
+		int viajesEncontrados = 0;
 
-	    try {
-	        viajes = viajeRepository.findByOmnibusId(idBus);
-	        System.out.println("Cantidad de viajes = " + viajes.size());
-	        for (Viaje v : viajes) {
-	        	System.out.println("");
-	        	System.out.println("");
-	        	System.out.println("fecha ingresada: " + fechaInicio);
-	        	System.out.println("fechainicio sistema: " + v.getFechaInicio());
-	        	System.out.println("fechaFin sistema: " + v.getFechaFin());
-	        	System.out.println("hora ingresada: " + horaInicio);
-	        	System.out.println("hora sistema fin: " + v.getHoraFin());
-	        	System.out.println("");
-	        	System.out.println("");
-	            // Suponiendo que v.getFechaInicio() y v.getFechaFin() son también de tipo java.util.Date
-	            if (fechaInicio.after(v.getFechaInicio()) && fechaInicio.before(v.getFechaFin())) {
-	                viajesEncontrados++;
-	                System.out.println("No se puede asignar ese bus porque la fecha de inicio coincide con el " +
-	                        "periodo de viaje al cual está asignado ese bus");
-	            }
+		try {
+			viajes = viajeRepository.findByOmnibusId(idBus);
+//			System.out.println("Cantidad de viajes = " + viajes.size());
+			for (Viaje v : viajes) {
+				// Suponiendo que v.getFechaInicio() y v.getFechaFin() son también de tipo
+				// java.util.Date
+				if (fechaInicio.after(v.getFechaInicio()) && fechaInicio.before(v.getFechaFin())) {
+					viajesEncontrados++;
+//					System.out.println("No se puede asignar ese bus porque la fecha de inicio coincide con el "
+//							+ "periodo de viaje al cual está asignado ese bus");
+				}
 
-	            // Suponiendo que v.getHoraFin() es de tipo LocalTime
-	            if (fechaInicio.equals(v.getFechaFin()) && horaInicio.isBefore(v.getHoraFin())) {
-	                viajesEncontrados++;
-	                System.out.println("No se puede asignar ese bus porque la fecha de inicio coincide con el " +
-	                        "periodo de viaje al cual está asignado ese bus");
-	            }
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace(); // Para ver qué sucede si hay un error
-	    }
+				// Suponiendo que v.getHoraFin() es de tipo LocalTime
+				if (fechaInicio.equals(v.getFechaFin()) && horaInicio.isBefore(v.getHoraFin())) {
+					viajesEncontrados++;
+//					System.out.println("No se puede asignar ese bus porque la fecha de inicio coincide con el "
+//							+ "periodo de viaje al cual está asignado ese bus");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Para ver qué sucede si hay un error
+		}
 
-	    if (viajesEncontrados == 0) {
-	        System.out.println("Viajes encontrados: " + viajesEncontrados);
-	        return true;
-	    } else {
-	        return false;
-	    }
+		if (viajesEncontrados == 0) {
+			System.out.println("Viajes encontrados: " + viajesEncontrados);
+			return true;
+		} else {
+			return false;
+		}
 	}
-	
-	
-	
-	
-	
-	
+
+	public int cantidadAsientosVendidos(Long viajeId) {
+		int cantidadAsientos = 0;
+		List<CompraPasaje> pasajes = compraPasajeRepository.findByViajeId(viajeId);
+
+		for (CompraPasaje cp : pasajes) {
+			if (!cp.getEstadoCompra().equals(EstadoCompra.CANCELADA)) {
+				System.out.println("Entre al if de cantidadAsientosVendidos");
+				int asientos = cp.getCat_pasajes();
+				cantidadAsientos = cantidadAsientos + asientos;
+				System.out.println("cantidad de asientos vendidos: " + cantidadAsientos);
+			}
+		}
+		System.out.println("cantidad de asientos vendidos: " + cantidadAsientos);
+		return cantidadAsientos;
+	}
 
 }
