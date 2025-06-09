@@ -28,6 +28,7 @@ import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuario;
+import com.example.Login.dto.DtoUsuarioMensaje;
 import com.example.Login.dto.DtoUsuarioPerfil;
 import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoUsuariosPorRolQuery;
@@ -868,12 +869,19 @@ public class UsuarioService {
 		return 2;
 	}
 
-	public DtoUsuario buscarPorEmails(String email) {
+	public DtoUsuarioMensaje buscarPorEmails(String email) {
 		Usuario u = new Usuario();
+		DtoUsuarioMensaje usuarios = new DtoUsuarioMensaje();
 		DtoUsuario usuario = new DtoUsuario();
 		try{
 			Optional<Usuario> user = usuarioRepository.findByEmail(email);
-			u = user.get();
+			if(user.isPresent()) {
+				usuarios.setResultado(1);
+				u = user.get();
+			}else {
+				usuarios.setResultado(0);
+			}
+			
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -887,7 +895,8 @@ public class UsuarioService {
 		usuario.setFechaNac(u.getFechaNac());
 		usuario.setNombre(u.getNombre());
 		usuario.setRol(u.getRol());
-		return usuario;
+		usuarios.setDtoUsuario(usuario);	
+		return usuarios;
 	}
 
 	public void activarUsuario(Optional<Usuario> user) {

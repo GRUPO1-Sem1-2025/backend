@@ -11,6 +11,7 @@ import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoUsuario;
+import com.example.Login.dto.DtoUsuarioMensaje;
 import com.example.Login.dto.DtoUsuarioPerfil;
 import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoValidarCodigo;
@@ -134,13 +135,21 @@ public class UsuarioController {
 
 	@GetMapping("/emails/")
 	@Operation(summary = "Obtener un usuario por email", description = "Retorna un usuario basado en su email")
-	public DtoUsuario buscarPorEmails(@RequestParam String email) {
-		DtoUsuario usuario = usuarioService.buscarPorEmails(email);
+	public ResponseEntity<Map<String, Object>> buscarPorEmails(@RequestParam String email) {
+		Map<String, Object> response = new HashMap<>();
+		DtoUsuarioMensaje usuario = usuarioService.buscarPorEmails(email);
 		
-		if(usuario == null) {
-			return null;
-		}			
-		return usuario;
+		if(usuario.getResultado() == 1) {
+			System.out.println("Usuario encontrado");
+			response.put("OK",usuario.getDtoUsuario());
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+			//return usuario.getDtoUsuario();
+		}else
+		{
+			response.put("Error","No existe un usuario ingresado con ese correo");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+		//return null;
 	}
 
 	// 🔹 Recibe email y password en el cuerpo de la petición (POST)
@@ -308,31 +317,6 @@ public class UsuarioController {
 		Optional<Usuario> usuario = usuarioService.buscarPorEmail(email);
 		int resultado = usuarioService.cambiarRol(email, rol);
 
-//		if (usuario.isPresent()) {
-//			System.out.println("Rol actual: " + usuario.get().getRol());
-//			if (rol.equals("User")) {
-//				usuario.get().setRol(100);
-//				usuario.get().setCod_empleado(null);
-//			} else if (rol.equals("Vendedor")) {
-//				usuario.get().setRol(200);
-//				if (usuario.get().getCod_empleado() == 0) {
-//					try {
-//						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado() + 1);
-//					} catch (Exception e) {
-//						usuario.get().setCod_empleado(100);
-//					}
-//				}
-//			} else if (rol.equals("Admin")) {
-//				usuario.get().setRol(300);
-//				if (usuario.get().getCod_empleado() == 0) {
-//					try {
-//						usuario.get().setCod_empleado(usuariorepository.findMaxCodEmpleado() + 1);
-//					} catch (Exception e) {
-//						usuario.get().setCod_empleado(100);
-//					}
-//				}
-//			} else {
-//				System.out.println("No existe el Rol ingresado");
 		switch (resultado) {
 		case 0:
 			response.put("mensaje", "No existe el rol ingresado");

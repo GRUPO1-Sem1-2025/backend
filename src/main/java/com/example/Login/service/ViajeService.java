@@ -29,6 +29,7 @@ import com.example.Login.dto.DtoCompraViaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeCompleto;
 import com.example.Login.dto.DtoViajeDestinoFecha;
+import com.example.Login.dto.DtoViajeIdDestino;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
@@ -808,5 +809,31 @@ public class ViajeService {
 		System.out.println("cantidad de asientos vendidos: " + cantidadAsientos);
 		return cantidadAsientos;
 	}
+
+	public List<DtoViajeIdDestino> obtenerViajesIdDestino() {
+		List<DtoViajeIdDestino> viajes = new ArrayList<>();
+		List<Viaje> total = viajeRepository.findAll();
+		
+		for (Viaje v : total) {
+
+			try {
+				DtoViajeIdDestino nuevo = new DtoViajeIdDestino();
+				nuevo.setId(v.getId());
+				nuevo.setOrigenDestino(
+						v.getLocalidadOrigen().getNombre()+
+						"-"+
+						v.getLocalidadDestino().getNombre()+
+						" "+
+						v.getHoraInicio()+
+						"-"+
+						v.getHoraFin());
+				viajes.add(nuevo);
+			} catch (Exception e) {
+			}
+
+		}
+		return viajes;
+	}
+
 
 }

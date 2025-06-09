@@ -7,6 +7,7 @@ import com.example.Login.dto.DtoTipoDeCompra;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeCompleto;
 import com.example.Login.dto.DtoViajeDestinoFecha;
+import com.example.Login.dto.DtoViajeIdDestino;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.Viaje;
@@ -230,6 +231,13 @@ public class ViajeController {
 	public List<DtoViajeCompleto> obtenerViajes() {
 		List<DtoViajeCompleto> respuesta = new ArrayList<>();
 		respuesta = viajeService.obtenerViajes();
+		return respuesta;
+	}
+	
+	@GetMapping("/obtenerViajesIdDestino")
+	public List<DtoViajeIdDestino> obtenerViajesIdDestino() {
+		List<DtoViajeIdDestino> respuesta = new ArrayList<>();
+		respuesta = viajeService.obtenerViajesIdDestino();
 		return respuesta;
 	}
 	
