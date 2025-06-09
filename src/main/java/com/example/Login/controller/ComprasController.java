@@ -30,8 +30,8 @@ public class ComprasController {
 	private CompraPasajeRepository comprapasajerepository;
 	
 	@GetMapping("/obtenerComprasPorViaje")
-	public List<DtoCompraPasaje> obtenerComprasPorViaje(@RequestParam long idViaje) {
-		List<DtoCompraPasaje> dtoCompras = new ArrayList<>();
+	public List<DtoCompraPasajeNombre> obtenerComprasPorViaje(@RequestParam long idViaje) {
+		List<DtoCompraPasajeNombre> dtoCompras = new ArrayList<>();
 		dtoCompras = compraPasajeService.obtenerComprasPorViaje(idViaje);
 		System.out.println("comprasEnControler: " + dtoCompras.size());
 		return dtoCompras;

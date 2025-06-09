@@ -1,6 +1,7 @@
 package com.example.Login.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
+import com.example.Login.controller.DtoCompraPasajeNombre;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoTipoDeCompra;
@@ -342,9 +344,9 @@ public class CompraPasajeService {
 	    }
 	}
 
-	public List<DtoCompraPasaje> obtenerComprasPorViaje(long idViaje) {
+	public List<DtoCompraPasajeNombre> obtenerComprasPorViaje(long idViaje) {
 		List<CompraPasaje> listadoCompra = new ArrayList<>();
-		List<DtoCompraPasaje> dtoListadoCompra = new ArrayList<>();
+		List<DtoCompraPasajeNombre> dtoListadoCompra = new ArrayList<>();
 		try {
 			listadoCompra = compraPasajeRepository.findByViajeId(idViaje);
 			System.out.println("cantidad de compras: " + listadoCompra.size());
@@ -353,15 +355,29 @@ public class CompraPasajeService {
 			    System.out.println("Usuario: " + cp.getUsuario());
 			    System.out.println("Vendedor: " + cp.getVendedor());
 			    System.out.println("Viaje: " + cp.getViaje());
-				DtoCompraPasaje compra = new DtoCompraPasaje();
+				DtoCompraPasajeNombre compra = new DtoCompraPasajeNombre();
 				try {
-				compra.setUsuarioId(cp.getUsuario().getId());
-				compra.setVendedorId(cp.getVendedor().getId());
+				compra.setNombreUsuario(cp.getUsuario().getNombre());
+				compra.setNombreVendedor(cp.getVendedor().getNombre());
 				}catch (Exception e) {
 					// TODO: handle exception
 				}
-				compra.setViajeId(cp.getViaje().getId());
+				compra.setOrigenDestino(cp.getViaje().getLocalidadOrigen().getNombre() + "-" + cp.getViaje().getLocalidadDestino().getNombre());
 				compra.setEstadoCompra(cp.getEstadoCompra());
+				
+				
+				LocalDateTime fechaHora = cp.getFechaHoraCompra();
+				
+				// Formato para la fecha
+		        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		        String soloFecha = fechaHora.format(formatoFecha);
+
+		        // Formato para la hora (HH:mm)
+		        DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
+		        String soloHora = fechaHora.format(formatoHora);
+		        
+		        compra.setFechaHora(soloFecha + " " + soloHora);
+		        
 				List<Integer> asientos = new ArrayList<>();
 				for(AsientoPorViaje apv: cp.getAsientos()) {
 					asientos.add(apv.getOmnibusAsiento().getAsiento().getId());
