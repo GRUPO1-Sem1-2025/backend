@@ -1,6 +1,7 @@
 package com.example.Login.dto;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class DtoRegistrarse {
 	private String nombre;

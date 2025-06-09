@@ -29,6 +29,7 @@ import com.example.Login.dto.DtoCompraViaje;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeCompleto;
 import com.example.Login.dto.DtoViajeDestinoFecha;
+import com.example.Login.dto.DtoViajeIdDestino;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
@@ -268,13 +269,6 @@ public class ViajeService {
 					return resultado;
 				}
 
-//				if(omnibusDisponible(busOpt.get().getId(),viaje.getFechaInicio(),viaje.getHoraInicio()) == false){
-//					System.out.println(
-//							"No se le puede asigar el bus, porque el viaje coincide con otro que ya tiene el bus asignado");
-//					resultado = 6;
-//					return resultado;
-//				}
-
 				if (!busOpt.get().isActivo()) {
 					System.out.println("No se le puede asigar el bus, porque el mismo esta inactivo");
 					resultado = 5;
@@ -465,9 +459,6 @@ public class ViajeService {
 			}
 		}
 	}
-//	@Query("SELECT v FROM Viaje v " +
-//		       "WHERE FUNCTION('TIMESTAMP', v.fechaInicio, v.horaInicio) BETWEEN CURRENT_TIMESTAMP AND FUNCTION('TIMESTAMPADD', 'MINUTE', 60, CURRENT_TIMESTAMP)")
-//		List<Viaje> findViajesConInicioEnLosProximos60Minutos();
 
 	public List<DtoViaje> obtenerViajesPorBus(int idBus) {
 		List<DtoViaje> dtoViajes = new ArrayList<>();
@@ -573,8 +564,8 @@ public class ViajeService {
 		int asientosLibres = 0;
 		int totalAsientos = 0;
 		for (Viaje v : total) {
-			String localidadOrigen = null;
-			String localidadDestino = null;
+//			String localidadOrigen = null;
+//			String localidadDestino = null;
 			try {
 				DtoViajeCompleto nuevo = new DtoViajeCompleto();
 				nuevo.setFechaInicio(v.getFechaInicio());
@@ -808,5 +799,31 @@ public class ViajeService {
 		System.out.println("cantidad de asientos vendidos: " + cantidadAsientos);
 		return cantidadAsientos;
 	}
+
+	public List<DtoViajeIdDestino> obtenerViajesIdDestino() {
+		List<DtoViajeIdDestino> viajes = new ArrayList<>();
+		List<Viaje> total = viajeRepository.findAll();
+		
+		for (Viaje v : total) {
+
+			try {
+				DtoViajeIdDestino nuevo = new DtoViajeIdDestino();
+				nuevo.setId(v.getId());
+				nuevo.setOrigenDestino(
+						v.getLocalidadOrigen().getNombre()+
+						"-"+
+						v.getLocalidadDestino().getNombre()+
+						" "+
+						v.getHoraInicio()+
+						"-"+
+						v.getHoraFin());
+				viajes.add(nuevo);
+			} catch (Exception e) {
+			}
+
+		}
+		return viajes;
+	}
+
 
 }

@@ -28,6 +28,7 @@ import com.example.Login.dto.DtoMisViajes;
 import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuario;
+import com.example.Login.dto.DtoUsuarioMensaje;
 import com.example.Login.dto.DtoUsuarioPerfil;
 import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoUsuariosPorRolQuery;
@@ -54,6 +55,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -146,21 +148,13 @@ public class UsuarioService {
 		usuario.setCodigo(generarCodigo());
 		usuario.setContraseniaValida(true);
 		usuario.setCategoria(categoriaUsuario.GENERAL);
+		
+		//Agregar la fecha de nacimiento al usuario
+		//LocalDate fechaNacimiento = registrarse.getFecha_nac();
+		java.sql.Date fechaNacimientoSql = java.sql.Date.valueOf(fechaNacimiento);
+		usuario.setFechaNac(fechaNacimientoSql);		
 		usuarioRepository.save(usuario);
 		return 1;
-
-//		if (edad < 60 && categoria.equals(categoria.JUBILADO)) {
-//			System.out.println("El usuario dice que es jubilado pero tiene menos de 60 anios");
-//			return 0;
-//		} else {
-//			System.out.println("El usuario NO esta jubilado");
-//			usuario.setCategoria(categoria);
-//			
-//		}
-
-		// usuarioRepository.save(usuario);
-		// emailService.enviarCorreo(para, asunto, mensaje);
-
 	}
 
 	// Guardar usuario con contraseña encriptada
@@ -875,12 +869,19 @@ public class UsuarioService {
 		return 2;
 	}
 
-	public DtoUsuario buscarPorEmails(String email) {
+	public DtoUsuarioMensaje buscarPorEmails(String email) {
 		Usuario u = new Usuario();
+		DtoUsuarioMensaje usuarios = new DtoUsuarioMensaje();
 		DtoUsuario usuario = new DtoUsuario();
 		try{
 			Optional<Usuario> user = usuarioRepository.findByEmail(email);
-			u = user.get();
+			if(user.isPresent()) {
+				usuarios.setResultado(1);
+				u = user.get();
+			}else {
+				usuarios.setResultado(0);
+			}
+			
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -894,7 +895,8 @@ public class UsuarioService {
 		usuario.setFechaNac(u.getFechaNac());
 		usuario.setNombre(u.getNombre());
 		usuario.setRol(u.getRol());
-		return usuario;
+		usuarios.setDtoUsuario(usuario);	
+		return usuarios;
 	}
 
 	public void activarUsuario(Optional<Usuario> user) {
