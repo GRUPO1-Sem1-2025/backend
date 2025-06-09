@@ -167,8 +167,6 @@ public class ViajeController {
 		dtoVDF.setIdLocalidadDestino(locDestino);
 		List<DtoViajeDestinoFecha> Dtovdf = new ArrayList<>();
 		Dtovdf = viajeService.obtenerViajesPorFechaYDestino(dtoVDF);
-		// response.put("mensaje", "No se encontró el viaje o el ómnibus con los IDs
-		// proporcionados.");
 		return ResponseEntity.status(HttpStatus.OK).body(Dtovdf);
 	}
 
