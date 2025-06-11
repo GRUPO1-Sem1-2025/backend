@@ -122,15 +122,13 @@ public class UsuarioController {
 		Optional<Usuario> user = usuarioService.buscarPorEmail(dtocrearCuenta.getEmail());
 		Map<String, String> response = new HashMap<>();
 
-		if (user.isPresent()) {
+		if(usuarioService.crearCuenta(dtocrearCuenta) == 0){
 			response.put("error", "El usuario ya se encuentra registrado con ese correo");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-		}
-
-		usuarioService.crearCuenta(dtocrearCuenta);
-		// 🔹 Prepara la respuesta exitosa
-		response.put("mensaje", "Usuario registrado exitosamente");
+		}else
+		{response.put("mensaje", "Usuario registrado exitosamente");
 		return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
+	}
 	}
 
 	@GetMapping("/emails/")
