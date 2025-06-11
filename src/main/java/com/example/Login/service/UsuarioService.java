@@ -158,8 +158,8 @@ public class UsuarioService {
 	}
 
 	// Guardar usuario con contraseña encriptada
-	public Usuario crearCuenta(DtoCrearCuenta dtocrearCuenta) {
-
+	public int crearCuenta(DtoCrearCuenta dtocrearCuenta) {
+		
 		Usuario usuario = new Usuario();
 		Integer rol = 0;
 		System.out.println("Rol del usuario agregado = " + dtocrearCuenta.getRol());
@@ -185,9 +185,23 @@ public class UsuarioService {
 				usuario.setCod_empleado(100);
 			}
 		}
+		String nombre = dtocrearCuenta.getNombre().toLowerCase();
+		String apellido = dtocrearCuenta.getApellido().toLowerCase();
 		usuario.setNombre(dtocrearCuenta.getNombre());
 		usuario.setApellido(dtocrearCuenta.getApellido());
-		usuario.setEmail(dtocrearCuenta.getEmail());
+		//usuario.setEmail(dtocrearCuenta.getEmail());
+		
+		usuario.setEmail(nombre + "." + apellido + "@outlook.com");
+		
+		try {
+			Optional<Usuario> Ousuario = usuarioRepository.findByEmail(usuario.getEmail());
+			if(Ousuario.isPresent()) {
+				return 0;
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		usuario.setCategoria(dtocrearCuenta.getCategoria());
 		usuario.setCi(dtocrearCuenta.getCi());
 		usuario.setFechaNac(dtocrearCuenta.getFechaNac());
@@ -205,8 +219,9 @@ public class UsuarioService {
 				+ " La contraseña temporal para acceder es " + password
 				+ " no se olvide de cambiarla una vez que haya ingresado";
 
-		emailService.enviarCorreo(para, asunto, mensaje);
-		return usuarioRepository.save(usuario);
+		//emailService.enviarCorreo(para, asunto, mensaje);
+		usuarioRepository.save(usuario);
+		return 1;
 	}
 
 	public Usuario bajaUsuario(Optional<Usuario> user) {
