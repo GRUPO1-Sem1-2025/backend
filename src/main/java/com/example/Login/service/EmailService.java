@@ -44,7 +44,7 @@ public class EmailService {
 	 */
 
 	public void enviarCorreo(String para, String asunto, String cuerpoHtml) {// public static void main(String[] args)																		// throws IOException {
-		Email from = new Email("grupo1sem12025@gmail.com");
+		Email from = new Email("notificaciones@tecnobus.uy");
 		// String subject = "Hola desde SendGrid";
 		String subject = asunto;// "Hola desde SendGrid";
 		Email to = new Email(para);// "destinatario@ejemplo.com");
@@ -52,7 +52,7 @@ public class EmailService {
 		// email");
 		Content content = new Content("text/html", cuerpoHtml);
 		Mail mail = new Mail(from, subject, to, content);
-		SendGrid sg = new SendGrid("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");
+		SendGrid sg = new SendGrid("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");
 		Request request = new Request();
 		try {
 			request.setMethod(Method.POST);
