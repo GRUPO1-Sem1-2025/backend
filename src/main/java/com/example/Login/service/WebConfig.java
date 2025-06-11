@@ -13,13 +13,17 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Aplica a todas las rutas
+                registry.addMapping("/**")
                         .allowedOrigins(
-                        		"http://localhost:5173", // Permitir origen de tu app React
-                        		"http://localhost:8081" // Permitir origen de tu app ReactNative
-                        		) // Permitir origen de tu app React
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD","TRACE") // Métodos permitidos
-                        .allowedHeaders("*");
+                            "http://localhost:5173",
+                            "http://localhost:8081",
+                            "https://www.tecnobus.uy",
+                            "https://tecnobus.uy",
+                            "https://panel.tecnobus.uy"
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD", "TRACE")
+                        .allowedHeaders("*")
+                        .allowCredentials(true); // Necesario si usás cookies o Authorization headers
             }
         };
     }
