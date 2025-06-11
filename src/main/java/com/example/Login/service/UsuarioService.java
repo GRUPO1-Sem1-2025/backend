@@ -191,7 +191,7 @@ public class UsuarioService {
 		usuario.setApellido(dtocrearCuenta.getApellido());
 		//usuario.setEmail(dtocrearCuenta.getEmail());
 		
-		usuario.setEmail(nombre + "." + apellido + "@outlook.com");
+		usuario.setEmail(nombre + "." + apellido + "@tecnobus.uy");
 		
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findByEmail(usuario.getEmail());
