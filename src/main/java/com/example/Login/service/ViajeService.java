@@ -159,11 +159,11 @@ public class ViajeService {
 			try {
 				Optional<Omnibus> Obus = omnibusRepository.findById(dtoViaje.getIdOmnibus());
 				bus = Obus.get();
-				if (!bus.isSePuedeUtilizar()) {
-					System.out.println(
-							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
-					return 6;
-				}
+//				if (!bus.isSePuedeUtilizar()) {
+//					System.out.println(
+//							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
+//					return 6;
+//				}
 
 				if (omnibusDisponible(bus.getId(), nuevoViaje.getFechaInicio(), nuevoViaje.getHoraInicio()) == false) {
 					System.out.println(
@@ -581,9 +581,14 @@ public class ViajeService {
 				nuevo.setHoraFin(v.getHoraFin());
 				nuevo.setHoraInicio(v.getHoraInicio());
 				nuevo.setId(v.getId());
+				System.out.println("id de bus en obtenerViajes = " + v.getOmnibus().getId());
+//				if(v.getOmnibus().getId()==null) {
+//					nuevo.setIdOmnibus(0);
+//				}
 				nuevo.setIdOmnibus(v.getOmnibus().getId());
 				nuevo.setPrecio(v.getPrecio());
 				nuevo.setEstadoViaje(v.getEstadoViaje());
+				nuevo.setCalificacion(v.getCalificacion());
 				Optional<Localidad> OlocalidadO = localidadRepository.findById(v.getLocalidadOrigen().getId());
 				Optional<Localidad> OlocalidadD = localidadRepository.findById(v.getLocalidadDestino().getId());
 				nuevo.setIdLocalidadDestino(OlocalidadD.get().getNombre());
