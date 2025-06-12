@@ -103,8 +103,9 @@ public class ViajeController {
 					+ " a la ciudad de donde parte el viaje");
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
 		case 6:
-			response.put("mensaje", "No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			response.put("mensaje", "Viaje creado de forma exitosa, pero no se le puede"+
+		" asigar el bus porque el mismo ya esta asignado a un viaje en proceso");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}
 		response.put("mensaje", "Error Desconcido");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); //

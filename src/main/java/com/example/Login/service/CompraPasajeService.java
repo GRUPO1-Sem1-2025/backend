@@ -37,7 +37,7 @@ import jakarta.transaction.Transactional;
 @Service
 public class CompraPasajeService {
 
-    private final SecurityFilterChain securityFilterChain;
+    private SecurityFilterChain securityFilterChain;
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
@@ -57,9 +57,14 @@ public class CompraPasajeService {
 	@Autowired
 	private CategoriaRepository categoriaRepository;
 
-    CompraPasajeService(SecurityFilterChain securityFilterChain) {
-        this.securityFilterChain = securityFilterChain;
-    }
+//    CompraPasajeService(SecurityFilterChain securityFilterChain) {
+//        this.securityFilterChain = securityFilterChain;
+//    }
+    
+    public CompraPasajeService(CompraPasajeRepository compraPasajeRepository,SecurityFilterChain securityFilterChain) {
+	    this.compraPasajeRepository = compraPasajeRepository;
+	    this.securityFilterChain = securityFilterChain;
+	}
 
 	public DtoRespuestaCompraPasaje comprarPasaje(DtoCompraPasaje request) {
 		Usuario vendedor = new Usuario();

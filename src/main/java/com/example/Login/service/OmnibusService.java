@@ -34,11 +34,19 @@ public class OmnibusService {
 
 	@Autowired
 	private OmnibusAsientoRepository omnibusasientoRepository;
+	
+//	// Inyección de dependencias
+//	public OmnibusService(OmnibusRepository omnibusRepository) {
+//		this.omnibusasientoRepository = null;
+//		this.omnibusRepository = omnibusRepository;
+//	}
 
-	// Inyección de dependencias
-	public OmnibusService(OmnibusRepository omnibusRepository) {
-		this.omnibusasientoRepository = null;
+	public OmnibusService(OmnibusRepository omnibusRepository, ViajeRepository viajeRepository,
+			LocalidadRepository localidadRepository, OmnibusAsientoRepository omnibusAsientoRepository) {
 		this.omnibusRepository = omnibusRepository;
+		this.viajeRepository = viajeRepository;
+		this.localidadRepository = localidadRepository;
+		this.omnibusasientoRepository = omnibusAsientoRepository;
 	}
 
 	public long busesTotales() {

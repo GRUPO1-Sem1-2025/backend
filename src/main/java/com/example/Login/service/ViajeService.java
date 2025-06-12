@@ -74,7 +74,15 @@ public class ViajeService {
 	@Autowired
 	private CompraPasajeService compraPasajeService;
 
-	ViajeService(UsuarioService usuarioService) {
+//	ViajeService(UsuarioService usuarioService) {
+//		this.usuarioService = usuarioService;
+//	}
+
+	public ViajeService(LocalidadRepository localidadRepository, ViajeRepository viajeRepository,
+			OmnibusRepository omnibusRepository, UsuarioService usuarioService) {
+		this.localidadRepository = localidadRepository;
+		this.viajeRepository = viajeRepository;
+		this.omnibusRepository = omnibusRepository;
 		this.usuarioService = usuarioService;
 	}
 
