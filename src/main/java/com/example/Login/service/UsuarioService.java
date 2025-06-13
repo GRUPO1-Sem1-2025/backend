@@ -116,9 +116,33 @@ public class UsuarioService {
 		usuarioRepository.save(usuario); // esto hace un UPDATE si el usuario existe
 	}
 
-	public List<Usuario> obtenerUsuarios() {
-		return usuarioRepository.findAll();
+//	public List<Usuario> obtenerUsuarios() {
+//		return usuarioRepository.findAll();
+//	}
+
+	public List<DtoUsuario> obtenerUsuarios() {
+		List<DtoUsuario> resultado = new ArrayList<>();
+		List<Usuario> usuario = usuarioRepository.findAll();
+		
+		for(Usuario u: usuario) {
+			DtoUsuario user = new DtoUsuario();
+			user.setActivo(u.getActivo());
+			user.setApellido(u.getApellido());
+			user.setCategoria(u.getCategoria());
+			user.setCi(u.getCi());
+			user.setCod_empleado(u.getCod_empleado());
+			user.setEmail(u.getEmail());
+			user.setFechaNac(u.getFechaNac());
+			user.setId(u.getId());
+			user.setNombre(u.getNombre());
+			user.setRol(u.getRol());
+			
+			resultado.add(user);
+		}		
+		return resultado;
 	}
+	
+	
 
 	// Guardar usuario con contraseña encriptada
 	public int registrarse(DtoRegistrarse registrarse) {

@@ -64,7 +64,7 @@ public class UsuarioController {
 	@GetMapping("/listarTodos")
 	@Operation(summary = "Obtener todos los usuarios", description = "Retorna una lista de usuarios")
 
-	public List<Usuario> obtenerUsuarios() {
+	public List<DtoUsuario> obtenerUsuarios() {
 		return usuarioService.obtenerUsuarios();
 	}
 

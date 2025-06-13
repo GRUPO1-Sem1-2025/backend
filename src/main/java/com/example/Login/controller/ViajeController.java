@@ -87,24 +87,39 @@ public class ViajeController {
 
 		switch (respuesta) {
 		case 1:
-			response.put("mensaje", "La ciudad de origen y destino no pueden ser las mismas");
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+			response.put("mensaje", "Se creo el viaje de forma exitosa y se le asigno"+
+			" el omnibus de forma correcta");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		case 2:
-			response.put("mensaje", "Una de las ciudades no se encuentra disponible");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			response.put("error", "Viaje creado de forma exitosa pero no se le puede"+
+		" asigar el bus porque el mismo no existe");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		case 3:
-			response.put("mensaje", "Viaje registrado exitosamente");
-			return ResponseEntity.status(HttpStatus.OK).body(response); // ✅ 201 - Creado
-		case 4:
-			response.put("mensaje", "Una de las ciudads ingresadas no existe en el sistema");
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
-		case 5:
-			response.put("error", "El bus no existe o se encuentra en una ciudad distinta 	"
-					+ " a la ciudad de donde parte el viaje");
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
+			response.put("error", "La ciudad de origen y destino no pueden ser las mismas");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		case 6:
-			response.put("mensaje", "No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			response.put("mensaje", "Viaje creado de forma exitosa, pero no se le puede"+
+		" asigar el bus porque el mismo ya esta asignado a un viaje en proceso");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		case 4:
+			response.put("mensaje", "Viaje creado de forma exitosa, pero no se puede asignar el viaje"+
+		" porque el bus no se encuentra en la localidad origen del viaje");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+		case 5:
+			response.put("mensaje", "Viaje creado de forma exitosa, pero no se le puede asigar el bus,"+
+		" porque el mismo esta inactivo");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response); //
+		
+		case 7:
+			response.put("mensaje", "Viaje creado de forma exitosa, pero no se puede asigar el"+
+		" bus, porque no dispone de los asientos libres necesarios");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		case 8:
+			response.put("error", "Una de las ciudades no se encuentra disponible");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		case 9:
+			response.put("error", "Una de las ciudades ingresadas no existe");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 		response.put("mensaje", "Error Desconcido");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); //

@@ -1,6 +1,7 @@
 package com.example.Login.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,8 @@ Integer>{
 	
 	@Query(value = "SELECT token FROM usuario_token WHERE usuario_id = :usuarioId", nativeQuery = true)
     List<String> findTokensByUsuarioId(@Param("usuarioId") int usuarioId);
+	
+	Optional<Token> findByToken(String token);
 	
 	
 	
