@@ -113,4 +113,29 @@ public class LocalidadService {
 	        return localidadRepository.findTop10DestinosConNombre();
 	    }
 
+	public int cambiarEstadoLocalidad(int idLocalidad) {
+		int resultado = 0;
+		Localidad localidad = new Localidad();
+		
+		try {
+		Optional<Localidad> Olocalidad = localidadRepository.findById(idLocalidad);
+		localidad = Olocalidad.get();
+		
+		if(localidad.isActivo()) {
+			localidad.setActivo(false);
+		}else {
+			localidad.setActivo(true);
+		}
+		
+		localidadRepository.save(localidad);
+		resultado = 1;
+		
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		return resultado;
+		
+		
+	}
+
 }

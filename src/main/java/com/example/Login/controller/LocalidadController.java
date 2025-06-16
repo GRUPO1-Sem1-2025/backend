@@ -29,58 +29,76 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Localidades", description = "API para gestionar localidades")
 
 public class LocalidadController {
-	
-	@Autowired
-    private LocalidadService localidadService;
 
-    //private LocalidadService localidadService;
 	@Autowired
-    private LocalidadService fileConversionService;
-    
-    
-    @PostMapping("/agregarlocalidad")
-    @Operation(summary = "Crear una localidad", description = "Agrega una nueva localidad")
-    public ResponseEntity<Map<String,String>> crearLocalidad(@RequestBody DtoLocalidad dtoLocalidad) {
-    	
-    	Optional<Localidad> loc = localidadService.buscarPorNombre(dtoLocalidad.getNombre());
-    	Map<String, String> response = new HashMap<>();
-    	
-    	if (loc.isPresent()) {
-    		response.put("mensaje", "Ya existe una Localidad con el nombre  " + dtoLocalidad.getNombre());
-    		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-    	}
-    	
-    	localidadService.crearLocalidad(dtoLocalidad);
-    	// 🔹 Prepara la respuesta exitosa
-        response.put("mensaje", "Localidad registrada exitosamente");
-        return ResponseEntity.status(HttpStatus.OK).body(response); // ✅ 201 - Creado
-    }
-    
-    @PostMapping("/crearLocalidadMasivas")
-    public ResponseEntity<String> crearLocalidadMasivos(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
-        }
+	private LocalidadService localidadService;
 
-        try {
-            // Llamamos al servicio para convertir el archivo a JSON
-            String json = fileConversionService.crearLocalidadesMasivas(file);
-            return ResponseEntity.ok(json);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el archivo: " + e.getMessage());
-        }
-    }
-    
-    @GetMapping("/obtenerLocalidadesActivas")
-    @Operation(summary = "Obtener localidades activas", description = "Retorna las localidades activas")    
-    public List<Localidad> obtenerLocalidadesActivas () {
-        return localidadService.obtenerLocalidadesActivas();
-        }
-    
-    @GetMapping("/localidadesMasVisitadas")
-    public List<DtoDestinoMasVistos> obtenerTop10DestinosConNombre(){
-    	return localidadService.obtenerTop10DestinosConNombre();
-    }
-    
-    
-    }
+	// private LocalidadService localidadService;
+	@Autowired
+	private LocalidadService fileConversionService;
+
+	@PostMapping("/agregarlocalidad")
+	@Operation(summary = "Crear una localidad", description = "Agrega una nueva localidad")
+	public ResponseEntity<Map<String, String>> crearLocalidad(@RequestBody DtoLocalidad dtoLocalidad) {
+
+		Optional<Localidad> loc = localidadService.buscarPorNombre(dtoLocalidad.getNombre());
+		Map<String, String> response = new HashMap<>();
+
+		if (loc.isPresent()) {
+			response.put("mensaje", "Ya existe una Localidad con el nombre  " + dtoLocalidad.getNombre());
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+		}
+
+		localidadService.crearLocalidad(dtoLocalidad);
+		// 🔹 Prepara la respuesta exitosa
+		response.put("mensaje", "Localidad registrada exitosamente");
+		return ResponseEntity.status(HttpStatus.OK).body(response); // ✅ 201 - Creado
+	}
+
+	@PostMapping("/crearLocalidadMasivas")
+	public ResponseEntity<String> crearLocalidadMasivos(@RequestParam("file") MultipartFile file) {
+		if (file.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
+		}
+
+		try {
+			// Llamamos al servicio para convertir el archivo a JSON
+			String json = fileConversionService.crearLocalidadesMasivas(file);
+			return ResponseEntity.ok(json);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al procesar el archivo: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/obtenerLocalidadesActivas")
+	@Operation(summary = "Obtener localidades activas", description = "Retorna las localidades activas")
+	public List<Localidad> obtenerLocalidadesActivas() {
+		return localidadService.obtenerLocalidadesActivas();
+	}
+
+	@GetMapping("/obtenerLocalidades")
+	public List<Localidad> obtenerLocalidades() {
+		return localidadService.obtenerLocalidades();
+	}
+
+	@GetMapping("/localidadesMasVisitadas")
+	public List<DtoDestinoMasVistos> obtenerTop10DestinosConNombre() {
+		return localidadService.obtenerTop10DestinosConNombre();
+	}
+
+	@PostMapping("/cambiarEstado")
+	public ResponseEntity<Map<String, String>> cambiarEstadoLocalidad(@RequestParam int idLocalidad) {
+		Map<String, String> response = new HashMap<>();
+		int resultado = localidadService.cambiarEstadoLocalidad(idLocalidad);
+
+		if (resultado == 1) {
+			response.put("mensaje", "Se le cambió el estado a la localidad ingresada");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			response.put("error", "No exita la localidad ingresadaEl usuario ya se encuentra registrado con ese correo");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
+}
