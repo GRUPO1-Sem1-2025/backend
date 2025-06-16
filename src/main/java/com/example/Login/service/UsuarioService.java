@@ -230,7 +230,7 @@ public class UsuarioService {
 		usuario.setCi(dtocrearCuenta.getCi());
 		usuario.setFechaNac(dtocrearCuenta.getFechaNac());
 		usuario.setRol(rol);
-		System.out.print("Rol del usuario agregado = " + usuario.getRol());
+		System.out.println("Rol del usuario agregado = " + usuario.getRol());
 		usuario.setActivo(true);
 		usuario.setFechaCreacion(LocalDate.now());
 		String password = usuario.getApellido() + usuario.getNombre() + "_2025";
