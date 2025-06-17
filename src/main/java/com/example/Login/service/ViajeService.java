@@ -3,24 +3,33 @@ package com.example.Login.service;
 import com.example.Login.repository.AsientoPorViajeRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.ToIntFunction;
 
 import com.example.Login.repository.ViajeRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.lang.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Login.dto.DtoCalificacion;
 import com.example.Login.dto.DtoCalificarViaje;
@@ -32,6 +41,7 @@ import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.dto.DtoViajeIdDestino;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
+import com.example.Login.dto.categoriaUsuario;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Localidad;
@@ -39,6 +49,7 @@ import com.example.Login.model.Omnibus;
 import com.example.Login.model.OmnibusAsiento;
 import com.example.Login.model.OmnibusAsientoViaje;
 import com.example.Login.model.Token;
+import com.example.Login.model.Usuario;
 import com.example.Login.repository.LocalidadRepository;
 import com.example.Login.repository.OmnibusRepository;
 import com.example.Login.repository.TokenRepository;
@@ -259,11 +270,11 @@ public class ViajeService {
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
-		
+
 			resultado = asignarOmnibusAViaje(bus, viaje);
 			System.out.println("***resultado: " + resultado);
 			return resultado;
-	}
+		}
 		System.out.println("***Una de las ciudades ingresadas no existe");
 		resultado = 9;
 		return resultado;
@@ -338,13 +349,13 @@ public class ViajeService {
 					return resultado;
 				}
 
-				if (omnibusDisponible(busOpt.get().getId(), viaje.getFechaInicio(),	viaje.getHoraInicio()) == false) {
+				if (omnibusDisponible(busOpt.get().getId(), viaje.getFechaInicio(), viaje.getHoraInicio()) == false) {
 					System.out.println(
 							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
 					resultado = 6;
 					return resultado;
 				}
-				
+
 //				if(!busOpt.get().isSePuedeUtilizar()) {
 //					
 //				}
@@ -679,83 +690,77 @@ public class ViajeService {
 //		System.out.println("Cantidad de viajes a mostrar: "+viajes.size());
 //		return viajes;
 //	}
-	
+
 	public List<DtoViajeCompleto> obtenerViajes() {
-	    List<DtoViajeCompleto> viajes = new ArrayList<>();
-	    List<Viaje> total = viajeRepository.findAll();
-	    int errores = 0;
+		List<DtoViajeCompleto> viajes = new ArrayList<>();
+		List<Viaje> total = viajeRepository.findAll();
+		int errores = 0;
 
-	    System.out.println("Cantidad de viajes en DB: " + total.size());
+		System.out.println("Cantidad de viajes en DB: " + total.size());
 
-	    for (Viaje v : total) {
-	        System.out.println("Procesando viaje ID: " + v.getId());
-	        try {
-	            DtoViajeCompleto nuevo = new DtoViajeCompleto();
+		for (Viaje v : total) {
+			System.out.println("Procesando viaje ID: " + v.getId());
+			try {
+				DtoViajeCompleto nuevo = new DtoViajeCompleto();
 
-	            // Datos básicos del viaje
-	            nuevo.setId(v.getId());
-	            nuevo.setFechaInicio(v.getFechaInicio());
-	            nuevo.setFechaFin(v.getFechaFin());
-	            nuevo.setHoraInicio(v.getHoraInicio());
-	            nuevo.setHoraFin(v.getHoraFin());
-	            nuevo.setPrecio(v.getPrecio());
-	            nuevo.setEstadoViaje(v.getEstadoViaje());
-	            nuevo.setCalificacion(v.getCalificacion());
+				// Datos básicos del viaje
+				nuevo.setId(v.getId());
+				nuevo.setFechaInicio(v.getFechaInicio());
+				nuevo.setFechaFin(v.getFechaFin());
+				nuevo.setHoraInicio(v.getHoraInicio());
+				nuevo.setHoraFin(v.getHoraFin());
+				nuevo.setPrecio(v.getPrecio());
+				nuevo.setEstadoViaje(v.getEstadoViaje());
+				nuevo.setCalificacion(v.getCalificacion());
 
-	            // Omnibus
-	            if (v.getOmnibus() != null) {
-	                nuevo.setIdOmnibus(v.getOmnibus().getId());
+				// Omnibus
+				if (v.getOmnibus() != null) {
+					nuevo.setIdOmnibus(v.getOmnibus().getId());
 
-	                Integer cantAsientos = v.getOmnibus().getCant_asientos();
-	                int totalAsientos = (cantAsientos != null) ? cantAsientos : 0;
-	                int asientosLibres = asientosDisponibles(v.getId()).size();
-	                int asientosOcupados = totalAsientos - asientosLibres;
+					Integer cantAsientos = v.getOmnibus().getCant_asientos();
+					int totalAsientos = (cantAsientos != null) ? cantAsientos : 0;
+					int asientosLibres = asientosDisponibles(v.getId()).size();
+					int asientosOcupados = totalAsientos - asientosLibres;
 
-	                nuevo.setAsientosOcupados(asientosOcupados);
-	            } else {
-	                System.out.println("Error en omnibus del viaje ID: " + v.getId());
-	                nuevo.setIdOmnibus(null); // Solo si el DTO usa Integer, no int
-	                nuevo.setAsientosOcupados(0); // o -1 si querés indicar "no definido"
-	            }
+					nuevo.setAsientosOcupados(asientosOcupados);
+				} else {
+					System.out.println("Error en omnibus del viaje ID: " + v.getId());
+					nuevo.setIdOmnibus(null); // Solo si el DTO usa Integer, no int
+					nuevo.setAsientosOcupados(0); // o -1 si querés indicar "no definido"
+				}
 
-	            // Localidad Origen
-	            if (v.getLocalidadOrigen() != null) {
-	                localidadRepository.findById(v.getLocalidadOrigen().getId())
-	                    .ifPresentOrElse(
-	                        lo -> nuevo.setIdLocalidadOrigen(lo.getNombre()),
-	                        () -> nuevo.setIdLocalidadOrigen("Desconocida")
-	                    );
-	            } else {
-	                nuevo.setIdLocalidadOrigen("No asignada");
-	            }
+				// Localidad Origen
+				if (v.getLocalidadOrigen() != null) {
+					localidadRepository.findById(v.getLocalidadOrigen().getId()).ifPresentOrElse(
+							lo -> nuevo.setIdLocalidadOrigen(lo.getNombre()),
+							() -> nuevo.setIdLocalidadOrigen("Desconocida"));
+				} else {
+					nuevo.setIdLocalidadOrigen("No asignada");
+				}
 
-	            // Localidad Destino
-	            if (v.getLocalidadDestino() != null) {
-	                localidadRepository.findById(v.getLocalidadDestino().getId())
-	                    .ifPresentOrElse(
-	                        ld -> nuevo.setIdLocalidadDestino(ld.getNombre()),
-	                        () -> nuevo.setIdLocalidadDestino("Desconocida")
-	                    );
-	            } else {
-	                nuevo.setIdLocalidadDestino("No asignada");
-	            }
+				// Localidad Destino
+				if (v.getLocalidadDestino() != null) {
+					localidadRepository.findById(v.getLocalidadDestino().getId()).ifPresentOrElse(
+							ld -> nuevo.setIdLocalidadDestino(ld.getNombre()),
+							() -> nuevo.setIdLocalidadDestino("Desconocida"));
+				} else {
+					nuevo.setIdLocalidadDestino("No asignada");
+				}
 
-	            // Agregar a la lista
-	            viajes.add(nuevo);
+				// Agregar a la lista
+				viajes.add(nuevo);
 
-	        } catch (Exception e) {
-	            errores++;
-	            System.err.println("Error procesando viaje con ID: " + v.getId());
-	            e.printStackTrace();
-	        }
-	    }
+			} catch (Exception e) {
+				errores++;
+				System.err.println("Error procesando viaje con ID: " + v.getId());
+				e.printStackTrace();
+			}
+		}
 
-	    System.out.println("Cantidad de errores: " + errores);
-	    System.out.println("Cantidad de viajes a mostrar: " + viajes.size());
-	    return viajes;
+		System.out.println("Cantidad de errores: " + errores);
+		System.out.println("Cantidad de viajes a mostrar: " + viajes.size());
+		return viajes;
 	}
-
-
 
 	public DtoCompraViaje obtenerCompraViaje(int idViaje, int idCompra, int idUsuario) {
 		// List<DtoCompraViaje> resultado = new ArrayList<>();
@@ -922,7 +927,7 @@ public class ViajeService {
 			viajes = viajeRepository.findByOmnibusId(idBus);
 			System.out.println("Cantidad de viajes = " + viajes.size());
 			for (Viaje v : viajes) {
-				System.out.println("viaje id: "+ v.getId());
+				System.out.println("viaje id: " + v.getId());
 				// Suponiendo que v.getFechaInicio() y v.getFechaFin() son también de tipo
 				// java.util.Date
 				if (fechaInicio.after(v.getFechaInicio()) && fechaInicio.before(v.getFechaFin())) {
@@ -934,14 +939,14 @@ public class ViajeService {
 				// Suponiendo que v.getHoraFin() es de tipo LocalTime
 				if (fechaInicio.equals(v.getFechaFin()) && horaInicio.isBefore(v.getHoraFin())) {
 					viajesEncontrados++;
-				System.out.println("No se puede asignar ese bus porque la hora de inicio del viaje"+
-					" esta antes de la hora de fin de un viaje existente para este bus");
+					System.out.println("No se puede asignar ese bus porque la hora de inicio del viaje"
+							+ " esta antes de la hora de fin de un viaje existente para este bus");
 				}
-				
+
 				if (fechaInicio.equals(v.getFechaInicio()) && horaInicio.equals(v.getHoraInicio())) {
 					viajesEncontrados++;
-					System.out.println("No se puede asignar ese bus porque la fecha y hora de incio del viaje"+
-							" coincide exactamente con un viaje creado para ese bus");
+					System.out.println("No se puede asignar ese bus porque la fecha y hora de incio del viaje"
+							+ " coincide exactamente con un viaje creado para ese bus");
 				}
 			}
 		} catch (Exception e) {
@@ -989,6 +994,133 @@ public class ViajeService {
 
 		}
 		return viajes;
+	}
+
+	public String crearViajesMasivos(MultipartFile file) throws Exception {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+		String line;
+		List<Map<String, String>> dataList = new ArrayList<>();
+		int fila = 1;
+
+		try {
+			while ((line = reader.readLine()) != null) {
+				Map<String, String> row = new HashMap<>();
+				DtoViaje viaje = new DtoViaje();
+				String[] values = line.split("/");
+
+				// Validamos que haya exactamente 7 valores por línea
+				if (values.length != 7) {
+					throw new Exception("Formato incorrecto en el CSV. Cada fila debe tener 7 valores.");
+				}
+
+				// Construimos el JSON correctamente
+				row.put("precio", values[0]);
+				row.put("fechaInicio", values[1]);
+				row.put("fechaFin", values[2]);
+				row.put("horaInicio", values[3]);
+				row.put("horaFin", values[4]);
+				row.put("idLocalidadOrigen", values[5]);
+				row.put("idLocalidadDestiono", values[6]);
+
+				viaje.setPrecio(Float.parseFloat(values[0]));
+				// viaje.setPrecio(values[0]);
+				// Parsea a java.util.Date
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				java.util.Date fechaInicioUtil = sdf.parse(values[1]);
+				java.util.Date fechaFinUtil = sdf.parse(values[2]);
+				// Convierte a java.sql.Date
+				java.sql.Date fechaInicio = new java.sql.Date(fechaInicioUtil.getTime());
+				java.sql.Date fechaFin = new java.sql.Date(fechaFinUtil.getTime());
+				viaje.setFechaInicio(fechaInicio);
+				viaje.setFechaFin(fechaFin);
+
+				DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+				LocalTime horaInicio = LocalTime.parse(values[3], timeFormatter);
+				LocalTime horaFin = LocalTime.parse(values[4], timeFormatter);
+				viaje.setHoraInicio(horaInicio);
+				viaje.setHoraFin(horaFin);
+
+				Optional<Localidad> localidadOrigenOpt = localidadRepository.findByNombre(values[5]);
+				Optional<Localidad> localidadDestinoOpt = localidadRepository.findByNombre(values[6]);
+
+//				if (!localidadOrigenOpt.isPresent() || !localidadDestinoOpt.isPresent()) {
+//					Map<String, String> response = new HashMap<>();
+//
+//					String origen = localidadOrigenOpt.isPresent() ? localidadOrigenOpt.get().getNombre() : values[5];
+//					String destino = localidadDestinoOpt.isPresent() ? localidadDestinoOpt.get().getNombre()
+//							: values[6];
+//					String localidad = "";
+//					if(!localidadOrigenOpt.isPresent()) {
+//						localidad = localidadOrigenOpt.get().getNombre();
+//						response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
+//								+ " no se pudo crear (la localidad " + localidad + " no se encuentra registrada)");
+//						dataList.add(response);
+//						fila++;
+//						continue;
+//					}
+//					if(!localidadDestinoOpt.isPresent()) {
+//						localidad = localidadDestinoOpt.get().getNombre();
+//						response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
+//								+ " no se pudo crear (la localidad " + localidad + " no se encuentra registrada)");
+//						dataList.add(response);
+//						fila++;
+//						continue;
+//					}
+//
+//				}
+				
+				
+				if (!localidadOrigenOpt.isPresent() || !localidadDestinoOpt.isPresent()) {
+				    Map<String, String> response = new HashMap<>();
+
+				    String origen = values[5];
+				    String destino = values[6];
+
+				    if (!localidadOrigenOpt.isPresent()) {
+				        response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
+				                + " no se pudo crear (la localidad " + origen + " no se encuentra registrada)");
+				        dataList.add(response);
+				        fila++;
+				        continue;
+				    }
+
+				    if (!localidadDestinoOpt.isPresent()) {
+				        response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
+				                + " no se pudo crear (la localidad " + destino + " no se encuentra registrada)");
+				        dataList.add(response);
+				        fila++;
+				        continue;
+				    }
+				}
+
+				int idOrigen = localidadOrigenOpt.get().getId();
+				int idDestino = localidadDestinoOpt.get().getId();
+
+				viaje.setIdLocalidadOrigen(idOrigen);
+				viaje.setIdLocalidadDestino(idDestino);
+				System.out.println("fila antes de guardar el viaje: " + fila);
+				if (crearViaje(viaje) != 3) {
+					Map<String, String> response = new HashMap<>();
+					System.out.println("fila dentro del if de guardar el viaje: " + fila);
+					response.put("error", "Linea " + fila + ":" + "El viaje de " + localidadOrigenOpt.get().getNombre()
+							+ " a " + localidadDestinoOpt.get().getNombre() + " no se pudo crear, una de las ciudades" + 
+							" se encuentra inactiva");
+					dataList.add(response);
+				}
+				System.out.println("fila despues de guardar el viaje: " + fila);
+				fila++;
+
+			}
+
+			// Convertir la lista a formato JSON
+			ObjectMapper objectMapper = new ObjectMapper();
+			return objectMapper.writeValueAsString(dataList);
+
+		} catch (Exception e) {
+			throw new Exception("Error procesando el archivo CSV: " + e.getMessage());
+		} finally {
+			reader.close(); // Cerramos el BufferedReader
+		}
 	}
 
 }
