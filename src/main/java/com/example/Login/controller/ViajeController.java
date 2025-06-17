@@ -14,6 +14,7 @@ import com.example.Login.model.Viaje;
 import com.example.Login.repository.OmnibusRepository;
 import com.example.Login.repository.ViajeRepository;
 import com.example.Login.service.OmnibusService;
+import com.example.Login.service.UsuarioService;
 import com.example.Login.service.ViajeService;
 
 import java.sql.Date;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,6 +54,9 @@ public class ViajeController {
 
 	@Autowired
 	private ViajeRepository viajeRepository;
+	
+	@Autowired
+	private ViajeService fileConversionService;
 
 	@PostMapping("/crearViaje")
 	@Operation(summary = "Crear un viaje", description = "Agrega un nuevo viaje")
@@ -285,6 +290,22 @@ public class ViajeController {
 		List<DtoViajeCompleto> resultado = new ArrayList<>();		
 		resultado = viajeService.obtenerViajeMejorCalificados();
 		return resultado;
+	}
+	
+	@PostMapping("/crearViajesMasivos")
+	public ResponseEntity<String> crearViajesMasivos(@RequestParam("file") MultipartFile file) {
+		if (file.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
+		}
+
+		try {
+			// Llamamos al servicio para convertir el archivo a JSON
+			String json = fileConversionService.crearViajesMasivos(file);
+			return ResponseEntity.ok(json);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al procesar el archivo: " + e.getMessage());
+		}
 	}
 
 }
