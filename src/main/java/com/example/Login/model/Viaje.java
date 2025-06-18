@@ -1,4 +1,5 @@
 package com.example.Login.model;
+
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.Localidad;
 import java.sql.Date;
@@ -70,8 +71,9 @@ public class Viaje {
 	//agregado para calificar viaje
 	@Column(nullable = true)
 	private Integer calificacion = 0;
-	@ElementCollection
-	private List<String> comentarios = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comentario> comentarios = new ArrayList<>();
 
 	
 	//Constructores
@@ -98,9 +100,28 @@ public class Viaje {
 	
 	
 
+//	public Viaje(int id, Omnibus omnibus, List<AsientoPorViaje> asientosPorViaje, float precio, Date fechaInicio,
+//			Date fechaFin, LocalTime horaInicio, LocalTime horaFin, EstadoViaje estadoViaje, Localidad localidadOrigen,
+//			Localidad localidadDestino, Integer calificacion, List<DtoComentarios> comentarios) {
+//		super();
+//		this.id = id;
+//		this.omnibus = omnibus;
+//		this.asientosPorViaje = asientosPorViaje;
+//		this.precio = precio;
+//		this.fechaInicio = fechaInicio;
+//		this.fechaFin = fechaFin;
+//		this.horaInicio = horaInicio;
+//		this.horaFin = horaFin;
+//		this.estadoViaje = estadoViaje;
+//		this.localidadOrigen = localidadOrigen;
+//		this.localidadDestino = localidadDestino;
+//		this.calificacion = calificacion;
+//		this.comentarios = comentarios;
+//	}
+
 	public Viaje(int id, Omnibus omnibus, List<AsientoPorViaje> asientosPorViaje, float precio, Date fechaInicio,
 			Date fechaFin, LocalTime horaInicio, LocalTime horaFin, EstadoViaje estadoViaje, Localidad localidadOrigen,
-			Localidad localidadDestino, Integer calificacion, List<String> comentarios) {
+			Localidad localidadDestino, Integer calificacion, List<Comentario> comentarios) {
 		super();
 		this.id = id;
 		this.omnibus = omnibus;
@@ -213,11 +234,11 @@ public class Viaje {
 		this.calificacion = calificacion;
 	}
 
-	public List<String> getComentarios() {
+	public List<Comentario> getComentarios() {
 		return comentarios;
 	}
 
-	public void setComentarios(List<String> comentarios) {
+	public void setComentarios(List<Comentario> comentarios) {
 		this.comentarios = comentarios;
 	}
 	
