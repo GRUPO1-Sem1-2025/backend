@@ -234,19 +234,32 @@ public class UsuarioService {
 		usuario.setActivo(true);
 		usuario.setFechaCreacion(LocalDate.now());
 		String password = usuario.getApellido() + usuario.getNombre() + "_2025";
+		System.out.println("Contraseña: " + password);
 		usuario.setPassword(encriptarSHA256(password));
 		usuario.setContraseniaValida(false);
+		
+		enviarMailCrearCuenta(usuario);
 
+//		String para = usuario.getEmail();
+//		System.out.println("dirección de envio de mail: " +  para);
+//		String asunto = "Contrasenia de inicio de sesion";
+//		String mensaje = "Bienvenido " + usuario.getNombre() + " usted ha sido dado de alta en nuestro sistema."
+//				+ " La contraseña temporal para acceder es " + password
+//				+ " no se olvide de cambiarla una vez que haya ingresado";
+//
+//		emailService.enviarCorreo(para, asunto, mensaje);
+		usuarioRepository.save(usuario);
+		return 1;
+	}
+	
+	public void enviarMailCrearCuenta(Usuario usuario) {
 		String para = usuario.getEmail();
 		System.out.println("dirección de envio de mail: " +  para);
 		String asunto = "Contrasenia de inicio de sesion";
 		String mensaje = "Bienvenido " + usuario.getNombre() + " usted ha sido dado de alta en nuestro sistema."
-				+ " La contraseña temporal para acceder es " + password
-				+ " no se olvide de cambiarla una vez que haya ingresado";
-
+				+ " La contraseña temporal para acceder es  " + usuario.getApellido() + usuario.getNombre() + "_2025"
+				+ "  no se olvide de cambiarla una vez que haya ingresado";
 		emailService.enviarCorreo(para, asunto, mensaje);
-		usuarioRepository.save(usuario);
-		return 1;
 	}
 
 	public Usuario bajaUsuario(Optional<Usuario> user) {
@@ -287,7 +300,7 @@ public class UsuarioService {
 
 				user.setNombre(values[0]);
 				user.setApellido(values[1]);
-				user.setEmail(values[2]);
+				//user.setEmail(values[2]);
 				System.out.println("correo: " + values[2]);
 				user.setPassword(values[3]);
 				user.setPassword(encriptarSHA256(user.getPassword()));
@@ -315,7 +328,7 @@ public class UsuarioService {
 					System.out.println("No existe el Rol: " + values[4]);
 				}
 				if (values[5].equals("true")) {
-					user.setActivo(true);// values[3].toString());
+					user.setActivo(true);
 				} else {
 					user.setActivo(false);
 				}
@@ -334,6 +347,10 @@ public class UsuarioService {
 				// user.setCategoria(values[6]);
 				user.setCi(values[7]);
 				user.setFechaCreacion(LocalDate.now());
+				String nombre = user.getNombre().toLowerCase();
+				String apellido = user.getApellido().toLowerCase();
+				
+				user.setEmail(nombre + "." + apellido + "@tecnobus.uy");
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				Date fechaNacimiento = sdf.parse(values[8]);
@@ -341,15 +358,34 @@ public class UsuarioService {
 				// Conversión segura:
 				java.sql.Date sqlFechaNacimiento = new java.sql.Date(fechaNacimiento.getTime());
 
-				dataList.add(row);
+				//dataList.add(row);
 
-				usuarioNoEncontrado = buscarPorEmail(values[2]);
+				usuarioNoEncontrado = buscarPorEmail(user.getEmail());
 				if (usuarioNoEncontrado.isEmpty()) {
+					System.out.println("Usuario no encontrado con el correo " + user.getEmail());
+					//DtoRegistrarse reg = new DtoRegistrarse();
+					DtoCrearCuenta cuenta = new DtoCrearCuenta();
+					cuenta.setApellido(user.getApellido());
+					cuenta.setCategoria(user.getCategoria());
+					cuenta.setCi(user.getCi());
+					cuenta.setEmail(user.getEmail());
+					cuenta.setFechaNac(user.getFechaNac());
+					cuenta.setNombre(user.getNombre());
+					cuenta.setRol(values[4]);//user.getRol());
+					crearCuenta(cuenta);
+					
+					//enviarMailCrearCuenta(user);
+					//enviarMailRegistrarse(null);
 					// Guardo el usuario nuevo
-					usuarioRepository.save(user);
+					
+					
+					//usuarioRepository.save(user);
 					System.out.println("El usuario fue registrado");
 				} else {
+					Map<String, String> usuarioExistente = new HashMap<>();
+					usuarioExistente.put("error","el usuario de correo " + user.getEmail() + " ya se encuentra registrado");
 					System.out.println("El correo : " + values[2] + " ya esta registrado en el sistema");
+					dataList.add(usuarioExistente);
 				}
 			}
 

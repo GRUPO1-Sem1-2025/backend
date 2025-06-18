@@ -1043,33 +1043,6 @@ public class ViajeService {
 				Optional<Localidad> localidadOrigenOpt = localidadRepository.findByNombre(values[5]);
 				Optional<Localidad> localidadDestinoOpt = localidadRepository.findByNombre(values[6]);
 
-//				if (!localidadOrigenOpt.isPresent() || !localidadDestinoOpt.isPresent()) {
-//					Map<String, String> response = new HashMap<>();
-//
-//					String origen = localidadOrigenOpt.isPresent() ? localidadOrigenOpt.get().getNombre() : values[5];
-//					String destino = localidadDestinoOpt.isPresent() ? localidadDestinoOpt.get().getNombre()
-//							: values[6];
-//					String localidad = "";
-//					if(!localidadOrigenOpt.isPresent()) {
-//						localidad = localidadOrigenOpt.get().getNombre();
-//						response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
-//								+ " no se pudo crear (la localidad " + localidad + " no se encuentra registrada)");
-//						dataList.add(response);
-//						fila++;
-//						continue;
-//					}
-//					if(!localidadDestinoOpt.isPresent()) {
-//						localidad = localidadDestinoOpt.get().getNombre();
-//						response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
-//								+ " no se pudo crear (la localidad " + localidad + " no se encuentra registrada)");
-//						dataList.add(response);
-//						fila++;
-//						continue;
-//					}
-//
-//				}
-				
-				
 				if (!localidadOrigenOpt.isPresent() || !localidadDestinoOpt.isPresent()) {
 				    Map<String, String> response = new HashMap<>();
 
