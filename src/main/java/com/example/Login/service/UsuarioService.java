@@ -610,30 +610,6 @@ public class UsuarioService {
 
 	}
 
-//	public void cambiarEstadoCompra(int idCompra) {
-//		CompraPasaje compra = new CompraPasaje();
-//		try {
-//			Optional<CompraPasaje> Ocompra = comprapasajerepository.findById(idCompra);
-//			compra = Ocompra.get();
-//		} catch (Exception e) {
-//
-//		}
-//		EstadoCompra estado = compra.getEstadoCompra();
-//		switch (estado) {
-//		case REALIZADA:
-//			compra.setEstadoCompra(EstadoCompra.RESERVADA);
-//			comprapasajerepository.save(compra);
-//			break;
-//		case RESERVADA:
-//			compra.setEstadoCompra(EstadoCompra.REALIZADA);
-//			comprapasajerepository.save(compra);
-//			break;
-//		default:
-//			System.out.println("Estado desconocido: " + estado);
-//		}
-//
-//	}
-	
 	public void cambiarEstadoCompra(int idCompra) {
 	    Optional<CompraPasaje> optionalCompra = comprapasajerepository.findById(idCompra);
 	    

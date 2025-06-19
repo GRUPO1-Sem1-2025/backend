@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Login.repository.AsientoRepository;
 import com.example.Login.repository.OmnibusRepository;
@@ -105,7 +106,7 @@ public class OmnibusController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
-	
+
 	@PostMapping("/crearOmnibusConLocalidad")
 	@Operation(summary = "Crear un bus", description = "Agrega un bus")
 	public ResponseEntity<Map<String, String>> crearOmnibusConLocalidad(@RequestBody DtoBus dtoBus) {
@@ -134,15 +135,15 @@ public class OmnibusController {
 
 		if (totalAsientos < asientosDisponibles) {
 			omnibusService.crearOmnibus(bus);
-			
-			//Agregar Localidad
+
+			// Agregar Localidad
 			DtoCargarLocalidad cargarLocalidad = new DtoCargarLocalidad();
 			cargarLocalidad.setNombreLocalidad(dtoBus.getLocalidad_actual());
 			System.out.println("localidad_actual: " + dtoBus.getLocalidad_actual());
 			cargarLocalidad.setId_bus(omnibusrepository.findUltimoId());
-			asignarLocalidadAOmnibus(cargarLocalidad);			
+			asignarLocalidadAOmnibus(cargarLocalidad);
 			// fin Agregar Localidad
-			
+
 			for (i = 1; i <= totalAsientos; i++) {
 				System.out.println("valor de i " + i);
 
@@ -223,12 +224,13 @@ public class OmnibusController {
 		case 2:
 			response.put("mensaje", "Se habilito el Omnibus");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			
+
 		case 3:
 			response.put("mensaje", "No existe un omnibus con ese id");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		case 4:
-			response.put("mensaje", "El omnibus esta asignado a algun viaje activo, por lo tanto no puede ser deshabilitado");
+			response.put("mensaje",
+					"El omnibus esta asignado a algun viaje activo, por lo tanto no puede ser deshabilitado");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 		response.put("mensaje", "Error desconocido");
@@ -246,7 +248,7 @@ public class OmnibusController {
 	public int obtenerCantidadDeOmnibus() {
 		return omnibusService.obtenerCantidadDeBus();
 	}
-	
+
 	@GetMapping("/obtenerOmnibusPorId")
 	public DtoBus obtenerOmnibusPorId(@RequestParam int idBus) {
 		DtoBus bus = new DtoBus();
@@ -254,5 +256,20 @@ public class OmnibusController {
 		return bus;
 	}
 	
-	
+	@PostMapping("/crearBusMasivosConLocalidad")
+	public ResponseEntity<String> crearBusMasivosConLocalidad(@RequestParam("file") MultipartFile file) {
+		if (file.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo procesado esta vacio");
+		}
+
+		try {
+			// Llamamos al servicio para convertir el archivo a JSON
+			String json = omnibusService.crearBusMasivosConLocalidad(file);
+			return ResponseEntity.ok(json);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al procesar el archivo: " + e.getMessage());
+		}
+	}
+
 }
