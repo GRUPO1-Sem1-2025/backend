@@ -610,18 +610,18 @@ public class UsuarioService {
 
 	}
 
-	public void cambiarEstadoCompra(int idCompra) {
+	public int cambiarEstadoCompra(int idCompra) {
 	    Optional<CompraPasaje> optionalCompra = comprapasajerepository.findById(idCompra);
 	    
 	    if (!optionalCompra.isPresent()) {
-	        throw new IllegalArgumentException("No se encontró la compra con id: " + idCompra);
+	        return 0;//throw new IllegalArgumentException("No se encontró la compra con id: " + idCompra);
 	    }
 
 	    CompraPasaje compra = optionalCompra.get();
 	    EstadoCompra estado = compra.getEstadoCompra();
 
 	    if (estado == null) {
-	        throw new IllegalStateException("La compra con id " + idCompra + " no tiene un estado definido.");
+	        return 2;//throw new IllegalStateException("La compra con id " + idCompra + " no tiene un estado definido.");
 	    }
 
 	    switch (estado) {
@@ -636,6 +636,7 @@ public class UsuarioService {
 	        default:
 	            System.out.println("Estado desconocido: " + estado);
 	    }
+	    return 1;
 	}
 
 	public List<DtoMisViajes> obtenerMisViajes(String email) {

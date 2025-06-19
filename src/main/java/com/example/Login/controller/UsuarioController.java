@@ -53,7 +53,7 @@ public class UsuarioController {
 
 	@Autowired
 	private TokenService tokenService;
-	
+
 	@Autowired
 	private EmailService emailService;
 
@@ -122,13 +122,13 @@ public class UsuarioController {
 		Optional<Usuario> user = usuarioService.buscarPorEmail(dtocrearCuenta.getEmail());
 		Map<String, String> response = new HashMap<>();
 
-		if(usuarioService.crearCuenta(dtocrearCuenta) == 0){
+		if (usuarioService.crearCuenta(dtocrearCuenta) == 0) {
 			response.put("error", "El usuario ya se encuentra registrado con ese correo");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-		}else
-		{response.put("mensaje", "Usuario registrado exitosamente");
-		return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
-	}
+		} else {
+			response.put("mensaje", "Usuario registrado exitosamente");
+			return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 - Creado
+		}
 	}
 
 	@GetMapping("/emails/")
@@ -136,18 +136,17 @@ public class UsuarioController {
 	public ResponseEntity<Map<String, Object>> buscarPorEmails(@RequestParam String email) {
 		Map<String, Object> response = new HashMap<>();
 		DtoUsuarioMensaje usuario = usuarioService.buscarPorEmails(email);
-		
-		if(usuario.getResultado() == 1) {
+
+		if (usuario.getResultado() == 1) {
 			System.out.println("Usuario encontrado");
-			response.put("OK",usuario.getDtoUsuario());
+			response.put("OK", usuario.getDtoUsuario());
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-			//return usuario.getDtoUsuario();
-		}else
-		{
-			response.put("Error","No existe un usuario ingresado con ese correo");
+			// return usuario.getDtoUsuario();
+		} else {
+			response.put("Error", "No existe un usuario ingresado con ese correo");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
-		//return null;
+		// return null;
 	}
 
 	// 🔹 Recibe email y password en el cuerpo de la petición (POST)
@@ -214,7 +213,7 @@ public class UsuarioController {
 		response.put("error", "No existe el usuario");
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
-	
+
 	@PostMapping("/activarUsuario")
 	public ResponseEntity<Map<String, String>> activarUsuario(@RequestParam String email) {
 
@@ -255,8 +254,6 @@ public class UsuarioController {
 	public long verCantidadUsuarios() {
 		return usuarioService.verCantidadUsuarios();
 	}
-
-	
 
 	@PostMapping("/resetearcontrasenia")
 	public ResponseEntity<Map<String, String>> resetearContrasenia(@RequestParam String para) {
@@ -377,8 +374,8 @@ public class UsuarioController {
 		EstadoCompra estado = resultado.getEstado();
 		List<Integer> asientos = new ArrayList<>();
 		Map<String, Object> response = new HashMap<>();
-		
-		if(resultado.getAsientosComprados() > 5) {
+
+		if (resultado.getAsientosComprados() > 5) {
 			response.put("error", "No se pueden comprar más de 5 pasajes por viaje");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
@@ -386,7 +383,7 @@ public class UsuarioController {
 			asientos = resultado.getAsientosOcupados();
 		} catch (Exception e) {
 			// TODO: handle exception
-		}		
+		}
 
 		if (!resultado.getAsientosOcupados().isEmpty()) {
 			// Map<String, Object> response = new HashMap<>();
@@ -404,7 +401,7 @@ public class UsuarioController {
 						"La compra ha sido reservada de forma exitosa. Recurede"
 								+ " que tiene 10 minutos para completar el proceso de compra, de lo contrario su "
 								+ "reserva sera cancelada de forma automatica");
-				response.put("idCompra",resultado.getIdCompra());
+				response.put("idCompra", resultado.getIdCompra());
 				usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			case CANCELADA:
@@ -506,11 +503,15 @@ public class UsuarioController {
 	@PostMapping("/cambiarEstadoCompra")
 	public ResponseEntity<Map<String, String>> cambiarEstadoCompra(@RequestBody int idCompra) {
 		Map<String, String> response = new HashMap<>();
-		usuarioService.cambiarEstadoCompra(idCompra);
-		response.put("mensaje", "Se cambió el estado de la compra");
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-		// return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado de la
-		// compra");
+		int resultado = usuarioService.cambiarEstadoCompra(idCompra);
+
+		if (resultado == 1) {
+			response.put("mensaje", "Se cambió el estado de la compra");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			response.put("error", "No se pudo cambiar el estado de la compra porque no existe");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}
 	}
 
 	@PostMapping("/reenviarCodigo")
