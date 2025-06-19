@@ -14,6 +14,7 @@ public class Comentario {
 	private int id;
 
 	private Integer idUsuario;
+	private Integer calificacion;
 	private String comentario;
 	@ManyToOne
 	@JoinColumn(name = "viaje_id")
@@ -23,10 +24,11 @@ public class Comentario {
 
 	}
 	
-	public Comentario(int id, Integer idUsuario, String comentario, Viaje viaje) {
+	public Comentario(int id, Integer idUsuario, Integer calificacion, String comentario, Viaje viaje) {
 		super();
 		this.id = id;
 		this.idUsuario = idUsuario;
+		this.calificacion = calificacion;
 		this.comentario = comentario;
 		this.viaje = viaje;
 	}
@@ -74,6 +76,14 @@ public class Comentario {
 
 	public void setComentario(String comentario) {
 		this.comentario = comentario;
+	}
+
+	public Integer getCalificacion() {
+		return calificacion;
+	}
+
+	public void setCalificacion(Integer calificacion) {
+		this.calificacion = calificacion;
 	}
 
 }

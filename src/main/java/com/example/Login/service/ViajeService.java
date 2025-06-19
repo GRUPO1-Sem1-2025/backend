@@ -1,6 +1,7 @@
 package com.example.Login.service;
 
 import com.example.Login.repository.AsientoPorViajeRepository;
+import com.example.Login.repository.ComentarioRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 
 import java.io.BufferedReader;
@@ -74,6 +75,9 @@ public class ViajeService {
 
 	@Autowired
 	private ViajeRepository viajeRepository;
+	
+	@Autowired
+	private ComentarioRepository comentarioRepository;
 
 	@Autowired
 	private OmnibusRepository omnibusRepository;
@@ -616,6 +620,7 @@ public class ViajeService {
 					System.out.println("comentario a insertar: " + comentario.getComentario());
 					System.out.println("usuario que comenta: " + comentario.getIdUsuario());
 					comentario.setViaje(viaje);
+					comentario.setCalificacion(dtoCalificar.getCalificacion());
 					comentarios.add(comentario);
 					viaje.setComentarios(comentarios);
 
@@ -641,7 +646,32 @@ public class ViajeService {
 		return 0;
 	}
 
-//	public DtoCalificacion verCalificacionYComentariosDeViaje(int idViaje) {
+	public DtoCalificacionUsuario verCalificacionYComentarioUsuario(int idViaje, int idUsuario) {
+		DtoCalificacionUsuario dtoCalificacion = new DtoCalificacionUsuario();
+		String comentario = "";
+		int calificacion = 0;
+		
+		List<Comentario> comentarios = comentarioRepository.findAll();
+		System.out.println("Cantidad de comentarios: " + comentarios.size());
+		
+		for (Comentario c: comentarios) {
+			try{
+				System.out.println("idUsuario " + c.getIdUsuario());
+				System.out.println("idViaje " + c.getViaje().getId());
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			if(c.getIdUsuario() == idUsuario && c.getViaje().getId() == idViaje) {
+				System.out.println("Entre al if para cargar calificacion y comentario");
+				calificacion = c.getCalificacion();
+				comentario = c.getComentario();
+				dtoCalificacion.setCalificacion(calificacion);
+				dtoCalificacion.setComentario(comentario);
+			}
+		}		
+		return dtoCalificacion;
+	}
 //		System.out.println("entre al service de verCalificacionComentario");
 //		DtoCalificacion resultado = new DtoCalificacion();
 //		List<String> comentarios = new ArrayList<>();

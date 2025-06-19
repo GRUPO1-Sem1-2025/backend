@@ -240,11 +240,11 @@ public class ViajeController {
 		}
 	}
 	
-//	@GetMapping("/verCalificacionComentario")
-//	public DtoCalificacion verCalificacionYComentariosDeViaje(@RequestParam int idViaje) {
-//		System.out.println("entre al controlador de verCalificacionComentario");
-//		return viajeService.verCalificacionYComentariosDeViaje(idViaje);
-//	}
+	@GetMapping("/verCalificacionUsuario")
+	public DtoCalificacionUsuario verCalificacionYComentariosDeViaje(@RequestParam int idViaje, int idUsuario) {
+		System.out.println("entre al controlador de verCalificacionComentario");
+		return viajeService.verCalificacionYComentarioUsuario(idViaje, idUsuario);
+	}
 	
 	@GetMapping("/obtenerViajes")
 	public List<DtoViajeCompleto> obtenerViajes() {
