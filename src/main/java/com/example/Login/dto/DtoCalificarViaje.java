@@ -1,18 +1,23 @@
 package com.example.Login.dto;
 
+import com.example.Login.model.Comentario;
+
 public class DtoCalificarViaje {
 	private int calificacion;
-	private String comentario;
+	private Comentario comentario;
 	private int idViaje;
 	
 	public DtoCalificarViaje() {}
 	
-	public DtoCalificarViaje(int calificacion, String comentario, int idViaje) {
+	public DtoCalificarViaje(int calificacion, Comentario comentario, int idViaje) {
 		super();
 		this.calificacion = calificacion;
 		this.comentario = comentario;
 		this.idViaje = idViaje;
+
 	}
+
+
 
 	public int getCalificacion() {
 		return calificacion;
@@ -22,11 +27,11 @@ public class DtoCalificarViaje {
 		this.calificacion = calificacion;
 	}
 
-	public String getComentario() {
+	public Comentario getComentario() {
 		return comentario;
 	}
 
-	public void setComentario(String comentario) {
+	public void setComentario(Comentario comentario) {
 		this.comentario = comentario;
 	}
 

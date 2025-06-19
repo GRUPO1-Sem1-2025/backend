@@ -1,6 +1,7 @@
 package com.example.Login.service;
 
 import com.example.Login.repository.AsientoPorViajeRepository;
+import com.example.Login.repository.ComentarioRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 
 import java.io.BufferedReader;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Login.dto.DtoCalificacion;
+import com.example.Login.dto.DtoCalificacionUsuario;
 import com.example.Login.dto.DtoCalificarViaje;
 import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoCompraViaje;
@@ -43,6 +45,7 @@ import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.dto.categoriaUsuario;
 import com.example.Login.model.AsientoPorViaje;
+import com.example.Login.model.Comentario;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Localidad;
 import com.example.Login.model.Omnibus;
@@ -72,6 +75,9 @@ public class ViajeService {
 
 	@Autowired
 	private ViajeRepository viajeRepository;
+	
+	@Autowired
+	private ComentarioRepository comentarioRepository;
 
 	@Autowired
 	private OmnibusRepository omnibusRepository;
@@ -582,7 +588,16 @@ public class ViajeService {
 	public int calificarViaje(DtoCalificarViaje dtoCalificar) {
 		int idViaje = dtoCalificar.getIdViaje();
 		int calificacion = dtoCalificar.getCalificacion();
-		String comentario = dtoCalificar.getComentario();
+		Comentario comentario = dtoCalificar.getComentario();
+		int idUsuario = 0;
+		String comentar = "";
+
+		try {
+			idUsuario = comentario.getIdUsuario();
+			comentar = comentario.getComentario();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
 		System.out.println("comentario: " + comentario);
 		System.out.println("viaje: " + idViaje);
@@ -595,24 +610,31 @@ public class ViajeService {
 			if (Oviaje.isPresent()) {
 				Viaje viaje = Oviaje.get();
 
-				List<String> comentarios = viaje.getComentarios();
+				List<Comentario> comentarios = viaje.getComentarios();
 				if (comentarios == null) {
 					comentarios = new ArrayList<>();
 				}
 
 				System.out.println("comentarios Actuales = " + comentarios.size());
-				if (!comentario.equals("")) {
+				if (!comentario.getComentario().equals(" ")) {
+					System.out.println("comentario a insertar: " + comentario.getComentario());
+					System.out.println("usuario que comenta: " + comentario.getIdUsuario());
+					comentario.setViaje(viaje);
+					comentario.setCalificacion(dtoCalificar.getCalificacion());
 					comentarios.add(comentario);
 					viaje.setComentarios(comentarios);
+
 				}
 				System.out.println("Entre para obtener los comentarios y agregar los nuevos: Nuevos:"
 						+ viaje.getComentarios().size());
 				System.out.println("calificacion Actual: " + viaje.getCalificacion());
 				viaje.setCalificacion(viaje.getCalificacion() + calificacion);
 				System.out.println("calificacion Nueva: " + viaje.getCalificacion());
-
-				viajeRepository.save(viaje); // ✅ PERSISTE LOS CAMBIOS
-
+				try {
+					viajeRepository.save(viaje); // ✅ PERSISTE LOS CAMBIOS
+				} catch (Exception e) {
+					return 0;// TODO: handle exception
+				}
 				return 1;
 			} else {
 				System.out.println("No se encontró el viaje con id: " + idViaje);
@@ -624,29 +646,54 @@ public class ViajeService {
 		return 0;
 	}
 
-	public DtoCalificacion verCalificacionYComentariosDeViaje(int idViaje) {
-		System.out.println("entre al service de verCalificacionComentario");
-		DtoCalificacion resultado = new DtoCalificacion();
-		List<String> comentarios = new ArrayList<>();
-
-		try {
-			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
-//			System.out.println("encontre el viaje");
-
-			int cantidadComentarios = Oviaje.get().getComentarios().size();
-			resultado.setCalificacion(Oviaje.get().getCalificacion() / cantidadComentarios);
-
-			for (String c : Oviaje.get().getComentarios()) {
-				if (!c.equals("")) {
-					comentarios.add(c);
-				}
+	public DtoCalificacionUsuario verCalificacionYComentarioUsuario(int idViaje, int idUsuario) {
+		DtoCalificacionUsuario dtoCalificacion = new DtoCalificacionUsuario();
+		String comentario = "";
+		int calificacion = 0;
+		
+		List<Comentario> comentarios = comentarioRepository.findAll();
+		System.out.println("Cantidad de comentarios: " + comentarios.size());
+		
+		for (Comentario c: comentarios) {
+			try{
+				System.out.println("idUsuario " + c.getIdUsuario());
+				System.out.println("idViaje " + c.getViaje().getId());
+			}catch (Exception e) {
+				// TODO: handle exception
 			}
-			resultado.setComentarios(comentarios);// Oviaje.get().getComentarios());
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		return resultado;
+			
+			if(c.getIdUsuario() == idUsuario && c.getViaje().getId() == idViaje) {
+				System.out.println("Entre al if para cargar calificacion y comentario");
+				calificacion = c.getCalificacion();
+				comentario = c.getComentario();
+				dtoCalificacion.setCalificacion(calificacion);
+				dtoCalificacion.setComentario(comentario);
+			}
+		}		
+		return dtoCalificacion;
 	}
+//		System.out.println("entre al service de verCalificacionComentario");
+//		DtoCalificacion resultado = new DtoCalificacion();
+//		List<String> comentarios = new ArrayList<>();
+//
+//		try {
+//			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
+////			System.out.println("encontre el viaje");
+//
+//			int cantidadComentarios = Oviaje.get().getComentarios().size();
+//			resultado.setCalificacion(Oviaje.get().getCalificacion() / cantidadComentarios);
+//
+//			for (String c : Oviaje.get().getComentarios()) {
+//				if (!c.equals("")) {
+//					comentarios.add(c);
+//				}
+//			}
+//			resultado.setComentarios(comentarios);// Oviaje.get().getComentarios());
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		}
+//		return resultado;
+//	}
 
 //	public List<DtoViajeCompleto> obtenerViajes() {
 //		List<DtoViajeCompleto> viajes = new ArrayList<>();
@@ -1044,26 +1091,26 @@ public class ViajeService {
 				Optional<Localidad> localidadDestinoOpt = localidadRepository.findByNombre(values[6]);
 
 				if (!localidadOrigenOpt.isPresent() || !localidadDestinoOpt.isPresent()) {
-				    Map<String, String> response = new HashMap<>();
+					Map<String, String> response = new HashMap<>();
 
-				    String origen = values[5];
-				    String destino = values[6];
+					String origen = values[5];
+					String destino = values[6];
 
-				    if (!localidadOrigenOpt.isPresent()) {
-				        response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
-				                + " no se pudo crear (la localidad " + origen + " no se encuentra registrada)");
-				        dataList.add(response);
-				        fila++;
-				        continue;
-				    }
+					if (!localidadOrigenOpt.isPresent()) {
+						response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
+								+ " no se pudo crear (la localidad " + origen + " no se encuentra registrada)");
+						dataList.add(response);
+						fila++;
+						continue;
+					}
 
-				    if (!localidadDestinoOpt.isPresent()) {
-				        response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
-				                + " no se pudo crear (la localidad " + destino + " no se encuentra registrada)");
-				        dataList.add(response);
-				        fila++;
-				        continue;
-				    }
+					if (!localidadDestinoOpt.isPresent()) {
+						response.put("error", "Linea " + fila + ": El viaje de " + origen + " a " + destino
+								+ " no se pudo crear (la localidad " + destino + " no se encuentra registrada)");
+						dataList.add(response);
+						fila++;
+						continue;
+					}
 				}
 
 				int idOrigen = localidadOrigenOpt.get().getId();
@@ -1075,9 +1122,10 @@ public class ViajeService {
 				if (crearViaje(viaje) != 3) {
 					Map<String, String> response = new HashMap<>();
 					System.out.println("fila dentro del if de guardar el viaje: " + fila);
-					response.put("error", "Linea " + fila + ":" + "El viaje de " + localidadOrigenOpt.get().getNombre()
-							+ " a " + localidadDestinoOpt.get().getNombre() + " no se pudo crear, una de las ciudades" + 
-							" se encuentra inactiva");
+					response.put("error",
+							"Linea " + fila + ":" + "El viaje de " + localidadOrigenOpt.get().getNombre() + " a "
+									+ localidadDestinoOpt.get().getNombre() + " no se pudo crear, una de las ciudades"
+									+ " se encuentra inactiva");
 					dataList.add(response);
 				}
 				System.out.println("fila despues de guardar el viaje: " + fila);

@@ -1,6 +1,7 @@
 package com.example.Login.controller;
 
 import com.example.Login.dto.DtoCalificacion;
+import com.example.Login.dto.DtoCalificacionUsuario;
 import com.example.Login.dto.DtoCalificarViaje;
 import com.example.Login.dto.DtoCompraViaje;
 import com.example.Login.dto.DtoTipoDeCompra;
@@ -239,10 +240,10 @@ public class ViajeController {
 		}
 	}
 	
-	@GetMapping("/verCalificacionComentario")
-	public DtoCalificacion verCalificacionYComentariosDeViaje(@RequestParam int idViaje) {
+	@GetMapping("/verCalificacionUsuario")
+	public DtoCalificacionUsuario verCalificacionYComentariosDeViaje(@RequestParam int idViaje, int idUsuario) {
 		System.out.println("entre al controlador de verCalificacionComentario");
-		return viajeService.verCalificacionYComentariosDeViaje(idViaje);
+		return viajeService.verCalificacionYComentarioUsuario(idViaje, idUsuario);
 	}
 	
 	@GetMapping("/obtenerViajes")

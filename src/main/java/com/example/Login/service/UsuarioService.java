@@ -37,9 +37,11 @@ import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.categoriaUsuario;
 import com.example.Login.model.AsientoPorViaje;
+import com.example.Login.model.Categoria;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
 import com.example.Login.model.Viaje;
+import com.example.Login.repository.CategoriaRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.repository.ViajeRepository;
@@ -68,6 +70,9 @@ public class UsuarioService {
 
 	@Autowired
 	private ViajeRepository viajeRepository;
+	
+	@Autowired
+	private CategoriaRepository categoriaRepository;
 
 	@Autowired
 	private CompraPasajeRepository comprapasajerepository;
@@ -681,6 +686,9 @@ public class UsuarioService {
 		List<CompraPasaje> compras = comprapasajerepository.findAll();
 		List<DtoMisCompras> misCompras = new ArrayList<>();
 		int idUsuario = 0;
+//		categoriaUsuario categoria = usuarioRepository.findByEmail(email).get().getCategoria();
+//		Optional<Categoria> OcategoriaUsuario = categoriaRepository.findBynombreCategoria(categoria.name());
+//		int descuento = OcategoriaUsuario.get().getDescuento();
 		try {
 			idUsuario = usuarioRepository.findByEmail(email).get().getId();
 		} catch (Exception e) {
@@ -703,6 +711,7 @@ public class UsuarioService {
 					}
 					compra.setNumerosDeAsiento(asientos);
 					compra.setEstadoCompra(c.getEstadoCompra());
+//					compra.setDescuento(c.getDescuentoAplicado());
 					misCompras.add(compra);
 				default:
 					System.out.println("Estado compra: " + estado);
@@ -716,23 +725,27 @@ public class UsuarioService {
 		List<CompraPasaje> compras = comprapasajerepository.findAll();
 		List<DtoMisCompras> misReservas = new ArrayList<>();
 		int idUsuario = usuarioRepository.findByEmail(email).get().getId();
-
+		categoriaUsuario categoria = usuarioRepository.findByEmail(email).get().getCategoria();
+		Optional<Categoria> OcategoriaUsuario = categoriaRepository.findBynombreCategoria(categoria.name());
+		int descuento = OcategoriaUsuario.get().getDescuento();
 		for (CompraPasaje c : compras) {
 			if (c.getUsuario().getId() == idUsuario) {
-				DtoMisCompras compra = new DtoMisCompras();
+				DtoMisCompras reserva = new DtoMisCompras();
 				EstadoCompra estado = c.getEstadoCompra();
 				switch (estado) {
 				case RESERVADA:
-					System.out.println("compraId: " + c.getId());
-					compra.setEstadoCompra(c.getEstadoCompra());
-					compra.setViajeId(c.getViaje().getId());
+					System.out.println("ReservaId: " + c.getId());
+					reserva.setEstadoCompra(c.getEstadoCompra());
+					reserva.setViajeId(c.getViaje().getId());
 					List<Integer> asientos = new ArrayList<>();
 					for (AsientoPorViaje apv : c.getAsientos()) {
 						asientos.add(apv.getOmnibusAsiento().getAsiento().getId());
 					}
-					compra.setNumerosDeAsiento(asientos);
-					compra.setEstadoCompra(c.getEstadoCompra());
-					misReservas.add(compra);
+					reserva.setNumerosDeAsiento(asientos);
+					reserva.setEstadoCompra(c.getEstadoCompra());
+					reserva.setCompraId(c.getId().intValue());
+					reserva.setDescuento(c.getDescuentoAplicado());
+					misReservas.add(reserva);
 				default:
 					System.out.println("Estado desconocido: " + estado);
 				}
