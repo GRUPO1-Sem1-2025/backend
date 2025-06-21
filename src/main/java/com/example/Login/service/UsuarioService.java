@@ -244,15 +244,6 @@ public class UsuarioService {
 		usuario.setContraseniaValida(false);
 		
 		enviarMailCrearCuenta(usuario);
-
-//		String para = usuario.getEmail();
-//		System.out.println("dirección de envio de mail: " +  para);
-//		String asunto = "Contrasenia de inicio de sesion";
-//		String mensaje = "Bienvenido " + usuario.getNombre() + " usted ha sido dado de alta en nuestro sistema."
-//				+ " La contraseña temporal para acceder es " + password
-//				+ " no se olvide de cambiarla una vez que haya ingresado";
-//
-//		emailService.enviarCorreo(para, asunto, mensaje);
 		usuarioRepository.save(usuario);
 		return 1;
 	}
