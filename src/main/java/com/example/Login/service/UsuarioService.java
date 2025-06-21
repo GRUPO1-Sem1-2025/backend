@@ -244,15 +244,6 @@ public class UsuarioService {
 		usuario.setContraseniaValida(false);
 		
 		enviarMailCrearCuenta(usuario);
-
-//		String para = usuario.getEmail();
-//		System.out.println("dirección de envio de mail: " +  para);
-//		String asunto = "Contrasenia de inicio de sesion";
-//		String mensaje = "Bienvenido " + usuario.getNombre() + " usted ha sido dado de alta en nuestro sistema."
-//				+ " La contraseña temporal para acceder es " + password
-//				+ " no se olvide de cambiarla una vez que haya ingresado";
-//
-//		emailService.enviarCorreo(para, asunto, mensaje);
 		usuarioRepository.save(usuario);
 		return 1;
 	}
@@ -610,18 +601,18 @@ public class UsuarioService {
 
 	}
 
-	public void cambiarEstadoCompra(int idCompra) {
+	public int cambiarEstadoCompra(int idCompra) {
 	    Optional<CompraPasaje> optionalCompra = comprapasajerepository.findById(idCompra);
 	    
 	    if (!optionalCompra.isPresent()) {
-	        throw new IllegalArgumentException("No se encontró la compra con id: " + idCompra);
+	        return 0;//throw new IllegalArgumentException("No se encontró la compra con id: " + idCompra);
 	    }
 
 	    CompraPasaje compra = optionalCompra.get();
 	    EstadoCompra estado = compra.getEstadoCompra();
 
 	    if (estado == null) {
-	        throw new IllegalStateException("La compra con id " + idCompra + " no tiene un estado definido.");
+	        return 2;//throw new IllegalStateException("La compra con id " + idCompra + " no tiene un estado definido.");
 	    }
 
 	    switch (estado) {
@@ -636,6 +627,7 @@ public class UsuarioService {
 	        default:
 	            System.out.println("Estado desconocido: " + estado);
 	    }
+	    return 1;
 	}
 
 	public List<DtoMisViajes> obtenerMisViajes(String email) {
