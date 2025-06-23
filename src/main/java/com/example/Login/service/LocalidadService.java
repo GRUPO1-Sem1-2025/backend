@@ -75,14 +75,16 @@ public class LocalidadService {
 				localidad.setDepartamento(values[1]);
 				localidad.setNombre(values[0]);				
 				
-				dataList.add(row);
+				//dataList.add(row);
 				localidadNoEncontrado = buscarPorNombre(values[0]);
 				if (localidadNoEncontrado.isEmpty()) {
 					// Guardo el usuario nuevo
 					localidadRepository.save(localidad);
 					System.out.println("La localidad fue registrada");
 				} else {
-					System.out.println("la localidad de nombre : " + values[0] + " ya esta registrada en el sistema");
+					Map<String, String> response = new HashMap<>();
+					response.put("error","la localidad de nombre " + values[0] + " ya esta registrada en el sistema");
+					dataList.add(response);
 				}
 			}
 

@@ -429,6 +429,7 @@ public class CompraPasajeService {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
+				compra.setIdCompra(cp.getId());
 				compra.setOrigenDestino(cp.getViaje().getLocalidadOrigen().getNombre() + "-"
 						+ cp.getViaje().getLocalidadDestino().getNombre());
 				compra.setEstadoCompra(cp.getEstadoCompra());

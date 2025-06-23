@@ -56,14 +56,14 @@ public class AsientoService {
 					Optional<Asiento> Oasiento = asientoRepository.findByNro(nroAsiento);
 					
 					if(!Oasiento.isPresent()) {
-						Map<String, String> row = new HashMap<>(); // <-- aquí
-						row.put("nro", String.valueOf(values[0]));
-					    dataList.add(row);
+						//Map<String, String> row = new HashMap<>(); // <-- aquí
+						//row.put("nro", String.valueOf(values[0]));
+					    //dataList.add(row);
 					    asientoRepository.save(asiento);// save(asiento);		
 					    System.out.println("El asiento " + values[0] + " fue registrado");
 					}else {
 						Map<String, String> row = new HashMap<>(); // <-- aquí
-						row.put("Error", "El asiento "+ String.valueOf(values[0] + " ya esta creado"));
+						row.put("error", "El asiento "+ String.valueOf(values[0] + " ya esta creado"));
 						dataList.add(row);
 						System.out.println("El asiento " + values[0] + " YA fue registrado");
 					}

@@ -259,9 +259,9 @@ public class OmnibusService {
 	                continue;
 	            }
 
-	            String matricula = matriculaRaw.toLowerCase();
+	            //String matricula = matriculaRaw.toLowerCase();
 
-	            Optional<Omnibus> encontrado = omnibusRepository.findByMatriculaIgnoreCase(matricula);
+	            Optional<Omnibus> encontrado = omnibusRepository.findByMatriculaIgnoreCase(matriculaRaw);
 	            if (encontrado.isPresent()) {
 	                response.put("error", "Ya existe un ómnibus con matrícula: " + matriculaRaw);	                
 	                dataList.add(response);
@@ -272,7 +272,7 @@ public class OmnibusService {
 	            Omnibus busCreado = new Omnibus();
 	            busCreado.setMarca(marca);
 	            busCreado.setCant_asientos(cantAsientos);
-	            busCreado.setMatricula(matricula);
+	            busCreado.setMatricula(matriculaRaw);
 	            busCreado.setActivo(true);
 
 	            // Verificamos si la localidad existe y está activa ANTES de asignar
