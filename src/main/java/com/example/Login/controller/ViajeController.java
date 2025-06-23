@@ -208,6 +208,25 @@ public class ViajeController {
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 		}
 	}
+	
+//	@GetMapping("/cancelarViaje")
+//	public ResponseEntity<Map<String, String>> cancelarViaje(@RequestParam Long idViaje) {
+//		Map<String, String> response = new HashMap<>();
+//		int resultado = viajeService.cancelarViaje(idViaje); 
+//		if (resultado == 1) {
+//			response.put("mensaje", "El viaje fue cancelado de forma correcta.");
+//			return ResponseEntity.status(HttpStatus.OK).body(response);
+//		} else if (resultado == 2) {
+//			response.put("mensaje", "No se puede cancelar el viaje porque no existe o ya esta cancelado.");
+//			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+//		}else {
+//			response.put("mensaje", "El viaje no se puede cancelar , dado que el mismo comienza en menos de una hora");//el viaje porque no existe o ya esta cancelado.");
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//		}
+//		// response.put("error", "error desconocido");//el viaje porque no existe o ya esta cancelado.");
+//		// return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+//		
+//	}
 
 	@GetMapping("/obtenerViajesPorBus")
 	public List<DtoViaje> obtenerViajesPorBus(@RequestParam int idBus) {
