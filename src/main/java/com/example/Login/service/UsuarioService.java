@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -773,10 +774,23 @@ public class UsuarioService {
 		usuarioRepository.save(user);
 		return true;
 	}
-
+//
+//	public List<DtoNewUsuariosPorMes> obtenerUsuariosPorMes() {
+//		List<DtoNewUsuariosPorMes> lista = usuarioRepository.contarUsuariosPorMes();
+//		return lista;
+//	}
+	
 	public List<DtoNewUsuariosPorMes> obtenerUsuariosPorMes() {
-		List<DtoNewUsuariosPorMes> lista = usuarioRepository.contarUsuariosPorMes();
-		return lista;
+	    List<Object[]> resultados = usuarioRepository.contarUsuariosPorMes();
+	    
+	    List<DtoNewUsuariosPorMes> lista = resultados.stream()
+	        .map(obj -> new DtoNewUsuariosPorMes(
+	            (String) obj[0],
+	            ((Number) obj[1]).longValue()
+	        ))
+	        .collect(Collectors.toList());
+
+	    return lista;
 	}
 
 	public List<DtoUsuariosPorRol> obtenerUsuariosPorRol() {

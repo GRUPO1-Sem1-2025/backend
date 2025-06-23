@@ -20,14 +20,24 @@ import java.util.Optional;
 	  @Query("SELECT MAX(u.cod_empleado) FROM Usuario u")
 	    Integer findMaxCodEmpleado();
 	  
+//		@Query(
+//		        value = "SELECT TO_CHAR(fecha_creacion, 'MM') AS mes, COUNT(*) AS total " +
+//		                "FROM usuarios " +
+//		                "GROUP BY mes " +
+//		                "ORDER BY mes",
+//		        nativeQuery = true
+//		    )
+//		    List<DtoNewUsuariosPorMes> contarUsuariosPorMes();
+		
 		@Query(
-		        value = "SELECT TO_CHAR(fecha_creacion, 'MM') AS mes, COUNT(*) AS total " +
-		                "FROM usuarios " +
-		                "GROUP BY mes " +
-		                "ORDER BY mes",
-		        nativeQuery = true
-		    )
-		    List<DtoNewUsuariosPorMes> contarUsuariosPorMes();
+			    value = "SELECT TO_CHAR(fecha_creacion, 'MM') AS mes, COUNT(*) AS total " +
+			            "FROM usuarios " +
+			            "GROUP BY mes " +
+			            "ORDER BY mes",
+			    nativeQuery = true
+			)
+			List<Object[]> contarUsuariosPorMes();
+
 		
 //		@Query(
 //				value = "select rol ,count(*)"
