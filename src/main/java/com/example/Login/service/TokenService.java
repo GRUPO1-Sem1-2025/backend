@@ -64,14 +64,9 @@ public class TokenService {
 	
 	public void enviarPushNotification(String idUsuario, String title, String body) throws IOException, InterruptedException {
 	    JsonObject json = new JsonObject();
-//	    json.addProperty("to", expoPushToken);
-//	    json.addProperty("sound", "default");
 	    json.addProperty("titulo", title);
 	    json.addProperty("mensaje", body);
-//	    json.addProperty("priority", "high");
 
-	    
-	    //https://notificaciones.tecnobus.uy/usuarios/{idUsuario}/mensaje
 	    HttpRequest request = HttpRequest.newBuilder()
 	        .uri(URI.create("https://notificaciones.tecnobus.uy/usuarios/"+idUsuario+"/mensaje"))
 	        .header("Content-Type", "application/json")
@@ -81,9 +76,6 @@ public class TokenService {
 	    HttpClient client = HttpClient.newHttpClient();
 	    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 	    System.out.println("response: " + response);
-	   // System.out.println("Token: " + expoPushToken);
-//	    System.out.println("Expo response: " + response.body());
-//	    System.out.println("");
 	}
 	
 //	public void enviarPushNotification(String expoPushToken, String title, String body) throws IOException, InterruptedException {
