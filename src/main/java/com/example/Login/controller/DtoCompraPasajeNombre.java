@@ -11,12 +11,13 @@ public class DtoCompraPasajeNombre {
     private List<Integer> numerosDeAsiento;
     EstadoCompra estadoCompra;
     private String fechaHora;
+    private Long idCompra;
     
     public DtoCompraPasajeNombre() {
     	
     }
 	public DtoCompraPasajeNombre(String nombreUsuario, String nombreVendedor, String origenDestino,
-			List<Integer> numerosDeAsiento, EstadoCompra estadoCompra, String fechaHora) {
+			List<Integer> numerosDeAsiento, EstadoCompra estadoCompra, String fechaHora, Long idCompra) {
 		super();
 		this.nombreUsuario = nombreUsuario;
 		this.nombreVendedor = nombreVendedor;
@@ -24,6 +25,7 @@ public class DtoCompraPasajeNombre {
 		this.numerosDeAsiento = numerosDeAsiento;
 		this.estadoCompra = estadoCompra;
 		this.fechaHora = fechaHora;
+		this.idCompra = idCompra;
 	}
 	public String getNombreUsuario() {
 		return nombreUsuario;
@@ -61,5 +63,12 @@ public class DtoCompraPasajeNombre {
 	public void setFechaHora(String fechaHora) {
 		this.fechaHora = fechaHora;
 	}
+	public Long getIdCompra() {
+		return idCompra;
+	}
+	public void setIdCompra(Long idCompra) {
+		this.idCompra = idCompra;
+	}
+	
     
 }
