@@ -493,6 +493,9 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 		// return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id de compra
 		// ingresado no existe");
+		case 4:
+			response.put("mensaje", "No se puede cancelar la compra dado que el viaje comienza en menos de una hora");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 		}
 		response.put("mensaje", "Error desconocido");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
