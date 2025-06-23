@@ -5,6 +5,7 @@ import com.example.Login.repository.ComentarioRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -608,34 +609,52 @@ public class ViajeService {
 				System.out.println("El viaje de id " + v.getId() + " ha sido cerrado");
 				for (CompraPasaje cp : comprapasaje) {
 					usuarioService.enviarMailAvisandoDeViaje(cp.getId().intValue());
-
-					// enviar pushNotifications
-					tokenAEnviar = tokenRepository.findTokensByUsuarioId(cp.getUsuario().getId());
+					String idUsuario = String.valueOf(cp.getUsuario().getId());
 					String titulo = "Recordatorio de viaje proximo";
 					String mensaje = "Recuerde que usted tiene un viaje con destino a "
 							+ cp.getViaje().getLocalidadDestino().getNombre() + " que sale en 1 hora aproximadamente";
-					for (String token : tokenAEnviar) { // son los tokens del usuario al que se le va a enviar el mail
-						String mobile = token.substring(0, Math.min(8, token.length()));
-
-						try {
-							System.out.println("");
-							if (mobile.equals("Exponent")) {
-								// enviar PushMobile
-								System.out.println("Enviando el mensaje al celular de: " + cp.getUsuario().getEmail()
-										+ " " + token);
-								System.out.println("");
-								tokenService.enviarPushNotification(token, titulo, mensaje);
-							} else {
-								// enviar PushWeb
-								System.out.println(
-										"Enviando el mensaje a la Pc de: " + cp.getUsuario().getEmail() + " " + token);
-								System.out.println("");
-								// tokenService.enviarPushNotificationWeb(token, titulo, mensaje);
-							}
-						} catch (Exception e) {
-							// TODO: handle exception
-						}
+					try {
+						tokenService.enviarPushNotification(idUsuario, titulo, mensaje);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+
+					
+					// llamar al endpoint de pablo
+					
+					
+					
+//					// enviar pushNotifications
+//					tokenAEnviar = tokenRepository.findTokensByUsuarioId(cp.getUsuario().getId());
+//					String titulo = "Recordatorio de viaje proximo";
+//					String mensaje = "Recuerde que usted tiene un viaje con destino a "
+//							+ cp.getViaje().getLocalidadDestino().getNombre() + " que sale en 1 hora aproximadamente";
+//					for (String token : tokenAEnviar) { // son los tokens del usuario al que se le va a enviar el mail
+//						String mobile = token.substring(0, Math.min(8, token.length()));
+//
+//						try {
+//							System.out.println("");
+//							if (mobile.equals("Exponent")) {
+//								// enviar PushMobile
+//								System.out.println("Enviando el mensaje al celular de: " + cp.getUsuario().getEmail()
+//										+ " " + token);
+//								System.out.println("");
+//								tokenService.enviarPushNotification(token, titulo, mensaje);
+//							} else {
+//								// enviar PushWeb
+//								System.out.println(
+//										"Enviando el mensaje a la Pc de: " + cp.getUsuario().getEmail() + " " + token);
+//								System.out.println("");
+//								// tokenService.enviarPushNotificationWeb(token, titulo, mensaje);
+//							}
+//						} catch (Exception e) {
+//							// TODO: handle exception
+//						}
+//					}
 				}
 			} else {
 			}
