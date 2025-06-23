@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Login.dto.DtoEnviarNuevoToken;
 import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuarioToken;
 import com.example.Login.repository.UsuarioRepository;
@@ -60,11 +61,11 @@ public class TokenController {
 //	}	
 	
 	@PostMapping("/enviarMsjPorToken")
-	public void enviarMsjPorToken(@RequestBody DtoUsuarioToken token) {
+	public void enviarMsjPorToken(@RequestBody DtoEnviarNuevoToken token) {
 	    String tituloPrueba = "titulo";
 	    String msjPrueba = "mensaje";
 	    try {
-	        tokenService.enviarPushNotification(token.getToken(), tituloPrueba, msjPrueba);
+	        tokenService.enviarPushNotification(token.getIdUsuario(), token.getTitulo(), token.getMsj());
 	    } catch (Exception e) {
 	        e.printStackTrace(); // Podés loguear el error mejor aquí
 	    }
