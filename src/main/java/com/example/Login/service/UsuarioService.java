@@ -31,6 +31,7 @@ import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuario;
 import com.example.Login.dto.DtoUsuarioMensaje;
 import com.example.Login.dto.DtoUsuarioPerfil;
+import com.example.Login.dto.DtoUsuariosPorEdad;
 import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoUsuariosPorRolQuery;
 import com.example.Login.dto.DtoVenderPasaje;
@@ -975,6 +976,67 @@ public class UsuarioService {
 		u.setActivo(true);
 		usuarioRepository.save(u);
 		//return u;		
+	}
+	
+	public int calcularEdad(Date fecha1) {
+		// Convertir java.sql.Date a LocalDate
+	    LocalDate fechaNacimiento = ((java.sql.Date) fecha1).toLocalDate();
+
+	    // Fecha actual
+	    LocalDate fechaActual = LocalDate.now();
+
+	    // Calcular edad
+	    return Period.between(fechaNacimiento, fechaActual).getYears();
+	}
+
+	public List<DtoUsuariosPorEdad> obtenerUsuariosActivos() {
+		List<Usuario> Ousuario = usuarioRepository.findAll();
+		List<DtoUsuariosPorEdad> resultado = new ArrayList<>();
+		Date fechaActual = new Date();
+		DtoUsuariosPorEdad primerFranja = new DtoUsuariosPorEdad(); // 16 a 25
+		DtoUsuariosPorEdad segundaFranja = new DtoUsuariosPorEdad(); // 26 a 35
+		DtoUsuariosPorEdad terceraFranja = new DtoUsuariosPorEdad(); // 36 a 45
+		DtoUsuariosPorEdad cuartaFranja = new DtoUsuariosPorEdad(); // 46 a 55
+		DtoUsuariosPorEdad quintaFranja = new DtoUsuariosPorEdad(); // + de 55
+		int edad= 0;
+		
+		primerFranja.setRango("16 a 25");
+		primerFranja.setCantidad(0);
+		segundaFranja.setRango("26 a 35");
+		segundaFranja.setCantidad(0);
+		terceraFranja.setRango("36 a 45");
+		terceraFranja.setCantidad(0);
+		cuartaFranja.setRango("46 a 55");
+		cuartaFranja.setCantidad(0);
+		quintaFranja.setRango("+ de 55");
+		quintaFranja.setCantidad(0);
+		
+		for(Usuario u: Ousuario) {
+			edad = calcularEdad(u.getFechaNac());
+			System.out.println("Edad: " + edad);
+			if (edad >= 16 && edad <= 25) {
+				primerFranja.setCantidad(primerFranja.getCantidad() + 1);
+			}else if (edad >= 26 && edad <= 35) {
+				segundaFranja.setCantidad(segundaFranja.getCantidad() + 1);
+			}else if (edad >= 36 && edad <= 45) {
+				terceraFranja.setCantidad(terceraFranja.getCantidad() + 1);
+			}else if (edad >= 46 && edad <= 55) {
+				cuartaFranja.setCantidad(cuartaFranja.getCantidad() + 1);
+			}if (edad >= 56) {
+				quintaFranja.setCantidad(quintaFranja.getCantidad() + 1);
+			}else {
+				System.out.println("no se puede agrupar la edad");
+			}
+			
+		}
+		
+		resultado.add(quintaFranja);
+		resultado.add(cuartaFranja);
+		resultado.add(terceraFranja);
+		resultado.add(segundaFranja);
+		resultado.add(primerFranja);
+				
+		return resultado;
 	}
 
 }

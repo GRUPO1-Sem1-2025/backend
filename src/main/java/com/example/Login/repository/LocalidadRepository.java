@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
 
 import com.example.Login.dto.DtoDestinoMasVistos;
 import com.example.Login.model.Localidad;
@@ -18,7 +19,7 @@ Integer>{
 	 
 	 @Query(value = """
 			    SELECT 
-			        CAST(v.localidad_destino_id AS BIGINT) AS id,
+			       (v.localidad_destino_id) AS id,
 			        l.nombre AS nombre,
 			        COUNT(*)::BIGINT AS cantidad
 			    FROM viaje v
@@ -29,5 +30,5 @@ Integer>{
 			    ORDER BY cantidad DESC
 			    LIMIT 10
 			""", nativeQuery = true)
-		    List<DtoDestinoMasVistos> findTop10DestinosConNombre();	  
+		    List<DtoDestinoMasVistos> findTop10DestinosConNombre();	
 }

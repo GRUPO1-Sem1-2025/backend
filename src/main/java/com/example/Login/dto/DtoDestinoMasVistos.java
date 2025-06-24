@@ -8,6 +8,7 @@ public class DtoDestinoMasVistos {
 	public DtoDestinoMasVistos() {
 		
 	}
+	
 	public DtoDestinoMasVistos(Long id, String nombre, Long cantidad) {
 		this.id = id;
 		this.nombre = nombre;
