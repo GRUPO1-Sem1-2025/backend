@@ -31,6 +31,8 @@ import com.example.Login.dto.DtoRegistrarse;
 import com.example.Login.dto.DtoUsuario;
 import com.example.Login.dto.DtoUsuarioMensaje;
 import com.example.Login.dto.DtoUsuarioPerfil;
+import com.example.Login.dto.DtoUsuariosActivos;
+import com.example.Login.dto.DtoUsuariosPorCategoria;
 import com.example.Login.dto.DtoUsuariosPorEdad;
 import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoUsuariosPorRolQuery;
@@ -989,7 +991,7 @@ public class UsuarioService {
 	    return Period.between(fechaNacimiento, fechaActual).getYears();
 	}
 
-	public List<DtoUsuariosPorEdad> obtenerUsuariosActivos() {
+	public List<DtoUsuariosPorEdad> obtenerUsuariosPorEdad() {
 		List<Usuario> Ousuario = usuarioRepository.findAll();
 		List<DtoUsuariosPorEdad> resultado = new ArrayList<>();
 		Date fechaActual = new Date();
@@ -1036,6 +1038,54 @@ public class UsuarioService {
 		resultado.add(segundaFranja);
 		resultado.add(primerFranja);
 				
+		return resultado;
+	}
+
+	public DtoUsuariosActivos obtenerUsuariosActivos() {
+		List<Usuario> Ousuario = usuarioRepository.findAll();
+		DtoUsuariosActivos resultado = new DtoUsuariosActivos();
+		int usuarioActivos = 0;
+		int usuariosInactivos = 0;
+		
+		for(Usuario u: Ousuario) {
+			if (u.getActivo()) {
+				usuarioActivos++;
+			}else {
+				usuariosInactivos++;
+			}
+		}
+		System.out.println("Usuarios activos: " + usuarioActivos);
+		System.out.println("Usuarios inactivos: " + usuariosInactivos);
+		resultado.setActivos(usuarioActivos);
+		resultado.setInactivos(usuariosInactivos);
+		return resultado;
+	}
+
+	public List<DtoUsuariosPorCategoria> obtenerUsuariosPorCategoria() {
+		List<Usuario> Ousuario = usuarioRepository.findAll();
+		List<DtoUsuariosPorCategoria> resultado = new ArrayList<>();
+		DtoUsuariosPorCategoria general = new DtoUsuariosPorCategoria();
+		general.setCategoria("General");
+		DtoUsuariosPorCategoria estudiante = new DtoUsuariosPorCategoria();
+		estudiante.setCategoria("Estudiante");
+		DtoUsuariosPorCategoria jubilado = new DtoUsuariosPorCategoria();
+		jubilado.setCategoria("Jubilado");
+		
+		for(Usuario u: Ousuario) {
+			categoriaUsuario categoria = u.getCategoria();
+			
+			switch(categoria) {
+			case GENERAL:
+				general.setCantidad(general.getCantidad() + 1);
+			case JUBILADO:
+				jubilado.setCantidad(jubilado.getCantidad() + 1);
+			case ESTUDIANTE:
+				jubilado.setCantidad(jubilado.getCantidad() + 1);
+			}
+		}
+		resultado.add(jubilado);
+		resultado.add(general);
+		resultado.add(estudiante);
 		return resultado;
 	}
 

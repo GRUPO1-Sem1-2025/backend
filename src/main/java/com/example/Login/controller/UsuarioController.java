@@ -13,6 +13,8 @@ import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoUsuario;
 import com.example.Login.dto.DtoUsuarioMensaje;
 import com.example.Login.dto.DtoUsuarioPerfil;
+import com.example.Login.dto.DtoUsuariosActivos;
+import com.example.Login.dto.DtoUsuariosPorCategoria;
 import com.example.Login.dto.DtoUsuariosPorEdad;
 import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoValidarCodigo;
@@ -602,9 +604,9 @@ public class UsuarioController {
 	}
 	
 	@GetMapping("usuariosPorEdad")
-	public List<DtoUsuariosPorEdad> obtenerUsuariosActivos() {
+	public List<DtoUsuariosPorEdad> obtenerUsuariosPorEdad() {
 		List<DtoUsuariosPorEdad> resultado = new ArrayList<>();
-		resultado = usuarioService.obtenerUsuariosActivos();
+		resultado = usuarioService.obtenerUsuariosPorEdad();
 		return resultado;
 	}
 
@@ -623,5 +625,20 @@ public class UsuarioController {
 	List<DtoCantidadPorRol> cantidadPorRol() {
 		return usuarioService.cantidadPorRol();
 	}
+	
+	@GetMapping("usuariosActivos")
+	public DtoUsuariosActivos obtenerUsuariosActivos() {
+		//List<DtoUsuariosPorEdad> resultado = new ArrayList<>();
+		DtoUsuariosActivos resultado  = usuarioService.obtenerUsuariosActivos();
+		return resultado;
+	}
+	
+	@GetMapping("usuariosPorCategoria")
+	public List<DtoUsuariosPorCategoria> obtenerUsuariosPorCategoria() {
+		//List<DtoUsuariosPorEdad> resultado = new ArrayList<>();
+		List<DtoUsuariosPorCategoria> resultado  = usuarioService.obtenerUsuariosPorCategoria();
+		return resultado;
+	}
+
 
 }
