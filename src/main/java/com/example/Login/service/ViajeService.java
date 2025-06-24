@@ -623,11 +623,8 @@ public class ViajeService {
 						e.printStackTrace();
 					}
 
-					
 					// llamar al endpoint de pablo
-					
-					
-					
+
 //					// enviar pushNotifications
 //					tokenAEnviar = tokenRepository.findTokensByUsuarioId(cp.getUsuario().getId());
 //					String titulo = "Recordatorio de viaje proximo";
@@ -1128,6 +1125,26 @@ public class ViajeService {
 		return cantidadAsientos;
 	}
 
+//	public List<DtoViajeIdDestino> obtenerViajesIdDestino() {
+//		List<DtoViajeIdDestino> viajes = new ArrayList<>();
+//		List<Viaje> total = viajeRepository.findAll();
+//
+//		for (Viaje v : total) {
+//
+//			try {
+//				DtoViajeIdDestino nuevo = new DtoViajeIdDestino();
+//				nuevo.setId(v.getId());
+//				nuevo.setOrigenDestino(v.getLocalidadOrigen().getNombre() + "-" + v.getLocalidadDestino().getNombre()
+//						+ " " + v.getHoraInicio() + "-" + v.getHoraFin());
+//				viajes.add(nuevo);
+//			} catch (Exception e) {
+//			}
+//
+//		}
+//	    System.out.println("Cantida de resultados: "+ viajes.size());
+//		return viajes;
+//	}
+
 	public List<DtoViajeIdDestino> obtenerViajesIdDestino() {
 		List<DtoViajeIdDestino> viajes = new ArrayList<>();
 		List<Viaje> total = viajeRepository.findAll();
@@ -1135,15 +1152,21 @@ public class ViajeService {
 		for (Viaje v : total) {
 
 			try {
-				DtoViajeIdDestino nuevo = new DtoViajeIdDestino();
-				nuevo.setId(v.getId());
-				nuevo.setOrigenDestino(v.getLocalidadOrigen().getNombre() + "-" + v.getLocalidadDestino().getNombre()
-						+ " " + v.getHoraInicio() + "-" + v.getHoraFin());
-				viajes.add(nuevo);
+				int cantidadCompras = compraPasajeRepository.findByViajeId((long) v.getId()).size();
+				System.out.println("Cantidad de compras: " + cantidadCompras);
+				if (cantidadCompras != 0) {
+					DtoViajeIdDestino nuevo = new DtoViajeIdDestino();
+					nuevo.setId(v.getId());
+					nuevo.setOrigenDestino(v.getLocalidadOrigen().getNombre() + "-"
+							+ v.getLocalidadDestino().getNombre() + " " + v.getHoraInicio() + "-" + v.getHoraFin());
+					viajes.add(nuevo);
+				}
+
 			} catch (Exception e) {
 			}
 
 		}
+		System.out.println("Cantida de resultados: "+ viajes.size());
 		return viajes;
 	}
 
