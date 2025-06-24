@@ -13,6 +13,7 @@ import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoUsuario;
 import com.example.Login.dto.DtoUsuarioMensaje;
 import com.example.Login.dto.DtoUsuarioPerfil;
+import com.example.Login.dto.DtoUsuariosPorEdad;
 import com.example.Login.dto.DtoUsuariosPorRol;
 import com.example.Login.dto.DtoValidarCodigo;
 import com.example.Login.dto.DtoVenderPasaje;
@@ -597,6 +598,13 @@ public class UsuarioController {
 	public List<DtoUsuariosPorRol> obtenerUsuariosPorRol() {
 		List<DtoUsuariosPorRol> resultado = new ArrayList<>();
 		resultado = usuarioService.obtenerUsuariosPorRol();
+		return resultado;
+	}
+	
+	@GetMapping("usuariosPorEdad")
+	public List<DtoUsuariosPorEdad> obtenerUsuariosActivos() {
+		List<DtoUsuariosPorEdad> resultado = new ArrayList<>();
+		resultado = usuarioService.obtenerUsuariosActivos();
 		return resultado;
 	}
 
