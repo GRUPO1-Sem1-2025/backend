@@ -507,82 +507,6 @@ public class ViajeService {
 		return true;
 	}
 
-//	public int cancelarViaje(Long idViaje) {
-//		Viaje viaje = new Viaje();
-//		try {
-//			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje.intValue());
-//			viaje = Oviaje.get();}
-//		catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		
-//		// Fecha y hora del viaje
-//		Date fechaViajeActual = viaje.getFechaInicio();// .valueOf("2025-06-20");
-//		LocalTime horaViaje = viaje.getHoraInicio();// .of(14, 0); // 14:00
-//
-//		// Fecha y hora que queremos comparar
-//		LocalDate fechaConsulta = LocalDate.now();
-//		LocalTime horaConsulta = LocalTime.now();// of(12, 59); // 12:59
-//
-//		// Convertir la fecha SQL a LocalDate
-//		LocalDate fechaViaje = fechaViajeActual.toLocalDate();
-//
-//		// Combinar fecha y hora del viaje
-//		LocalDateTime fechaHoraViaje = LocalDateTime.of(fechaViaje, horaViaje);
-//
-//		// Restar una hora
-//		LocalDateTime fechaHoraViajeMenosUnaHora = fechaHoraViaje.minusHours(1);
-//
-//		// Combinar fecha y hora de consulta
-//		LocalDateTime fechaHoraConsulta = LocalDateTime.of(fechaConsulta, horaConsulta);
-//
-//		// Comparar
-//		boolean esMayor = fechaHoraConsulta.isAfter(fechaHoraViajeMenosUnaHora);
-//
-//		System.out.println("¿La fecha de consulta es mayor a una hora antes del viaje? " + esMayor);
-//
-//		if (esMayor == true) {
-//			try {
-//				Optional<Viaje> Oviaje = viajeRepository.findById(idViaje.intValue());
-//				viaje = Oviaje.get();
-//				if (viaje.getEstadoViaje().equals(EstadoViaje.CANCELADO)) {
-//					return 2;
-//				}
-//				viaje.setEstadoViaje(EstadoViaje.CANCELADO);
-//
-//				try {
-//					viaje.getOmnibus().setSePuedeUtilizar(true);
-//					System.out.println("id del bus a habilitar: " + viaje.getOmnibus().getId());
-//				} catch (Exception e) {
-//					// TODO: handle exception
-//				}
-//				viajeRepository.save(viaje);
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
-//			List<Long> compraPasajeACancelar = new ArrayList<>();
-//			try {
-//				List<CompraPasaje> compraPasaje = compraPasajeRepository.findByViajeId(idViaje);
-//				System.out.println("Cantidad de compras: " + compraPasaje.size());// Ok
-//
-//				for (CompraPasaje cp : compraPasaje) {
-//					compraPasajeACancelar.add(cp.getId());
-//				}
-//				for (Long id : compraPasajeACancelar) {
-//					compraPasajeService.cancelarCompra(id.intValue()); // cancela la compra
-//					usuarioService.enviarMailCancelarCompra(id.intValue());
-//					System.out.println("Se canceló la compra nro " + id);
-//				}
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
-//			return 1;
-//		} else {
-//			System.out.println("El viaje no puede ser cancelado");
-//			return 3;
-//		}
-//	}
-
 	@Scheduled(fixedRate = 60000) // cada 60 segundos
 	public void cerrarViajes() {
 		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximos60Minutos();
@@ -622,36 +546,6 @@ public class ViajeService {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
-					// llamar al endpoint de pablo
-
-//					// enviar pushNotifications
-//					tokenAEnviar = tokenRepository.findTokensByUsuarioId(cp.getUsuario().getId());
-//					String titulo = "Recordatorio de viaje proximo";
-//					String mensaje = "Recuerde que usted tiene un viaje con destino a "
-//							+ cp.getViaje().getLocalidadDestino().getNombre() + " que sale en 1 hora aproximadamente";
-//					for (String token : tokenAEnviar) { // son los tokens del usuario al que se le va a enviar el mail
-//						String mobile = token.substring(0, Math.min(8, token.length()));
-//
-//						try {
-//							System.out.println("");
-//							if (mobile.equals("Exponent")) {
-//								// enviar PushMobile
-//								System.out.println("Enviando el mensaje al celular de: " + cp.getUsuario().getEmail()
-//										+ " " + token);
-//								System.out.println("");
-//								tokenService.enviarPushNotification(token, titulo, mensaje);
-//							} else {
-//								// enviar PushWeb
-//								System.out.println(
-//										"Enviando el mensaje a la Pc de: " + cp.getUsuario().getEmail() + " " + token);
-//								System.out.println("");
-//								// tokenService.enviarPushNotificationWeb(token, titulo, mensaje);
-//							}
-//						} catch (Exception e) {
-//							// TODO: handle exception
-//						}
-//					}
 				}
 			} else {
 			}
@@ -773,71 +667,6 @@ public class ViajeService {
 		}
 		return dtoCalificacion;
 	}
-//		System.out.println("entre al service de verCalificacionComentario");
-//		DtoCalificacion resultado = new DtoCalificacion();
-//		List<String> comentarios = new ArrayList<>();
-//
-//		try {
-//			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
-////			System.out.println("encontre el viaje");
-//
-//			int cantidadComentarios = Oviaje.get().getComentarios().size();
-//			resultado.setCalificacion(Oviaje.get().getCalificacion() / cantidadComentarios);
-//
-//			for (String c : Oviaje.get().getComentarios()) {
-//				if (!c.equals("")) {
-//					comentarios.add(c);
-//				}
-//			}
-//			resultado.setComentarios(comentarios);// Oviaje.get().getComentarios());
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		return resultado;
-//	}
-
-//	public List<DtoViajeCompleto> obtenerViajes() {
-//		List<DtoViajeCompleto> viajes = new ArrayList<>();
-//		List<Viaje> total = viajeRepository.findAll();
-//		int asientosOcupados = 0;
-//		int asientosLibres = 0;
-//		int totalAsientos = 0;
-//		for (Viaje v : total) {
-////			String localidadOrigen = null;
-////			String localidadDestino = null;
-//			try {
-//				DtoViajeCompleto nuevo = new DtoViajeCompleto();
-//				nuevo.setFechaInicio(v.getFechaInicio());
-//				nuevo.setFechaFin(v.getFechaFin());
-//				nuevo.setHoraFin(v.getHoraFin());
-//				nuevo.setHoraInicio(v.getHoraInicio());
-//				nuevo.setId(v.getId());
-//				System.out.println("id de bus en obtenerViajes = " + v.getOmnibus().getId());
-////				if(v.getOmnibus().getId()==null) {
-////					nuevo.setIdOmnibus(0);
-////				}
-//				nuevo.setIdOmnibus(v.getOmnibus().getId());
-//				nuevo.setPrecio(v.getPrecio());
-//				nuevo.setEstadoViaje(v.getEstadoViaje());
-//				nuevo.setCalificacion(v.getCalificacion());
-//				Optional<Localidad> OlocalidadO = localidadRepository.findById(v.getLocalidadOrigen().getId());
-//				Optional<Localidad> OlocalidadD = localidadRepository.findById(v.getLocalidadDestino().getId());
-//				nuevo.setIdLocalidadDestino(OlocalidadD.get().getNombre());
-//				nuevo.setIdLocalidadOrigen(OlocalidadO.get().getNombre());
-//				asientosLibres = asientosDisponibles(v.getId()).size();
-//				totalAsientos = v.getOmnibus().getCant_asientos();
-//				asientosOcupados = totalAsientos - asientosLibres;
-//				nuevo.setAsientosOcupados(asientosOcupados);
-//				viajes.add(nuevo);
-//			} catch (Exception e) {
-//				 System.err.println("Error procesando viaje con ID: " + v.getId());
-//				    e.printStackTrace(); // o log.error(...) si estás usando logging
-//			}
-//
-//		}
-//		System.out.println("Cantidad de viajes a mostrar: "+viajes.size());
-//		return viajes;
-//	}
 
 	public List<DtoViajeCompleto> obtenerViajes() {
 		List<DtoViajeCompleto> viajes = new ArrayList<>();
@@ -1166,7 +995,7 @@ public class ViajeService {
 			}
 
 		}
-		System.out.println("Cantida de resultados: "+ viajes.size());
+		System.out.println("Cantida de resultados: " + viajes.size());
 		return viajes;
 	}
 
