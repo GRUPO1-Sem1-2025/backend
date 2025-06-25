@@ -8,18 +8,20 @@ public class DtoRespuestaCompraPasaje {
 	private EstadoCompra estado;
 	private int idCompra;
 	private int asientosComprados;
+	private int descuento;
 
 	public DtoRespuestaCompraPasaje() {
 		this.asientosOcupados = new ArrayList<>();
 	}
 
 	public DtoRespuestaCompraPasaje(List<Integer> asientosOcupados, EstadoCompra estado, int icCompra,
-			int asientosComprados) {
+			int asientosComprados, int descuento) {
 		super();
 		this.asientosOcupados = asientosOcupados;
 		this.estado = estado;
 		this.idCompra = idCompra;
 		this.asientosComprados = asientosComprados;
+		this.descuento = descuento;
 	}
 
 	public List<Integer> getAsientosOcupados() {
@@ -52,6 +54,14 @@ public class DtoRespuestaCompraPasaje {
 
 	public void setAsientosComprados(int asientosComprados) {
 		this.asientosComprados = asientosComprados;
+	}
+
+	public int getDescuento() {
+		return descuento;
+	}
+
+	public void setDescuento(int descuento) {
+		this.descuento = descuento;
 	}
 
 }

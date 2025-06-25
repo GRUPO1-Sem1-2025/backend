@@ -80,6 +80,7 @@ public class CompraPasajeService {
 		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
 		DtoRespuestaCompraPasaje asientosOcupados = new DtoRespuestaCompraPasaje();
 		asientosOcupados.setEstado(estado);
+		asientosOcupados.setDescuento(descuento);
 
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findById(request.getUsuarioId());
@@ -89,6 +90,7 @@ public class CompraPasajeService {
 						.findBynombreCategoria(usuario.getCategoria().name());
 				System.out.println("Encontre la categoria: " + Ocategoria.get().getNombreCategoria());
 				descuento = Ocategoria.get().getDescuento();
+				asientosOcupados.setDescuento(descuento);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -198,6 +200,7 @@ public class CompraPasajeService {
 		compraPasajeRepository.save(compra);
 
 		// cargo el siguiente id de compra para mostrar
+		//asientosOcupados.
 		asientosOcupados.setIdCompra((int) (aux.getId() + 1));
 		// fin
 
