@@ -397,6 +397,7 @@ public class UsuarioController {
 			switch (estado) {
 			case REALIZADA:
 				response.put("mensaje", "La compra ha sido realizada de forma exitosa");
+				response.put("descuento",resultado.getDescuento());
 				usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			case RESERVADA:
@@ -405,6 +406,7 @@ public class UsuarioController {
 								+ " que tiene 10 minutos para completar el proceso de compra, de lo contrario su "
 								+ "reserva sera cancelada de forma automatica");
 				response.put("idCompra", resultado.getIdCompra());
+				response.put("descuento",resultado.getDescuento());
 				usuarioService.enviarMailReservarPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.OK).body(response);
 			case CANCELADA:
