@@ -1,6 +1,7 @@
 package com.example.Login.service;
 
 import com.example.Login.repository.AsientoPorViajeRepository;
+import com.example.Login.repository.CerrarViajeRepository;
 import com.example.Login.repository.ComentarioRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 
@@ -46,6 +47,7 @@ import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.dto.categoriaUsuario;
 import com.example.Login.model.AsientoPorViaje;
+import com.example.Login.model.CerrarViaje;
 import com.example.Login.model.Comentario;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Localidad;
@@ -91,6 +93,9 @@ public class ViajeService {
 
 	@Autowired
 	private CompraPasajeService compraPasajeService;
+
+	@Autowired
+	private CerrarViajeRepository cerrarViajeRepository;
 
 //	ViajeService(UsuarioService usuarioService) {
 //		this.usuarioService = usuarioService;
@@ -509,7 +514,25 @@ public class ViajeService {
 
 	@Scheduled(fixedRate = 60000) // cada 60 segundos
 	public void cerrarViajes() {
-		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximos60Minutos();
+
+		// Agregado para modificar el tiempo de cerrar viajes mediante endpoint
+
+		CerrarViaje cerrarViaje = new CerrarViaje();
+		try {
+			Optional<CerrarViaje> OcerrarViaje = cerrarViajeRepository.findAllById(1);
+			cerrarViaje = OcerrarViaje.get();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		String tiempo = cerrarViaje.getTiempo() + " minutes";
+		//System.out.println("Tiempo para cerrar el viaje: " + tiempo);
+		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximosMinutos(tiempo);
+
+		// hasta aca
+
+		// List<Viaje> viajesACerrar =
+		// viajeRepository.findViajesConInicioEnLosProximos60Minutos();
 		List<String> tokenAEnviar = new ArrayList<>();
 		for (Viaje v : viajesACerrar) {
 			if (!v.getEstadoViaje().equals(EstadoViaje.CERRADO)) {
@@ -547,10 +570,48 @@ public class ViajeService {
 						e.printStackTrace();
 					}
 				}
-			} else {
-			}
+			} 
+//			else {
+//			}
 		}
 	}
+
+//	@Scheduled(fixedRate = 60000) // cada 60 segundos
+//	public void enviarMailAvisandoDeViaje() {
+//
+//		String tiempo = "60 minutes";
+//		System.out.println("Tiempo para enviar mails y push notifications: " + tiempo);
+//		//List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximosMinutos(tiempo);
+//		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximos60Minutos();// ProximosMinutos(tiempo);
+//		List<String> tokenAEnviar = new ArrayList<>();
+//		for (Viaje v : viajesACerrar) {
+//
+//			// enviar mail a los compradores de pasajes para ese viaje
+//			List<CompraPasaje> comprapasaje = new ArrayList<>();
+//			comprapasaje = compraPasajeRepository.findByViajeId((long) v.getId());
+//			System.out.println("El viaje de id " + v.getId() + " ha sido cerrado");
+//			for (CompraPasaje cp : comprapasaje) {
+//				usuarioService.enviarMailAvisandoDeViaje(cp.getId().intValue());
+//				String idUsuario = String.valueOf(cp.getUsuario().getId());
+//				String titulo = "Recordatorio de viaje proximo";
+//				String mensaje = "Recuerde que usted tiene un viaje con destino a "
+//						+ cp.getViaje().getLocalidadDestino().getNombre() + " que sale en 1 hora aproximadamente";
+//				try {
+//
+//					// Enviar push notifications
+//					try {
+//						tokenService.enviarPushNotification(idUsuario, titulo, mensaje);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//	}
 
 	public List<DtoViaje> obtenerViajesPorBus(int idBus) {
 		List<DtoViaje> dtoViajes = new ArrayList<>();

@@ -74,6 +74,12 @@ public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
 			""", nativeQuery = true)
 			List<Viaje> findViajesConInicioEnLosProximos60Minutos();
 		
+		@Query(value = """
+			    SELECT * FROM viaje 
+			    WHERE (fecha_inicio + hora_inicio) BETWEEN NOW() AND NOW() + CAST(?1 AS INTERVAL)
+			    """, nativeQuery = true)
+			List<Viaje> findViajesConInicioEnLosProximosMinutos(String intervalo);
+		
 		List<Viaje> findByOmnibus_Id(int idOmnibus);
 		
 		@Query(value = "SELECT id FROM viaje ORDER BY calificacion DESC LIMIT 5", nativeQuery = true)
