@@ -80,8 +80,7 @@ public class CompraPasajeService {
 		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
 		DtoRespuestaCompraPasaje asientosOcupados = new DtoRespuestaCompraPasaje();
 		asientosOcupados.setEstado(estado);
-		asientosOcupados.setDescuento(descuento);
-
+		
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findById(request.getUsuarioId());
 			usuario = Ousuario.get();

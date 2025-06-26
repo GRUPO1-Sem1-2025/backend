@@ -683,7 +683,7 @@ public class UsuarioService {
 					}
 					compra.setNumerosDeAsiento(asientos);
 					compra.setEstadoCompra(c.getEstadoCompra());
-//					compra.setDescuento(c.getDescuentoAplicado());
+					compra.setDescuento(c.getDescuentoAplicado());
 					misCompras.add(compra);
 				default:
 					System.out.println("Estado compra: " + estado);
