@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.lang.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +44,7 @@ import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeCompleto;
 import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.dto.DtoViajeIdDestino;
+import com.example.Login.dto.DtoViajesMasCaros;
 import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.dto.categoriaUsuario;
@@ -60,6 +62,8 @@ import com.example.Login.repository.LocalidadRepository;
 import com.example.Login.repository.OmnibusRepository;
 import com.example.Login.repository.TokenRepository;
 import com.example.Login.model.Viaje;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 public class ViajeService {
@@ -1159,6 +1163,12 @@ public class ViajeService {
 		} finally {
 			reader.close(); // Cerramos el BufferedReader
 		}
+	}
+
+	public List<DtoViajesMasCaros> obtenerViajesMasCaros() {
+		Pageable pageable = PageRequest.of(0, 10);
+		List<DtoViajesMasCaros> top10 = viajeRepository.obtenerTop10Dto(pageable);
+		return top10;
 	}
 
 }
