@@ -1,5 +1,6 @@
 package com.example.Login.controller;
 
+import com.example.Login.dto.DtoBusMasUsado;
 import com.example.Login.dto.DtoCalificacion;
 import com.example.Login.dto.DtoCalificacionUsuario;
 import com.example.Login.dto.DtoCalificarViaje;
@@ -333,6 +334,13 @@ public class ViajeController {
 	public List<DtoViajesMasCaros> obtenerViajesMasCaros() {
 		List<DtoViajesMasCaros> resultado = new ArrayList<>();		
 		resultado = viajeService.obtenerViajesMasCaros();
+		return resultado;
+	}
+	
+	@GetMapping("/obtenerBusMasUsados")
+	public List<DtoBusMasUsado> obtenerBusMasUsados() {
+		List<DtoBusMasUsado> resultado = new ArrayList<>();		
+		resultado = viajeService.obtenerBusMasUsados();
 		return resultado;
 	}
 

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.Login.dto.DtoBusMasUsado;
 import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajesMasCaros;
 import com.example.Login.dto.DtoViajeDestinoFecha;
@@ -96,4 +97,13 @@ public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
 		
 		@Query("SELECT new com.example.Login.dto.DtoViajesMasCaros(v.id, v.precio) FROM Viaje v ORDER BY v.precio DESC")
 		List<DtoViajesMasCaros> obtenerTop10Dto(org.springframework.data.domain.Pageable pageable);
+		
+		@Query(value = """
+			    SELECT v.omnibus_id AS id_bus, COUNT(v.omnibus_id) AS cantidad
+			    FROM viaje v
+			    GROUP BY v.omnibus_id
+			    ORDER BY cantidad DESC
+			    LIMIT 5
+			    """, nativeQuery = true)
+			List<DtoBusMasUsado> obtenerTop5BusesMasUsados();
 }

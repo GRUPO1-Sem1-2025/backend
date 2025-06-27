@@ -35,6 +35,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.Login.dto.DtoBusMasUsado;
 import com.example.Login.dto.DtoCalificacion;
 import com.example.Login.dto.DtoCalificacionUsuario;
 import com.example.Login.dto.DtoCalificarViaje;
@@ -1166,9 +1167,14 @@ public class ViajeService {
 	}
 
 	public List<DtoViajesMasCaros> obtenerViajesMasCaros() {
-		Pageable pageable = PageRequest.of(0, 10);
+		Pageable pageable = PageRequest.of(0, 5);
 		List<DtoViajesMasCaros> top10 = viajeRepository.obtenerTop10Dto(pageable);
 		return top10;
+	}
+
+	public List<DtoBusMasUsado> obtenerBusMasUsados() {
+		List<DtoBusMasUsado> resultado = viajeRepository.obtenerTop5BusesMasUsados(); // TODO Auto-generated method stub
+		return resultado;
 	}
 
 }
