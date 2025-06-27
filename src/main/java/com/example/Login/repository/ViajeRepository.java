@@ -1,16 +1,20 @@
 package com.example.Login.repository;
 
+import java.awt.print.Pageable;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.Login.dto.DtoBusMasUsado;
 import com.example.Login.dto.DtoViaje;
+import com.example.Login.dto.DtoViajesMasCaros;
 import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.model.Asiento;
 import com.example.Login.model.Viaje;
@@ -90,4 +94,16 @@ public interface ViajeRepository extends JpaRepository<Viaje, Integer> {
 		
 		@Query("SELECT v FROM Viaje v WHERE v.omnibus.id = :omnibusId")
 	    List<Viaje> findByOmnibusId(@Param("omnibusId") int omnibusId);
+		
+		@Query("SELECT new com.example.Login.dto.DtoViajesMasCaros(v.id, v.precio) FROM Viaje v ORDER BY v.precio DESC")
+		List<DtoViajesMasCaros> obtenerTop10Dto(org.springframework.data.domain.Pageable pageable);
+		
+		@Query(value = """
+			    SELECT v.omnibus_id AS id_bus, COUNT(v.omnibus_id) AS cantidad
+			    FROM viaje v
+			    GROUP BY v.omnibus_id
+			    ORDER BY cantidad DESC
+			    LIMIT 5
+			    """, nativeQuery = true)
+			List<DtoBusMasUsado> obtenerTop5BusesMasUsados();
 }

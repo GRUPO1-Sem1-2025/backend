@@ -1,5 +1,6 @@
 package com.example.Login.controller;
 
+import com.example.Login.dto.DtoBusMasUsado;
 import com.example.Login.dto.DtoCalificacion;
 import com.example.Login.dto.DtoCalificacionUsuario;
 import com.example.Login.dto.DtoCalificarViaje;
@@ -9,6 +10,7 @@ import com.example.Login.dto.DtoViaje;
 import com.example.Login.dto.DtoViajeCompleto;
 import com.example.Login.dto.DtoViajeDestinoFecha;
 import com.example.Login.dto.DtoViajeIdDestino;
+import com.example.Login.dto.DtoViajesMasCaros;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.Omnibus;
 import com.example.Login.model.Viaje;
@@ -326,6 +328,20 @@ public class ViajeController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error al procesar el archivo: " + e.getMessage());
 		}
+	}
+	
+	@GetMapping("/obtenerViajesMasCaros")
+	public List<DtoViajesMasCaros> obtenerViajesMasCaros() {
+		List<DtoViajesMasCaros> resultado = new ArrayList<>();		
+		resultado = viajeService.obtenerViajesMasCaros();
+		return resultado;
+	}
+	
+	@GetMapping("/obtenerBusMasUsados")
+	public List<DtoBusMasUsado> obtenerBusMasUsados() {
+		List<DtoBusMasUsado> resultado = new ArrayList<>();		
+		resultado = viajeService.obtenerBusMasUsados();
+		return resultado;
 	}
 
 }
