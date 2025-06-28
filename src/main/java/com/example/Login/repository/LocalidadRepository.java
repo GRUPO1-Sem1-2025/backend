@@ -14,13 +14,13 @@ import com.example.Login.dto.DtoLocalidadOrigenDestino;
 import com.example.Login.model.Localidad;
 import com.example.Login.model.Usuario;
 
-@Repository public interface LocalidadRepository extends JpaRepository<Localidad,
-Integer>{ 
-	  
-	 Optional<Localidad> findByNombre(String nombre);
-	 
-	 @Query(value = """
-			    SELECT 
+@Repository
+public interface LocalidadRepository extends JpaRepository<Localidad, Integer> {
+
+	Optional<Localidad> findByNombre(String nombre);
+
+	@Query(value = """
+			    SELECT
 			       v.localidad_destino_id AS id,
 			       l.nombre AS nombre,
 			       COUNT(*) AS cantidad
@@ -32,28 +32,37 @@ Integer>{
 			    ORDER BY cantidad DESC
 			    LIMIT 10
 			""", nativeQuery = true)
-		    List<DtoDestinoMasVistos> findTop10DestinosConNombre();	
-	 
-	 @Query(value = """
-			    SELECT l.departamento AS nombreDepartamento, COUNT(l.nombre) AS cantidadLocalidades
-			    FROM localidades l
-			    GROUP BY l.departamento
-			    ORDER BY cantidadLocalidades DESC
-			    """, nativeQuery = true)
-			List<DtoDepartamentoLocalidad> obtenerDepartamentosConCantidad();
-	 
-	 @Query(value = """
-		        SELECT 
-		          l.nombre AS nombreLocalidad,
-		          COUNT(vo.id) AS cantidad_origen,
-		          COUNT(vd.id) AS cantidad_destino
-		        FROM localidades l
-		        LEFT JOIN viaje vo ON vo.localidad_origen_id = l.id
-		        LEFT JOIN viaje vd ON vd.localidad_destino_id = l.id
-		        GROUP BY l.id, l.nombre
-		        HAVING COUNT(vo.id) != 0 AND COUNT(vd.id) != 0
-		        ORDER BY l.nombre
-		        LIMIT 10
-		        """, nativeQuery = true)
-		    List<DtoLocalidadOrigenDestino> obtenerLocalidadesConViajes();	 
+	List<DtoDestinoMasVistos> findTop10DestinosConNombre();
+
+	@Query(value = """
+			SELECT l.departamento AS nombreDepartamento, COUNT(l.nombre) AS cantidadLocalidades
+			FROM localidades l
+			GROUP BY l.departamento
+			ORDER BY cantidadLocalidades DESC
+			LIMIT 10
+			""", nativeQuery = true)
+	List<DtoDepartamentoLocalidad> obtenerDepartamentosConCantidad();
+
+	@Query(value = """
+					    SELECT
+			  l.nombre AS nombreLocalidad,
+			  (
+			    SELECT COUNT(*)
+			    FROM viaje v1
+			    WHERE v1.localidad_origen_id = l.id
+			  ) AS cantidad_origen,
+			  (
+			    SELECT COUNT(*)
+			    FROM viaje v2
+			    WHERE v2.localidad_destino_id = l.id
+			  ) AS cantidad_destino
+			FROM localidades l
+			WHERE
+			  (SELECT COUNT(*) FROM viaje v1 WHERE v1.localidad_origen_id = l.id) > 0
+			  AND
+			  (SELECT COUNT(*) FROM viaje v2 WHERE v2.localidad_destino_id = l.id) > 0
+			ORDER BY l.nombre
+			LIMIT 10;
+					        """, nativeQuery = true)
+	List<DtoLocalidadOrigenDestino> obtenerLocalidadesConViajes();
 }
