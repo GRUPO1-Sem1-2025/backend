@@ -18,30 +18,6 @@ Integer>{
 	  
 	 Optional<Localidad> findByNombre(String nombre);
 	 
-//	 @Query(value = """
-//			    SELECT 
-//			       (v.localidad_destino_id) AS id,
-//			        l.nombre AS nombre,
-//			        COUNT(*)::BIGINT AS cantidad
-//			    FROM viaje v
-//			    JOIN compras c ON c.viaje_id = v.id
-//			    JOIN localidades l ON v.localidad_destino_id = l.id
-//			    WHERE c.estado_compra = 0
-//			    GROUP BY v.localidad_destino_id, l.nombre
-//			    ORDER BY cantidad DESC
-//			    LIMIT 10
-//			""", nativeQuery = true)
-	 
-	 
-//	 @Query(value = "SELECT v.localidad_destino_id AS id, l.nombre AS nombre, COUNT(*) AS cantidad " +
-//             "FROM viaje v " +
-//             "JOIN compras c ON c.viaje_id = v.id " +
-//             "JOIN localidades l ON v.localidad_destino_id = l.id " +
-//             "WHERE c.estado_compra = 0 " +
-//             "GROUP BY v.localidad_destino_id, l.nombre " +
-//             "ORDER BY cantidad DESC " +
-//             "LIMIT 10", nativeQuery = true)
-	 
 	 @Query(value = """
 			    SELECT 
 			       v.localidad_destino_id AS id,
@@ -56,14 +32,6 @@ Integer>{
 			    LIMIT 10
 			""", nativeQuery = true)
 		    List<DtoDestinoMasVistos> findTop10DestinosConNombre();	
-	 
-//	 @Query(value = """
-//			    SELECT l.departamento AS nombreDepartamento, COUNT(l.nombre) AS cantidad
-//			    FROM localidades l
-//			    GROUP BY l.departamento
-//			    ORDER BY cantidad DESC
-//			    """, nativeQuery = true)
-//			List<DtoDepartamentoLocalidad> obtenerDepartamentosConCantidad();
 	 
 	 @Query(value = """
 			    SELECT l.departamento AS nombreDepartamento, COUNT(l.nombre) AS cantidadLocalidades
