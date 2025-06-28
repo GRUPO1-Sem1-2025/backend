@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.Login.dto.DtoDepartamentoLocalidad;
 import com.example.Login.dto.DtoDestinoMasVistos;
 import com.example.Login.dto.DtoLocalidad;
+import com.example.Login.dto.DtoLocalidadOrigenDestino;
 import com.example.Login.model.Localidad;
 import com.example.Login.service.LocalidadService;
 
@@ -105,6 +106,11 @@ public class LocalidadController {
 	@GetMapping("/localidadesPorDepartamento")
 	public List<DtoDepartamentoLocalidad> localidadesPorDepartamento() {
 		return localidadService.localidadesPorDepartamento();
+	}
+	
+	@GetMapping("/localidadesOrigenDestino")
+	public List<DtoLocalidadOrigenDestino> localidadesOrigenDestino() {
+		return localidadService.localidadesOrigenDestino();
 	}
 
 }

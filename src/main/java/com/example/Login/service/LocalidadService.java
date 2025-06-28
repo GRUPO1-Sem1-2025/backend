@@ -2,6 +2,7 @@ package com.example.Login.service;
 import com.example.Login.dto.DtoDepartamentoLocalidad;
 import com.example.Login.dto.DtoDestinoMasVistos;
 import com.example.Login.dto.DtoLocalidad;
+import com.example.Login.dto.DtoLocalidadOrigenDestino;
 import com.example.Login.model.Localidad;
 import com.example.Login.repository.LocalidadRepository;
 
@@ -143,6 +144,11 @@ public class LocalidadService {
 
 	public List<DtoDepartamentoLocalidad> localidadesPorDepartamento() {
 		List<DtoDepartamentoLocalidad> resultado = localidadRepository.obtenerDepartamentosConCantidad();
+		return resultado;
+	}
+
+	public List<DtoLocalidadOrigenDestino> localidadesOrigenDestino() {
+		List<DtoLocalidadOrigenDestino> resultado = localidadRepository.obtenerLocalidadesConViajes();
 		return resultado;
 	}
 
