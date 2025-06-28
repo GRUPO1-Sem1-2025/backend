@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 
+import com.example.Login.dto.DtoDepartamentoLocalidad;
 import com.example.Login.dto.DtoDestinoMasVistos;
 import com.example.Login.model.Localidad;
 import com.example.Login.model.Usuario;
@@ -55,4 +56,23 @@ Integer>{
 			    LIMIT 10
 			""", nativeQuery = true)
 		    List<DtoDestinoMasVistos> findTop10DestinosConNombre();	
+	 
+//	 @Query(value = """
+//			    SELECT l.departamento AS nombreDepartamento, COUNT(l.nombre) AS cantidad
+//			    FROM localidades l
+//			    GROUP BY l.departamento
+//			    ORDER BY cantidad DESC
+//			    """, nativeQuery = true)
+//			List<DtoDepartamentoLocalidad> obtenerDepartamentosConCantidad();
+	 
+	 @Query(value = """
+			    SELECT l.departamento AS nombreDepartamento, COUNT(l.nombre) AS cantidadLocalidades
+			    FROM localidades l
+			    GROUP BY l.departamento
+			    ORDER BY cantidadLocalidades DESC
+			    """, nativeQuery = true)
+			List<DtoDepartamentoLocalidad> obtenerDepartamentosConCantidad();
+	 
+	
+	 
 }
