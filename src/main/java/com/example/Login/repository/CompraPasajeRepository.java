@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.Login.dto.EstadoCompra;
+import com.example.Login.dto.DtoComprasUsuarios;
 import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoTipoDeCompra;
 import com.example.Login.dto.DtoTotalPorMes;
@@ -53,4 +54,16 @@ public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Inte
 	List<DtoTipoDeCompra> contarPorTipoVenta();
 	
 	Optional<CompraPasaje> findTopByOrderByIdDesc();
+	
+	@Query(value = """
+		    SELECT u.nombre AS nombre, 
+		           u.apellido AS apellido, 
+		           COUNT(c.cliente_id) AS cantidadCompras
+		    FROM compras c
+		    JOIN usuarios u ON u.id = c.cliente_id
+		    GROUP BY c.cliente_id, u.nombre, u.apellido
+		    ORDER BY cantidadCompras DESC
+		    LIMIT 5
+		    """, nativeQuery = true)
+		List<DtoComprasUsuarios> obtenerComprasPorUsuario();
 }

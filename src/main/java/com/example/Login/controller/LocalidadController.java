@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.Login.dto.DtoDepartamentoLocalidad;
 import com.example.Login.dto.DtoDestinoMasVistos;
 import com.example.Login.dto.DtoLocalidad;
 import com.example.Login.model.Localidad;
@@ -99,6 +100,11 @@ public class LocalidadController {
 			response.put("error", "No exita la localidad ingresadaEl usuario ya se encuentra registrado con ese correo");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
+	}
+	
+	@GetMapping("/localidadesPorDepartamento")
+	public List<DtoDepartamentoLocalidad> localidadesPorDepartamento() {
+		return localidadService.localidadesPorDepartamento();
 	}
 
 }
