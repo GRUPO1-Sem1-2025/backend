@@ -39,6 +39,7 @@ public interface LocalidadRepository extends JpaRepository<Localidad, Integer> {
 			FROM localidades l
 			GROUP BY l.departamento
 			ORDER BY cantidadLocalidades DESC
+			LIMIT 10
 			""", nativeQuery = true)
 	List<DtoDepartamentoLocalidad> obtenerDepartamentosConCantidad();
 
