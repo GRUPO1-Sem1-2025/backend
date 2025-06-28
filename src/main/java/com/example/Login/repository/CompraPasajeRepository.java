@@ -47,9 +47,6 @@ public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Inte
 		""")
 	List<DtoTotalPorMes> findTotalPorMes();
 	
-//	@Query("SELECT c.tipo_venta, COUNT(c) FROM CompraPasaje c GROUP BY c.tipo_venta")
-//	List<DtoTipoDeCompra> contarPorTipoVenta();
-	
 	@Query("SELECT new com.example.Login.dto.DtoTipoDeCompra(c.tipo_venta, COUNT(c)) FROM CompraPasaje c GROUP BY c.tipo_venta")
 	List<DtoTipoDeCompra> contarPorTipoVenta();
 	

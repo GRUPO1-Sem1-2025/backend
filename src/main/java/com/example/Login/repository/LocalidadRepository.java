@@ -55,8 +55,5 @@ Integer>{
 		        ORDER BY l.nombre
 		        LIMIT 10
 		        """, nativeQuery = true)
-		    List<DtoLocalidadOrigenDestino> obtenerLocalidadesConViajes();
-	 
-	
-	 
+		    List<DtoLocalidadOrigenDestino> obtenerLocalidadesConViajes();	 
 }
