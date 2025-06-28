@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.Login.dto.DtoDepartamentoLocalidad;
 import com.example.Login.dto.DtoDestinoMasVistos;
+import com.example.Login.dto.DtoLocalidadOrigenDestino;
 import com.example.Login.model.Localidad;
 import com.example.Login.model.Usuario;
 
@@ -41,6 +42,18 @@ Integer>{
 			    """, nativeQuery = true)
 			List<DtoDepartamentoLocalidad> obtenerDepartamentosConCantidad();
 	 
-	
-	 
+	 @Query(value = """
+		        SELECT 
+		          l.nombre AS nombreLocalidad,
+		          COUNT(vo.id) AS cantidad_origen,
+		          COUNT(vd.id) AS cantidad_destino
+		        FROM localidades l
+		        LEFT JOIN viaje vo ON vo.localidad_origen_id = l.id
+		        LEFT JOIN viaje vd ON vd.localidad_destino_id = l.id
+		        GROUP BY l.id, l.nombre
+		        HAVING COUNT(vo.id) != 0 AND COUNT(vd.id) != 0
+		        ORDER BY l.nombre
+		        LIMIT 10
+		        """, nativeQuery = true)
+		    List<DtoLocalidadOrigenDestino> obtenerLocalidadesConViajes();	 
 }
