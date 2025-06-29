@@ -1077,10 +1077,13 @@ public class UsuarioService {
 			switch(categoria) {
 			case GENERAL:
 				general.setCantidad(general.getCantidad() + 1);
+				break;
 			case JUBILADO:
 				jubilado.setCantidad(jubilado.getCantidad() + 1);
+				break;
 			case ESTUDIANTE:
-				jubilado.setCantidad(jubilado.getCantidad() + 1);
+				estudiante.setCantidad(estudiante.getCantidad() + 1);
+				break;
 			}
 		}
 		resultado.add(jubilado);
