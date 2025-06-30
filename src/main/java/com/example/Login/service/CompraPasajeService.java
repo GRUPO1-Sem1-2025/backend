@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.Login.controller.DtoCompraPasajeNombre;
 import com.example.Login.dto.DtoCompraPasaje;
+import com.example.Login.dto.DtoComprasPorTipo;
 import com.example.Login.dto.DtoComprasUsuarios;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoTipoDeCompra;
@@ -474,6 +475,11 @@ public class CompraPasajeService {
 
 	public List<DtoComprasUsuarios> comprasPorUsuario() {
 		List<DtoComprasUsuarios> resultado = compraPasajeRepository.obtenerComprasPorUsuario();
+		return resultado;
+	}
+
+	public List<DtoComprasPorTipo> comprasPorTipoVenta() {
+		List<DtoComprasPorTipo> resultado = compraPasajeRepository.obtenerComprasPorTipo();
 		return resultado;
 	}
 }
