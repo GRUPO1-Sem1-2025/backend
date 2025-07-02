@@ -446,7 +446,9 @@ public class ViajeService {
 			vdf.setPrecioPasaje(dto.getPrecio());
 			vdf.setViajeId(dto.getId());
 			vdf.setFechaInicio(dto.getFechaInicio());
+			System.out.println("fechaInicioObtenida: " + dto.getFechaInicio());
 			vdf.setFechaFin(dto.getFechaFin());
+			System.out.println("fechaFinObtenida: " + dto.getFechaFin());
 			listaDto.add(vdf);
 		}
 		return listaDto;
@@ -836,7 +838,9 @@ public class ViajeService {
 			horaInicio = Oviaje.get().getHoraInicio();
 			horaFin = Oviaje.get().getHoraFin();
 			fechaInicio = Oviaje.get().getFechaInicio();
+			System.out.println("FechaInicioObtenida: " + Oviaje.get().getFechaInicio());
 			fechaFin = Oviaje.get().getFechaFin();
+			System.out.println("FechaFinObtenida: " + Oviaje.get().getFechaFin());
 			idOmnibus = Oviaje.get().getOmnibus().getId();
 		} catch (Exception e) {
 			// TODO: handle exception

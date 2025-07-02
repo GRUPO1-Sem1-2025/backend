@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.Login.controller.DtoCompraPasajeNombre;
 import com.example.Login.dto.DtoCompraPasaje;
+import com.example.Login.dto.DtoComprasPorTipo;
 import com.example.Login.dto.DtoComprasUsuarios;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
 import com.example.Login.dto.DtoTipoDeCompra;
@@ -78,6 +79,7 @@ public class CompraPasajeService {
 		int descuento = 0;
 
 		List<Integer> asientosOcupado = new ArrayList<>();
+		List<Integer> asientosInexistentes = new ArrayList<>();
 		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
 		DtoRespuestaCompraPasaje asientosOcupados = new DtoRespuestaCompraPasaje();
 		asientosOcupados.setEstado(estado);
@@ -144,7 +146,7 @@ public class CompraPasajeService {
 		}
 
 		compra.setFechaHoraCompra(LocalDateTime.now());
-
+		
 		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
 
 		for (Integer nroAsiento : request.getNumerosDeAsiento()) {
@@ -160,11 +162,20 @@ public class CompraPasajeService {
 					// return 2;
 				}
 			}
+			else {
+				System.out.println("No existe el asiento a comprar nro " + nroAsiento);
+				asientosInexistentes.add(nroAsiento);
+			}
 		}
 
 		if (!asientosOcupado.isEmpty()) {
 			System.out.println("asientos ocupados: " + asientosOcupado);
 			asientosOcupados.setAsientosOcupados(asientosOcupado);
+			return asientosOcupados;
+		}
+		if (!asientosInexistentes.isEmpty()) {
+			System.out.println("asientos inexistentes: " + asientosOcupado);
+			asientosOcupados.setAsientosInexistentes(asientosInexistentes);
 			return asientosOcupados;
 		}
 
@@ -474,6 +485,11 @@ public class CompraPasajeService {
 
 	public List<DtoComprasUsuarios> comprasPorUsuario() {
 		List<DtoComprasUsuarios> resultado = compraPasajeRepository.obtenerComprasPorUsuario();
+		return resultado;
+	}
+
+	public List<DtoComprasPorTipo> comprasPorTipoVenta() {
+		List<DtoComprasPorTipo> resultado = compraPasajeRepository.obtenerComprasPorTipo();
 		return resultado;
 	}
 }

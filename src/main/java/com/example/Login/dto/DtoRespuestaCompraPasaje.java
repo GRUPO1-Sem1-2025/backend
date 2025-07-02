@@ -5,6 +5,7 @@ import java.util.List;
 
 public class DtoRespuestaCompraPasaje {
 	private List<Integer> asientosOcupados;
+	private List<Integer> asientosInexistentes;
 	private EstadoCompra estado;
 	private int idCompra;
 	private int asientosComprados;
@@ -14,7 +15,7 @@ public class DtoRespuestaCompraPasaje {
 		this.asientosOcupados = new ArrayList<>();
 	}
 
-	public DtoRespuestaCompraPasaje(List<Integer> asientosOcupados, EstadoCompra estado, int icCompra,
+	public DtoRespuestaCompraPasaje(List<Integer> asientosOcupados,List<Integer> asientosInexistentes, EstadoCompra estado, int icCompra,
 			int asientosComprados, int descuento) {
 		super();
 		this.asientosOcupados = asientosOcupados;
@@ -22,6 +23,7 @@ public class DtoRespuestaCompraPasaje {
 		this.idCompra = idCompra;
 		this.asientosComprados = asientosComprados;
 		this.descuento = descuento;
+		this.asientosInexistentes = asientosInexistentes;
 	}
 
 	public List<Integer> getAsientosOcupados() {
@@ -63,5 +65,14 @@ public class DtoRespuestaCompraPasaje {
 	public void setDescuento(int descuento) {
 		this.descuento = descuento;
 	}
+
+	public List<Integer> getAsientosInexistentes() {
+		return asientosInexistentes;
+	}
+
+	public void setAsientosInexistentes(List<Integer> asientosInexistentes) {
+		this.asientosInexistentes = asientosInexistentes;
+	}
+	
 
 }

@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.Login.dto.EstadoCompra;
+import com.example.Login.dto.DtoComprasPorTipo;
 import com.example.Login.dto.DtoComprasUsuarios;
 import com.example.Login.dto.DtoNewUsuariosPorMes;
 import com.example.Login.dto.DtoTipoDeCompra;
@@ -21,46 +22,55 @@ import com.example.Login.model.Viaje;
 
 @Repository
 public interface CompraPasajeRepository extends JpaRepository<CompraPasaje, Integer> {
-	@Query("SELECT apv " +
-		       "FROM AsientoPorViaje apv " +
-		       "JOIN apv.omnibusAsiento oa " +
-		       "JOIN oa.asiento a " +
-		       "WHERE apv.viaje.id = :viajeId AND a.nro = :nroAsiento")
-		Optional<AsientoPorViaje> findByViajeIdAndNroAsiento(@Param("viajeId") Long viajeId,
-		                                                     @Param("nroAsiento") Integer nroAsiento);
-	
+	@Query("SELECT apv " + "FROM AsientoPorViaje apv " + "JOIN apv.omnibusAsiento oa " + "JOIN oa.asiento a "
+			+ "WHERE apv.viaje.id = :viajeId AND a.nro = :nroAsiento")
+	Optional<AsientoPorViaje> findByViajeIdAndNroAsiento(@Param("viajeId") Long viajeId,
+			@Param("nroAsiento") Integer nroAsiento);
+
 	List<CompraPasaje> findByEstadoCompraAndFechaHoraCompraBefore(EstadoCompra estadoCompra, LocalDateTime fechaLimite);
 
 	Optional<CompraPasaje> findById(Long compraId);
-	
+
 	List<CompraPasaje> findByViajeId(Long idViaje);
-	
+
 	@Query("""
-		    SELECT new com.example.Login.dto.DtoTotalPorMes(
-		        FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM'),
-		        FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY'),
-		        SUM(c.total)
-		    )
-		    FROM CompraPasaje c
-		    GROUP BY FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM'), FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY')
-		    ORDER BY FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY'), FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM')
-		""")
+			    SELECT new com.example.Login.dto.DtoTotalPorMes(
+			        FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM'),
+			        FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY'),
+			        SUM(c.total)
+			    )
+			    FROM CompraPasaje c
+			    GROUP BY FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM'), FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY')
+			    ORDER BY FUNCTION('TO_CHAR', c.fechaHoraCompra, 'YYYY'), FUNCTION('TO_CHAR', c.fechaHoraCompra, 'MM')
+			""")
 	List<DtoTotalPorMes> findTotalPorMes();
-	
+
 	@Query("SELECT new com.example.Login.dto.DtoTipoDeCompra(c.tipo_venta, COUNT(c)) FROM CompraPasaje c GROUP BY c.tipo_venta")
 	List<DtoTipoDeCompra> contarPorTipoVenta();
-	
+
 	Optional<CompraPasaje> findTopByOrderByIdDesc();
-	
+
 	@Query(value = """
-		    SELECT u.nombre AS nombre, 
-		           u.apellido AS apellido, 
-		           COUNT(c.cliente_id) AS cantidadCompras
-		    FROM compras c
-		    JOIN usuarios u ON u.id = c.cliente_id
-		    GROUP BY c.cliente_id, u.nombre, u.apellido
-		    ORDER BY cantidadCompras DESC
-		    LIMIT 5
-		    """, nativeQuery = true)
-		List<DtoComprasUsuarios> obtenerComprasPorUsuario();
+			SELECT u.nombre AS nombre,
+			       u.apellido AS apellido,
+			       COUNT(c.cliente_id) AS cantidadCompras
+			FROM compras c
+			JOIN usuarios u ON u.id = c.cliente_id
+			GROUP BY c.cliente_id, u.nombre, u.apellido
+			ORDER BY cantidadCompras DESC
+			LIMIT 5
+			""", nativeQuery = true)
+	List<DtoComprasUsuarios> obtenerComprasPorUsuario();
+
+	@Query(value = """
+			SELECT
+			  TO_CHAR(fecha_hora_compra, 'YYYY-MM') AS anio_mes,
+			  COUNT(cliente_id) filter(
+			  where vendedor_id is null) AS compras_web,
+			  COUNT(vendedor_id) AS ventas_mostrador
+			FROM compras
+			GROUP BY anio_mes
+			ORDER BY anio_mes;
+					    """, nativeQuery = true)
+	List<DtoComprasPorTipo> obtenerComprasPorTipo();
 }
