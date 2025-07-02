@@ -79,6 +79,7 @@ public class CompraPasajeService {
 		int descuento = 0;
 
 		List<Integer> asientosOcupado = new ArrayList<>();
+		List<Integer> asientosInexistentes = new ArrayList<>();
 		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
 		DtoRespuestaCompraPasaje asientosOcupados = new DtoRespuestaCompraPasaje();
 		asientosOcupados.setEstado(estado);
@@ -145,7 +146,7 @@ public class CompraPasajeService {
 		}
 
 		compra.setFechaHoraCompra(LocalDateTime.now());
-
+		
 		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
 
 		for (Integer nroAsiento : request.getNumerosDeAsiento()) {
@@ -161,11 +162,20 @@ public class CompraPasajeService {
 					// return 2;
 				}
 			}
+			else {
+				System.out.println("No existe el asiento a comprar nro " + nroAsiento);
+				asientosInexistentes.add(nroAsiento);
+			}
 		}
 
 		if (!asientosOcupado.isEmpty()) {
 			System.out.println("asientos ocupados: " + asientosOcupado);
 			asientosOcupados.setAsientosOcupados(asientosOcupado);
+			return asientosOcupados;
+		}
+		if (!asientosInexistentes.isEmpty()) {
+			System.out.println("asientos inexistentes: " + asientosOcupado);
+			asientosOcupados.setAsientosInexistentes(asientosInexistentes);
 			return asientosOcupados;
 		}
 

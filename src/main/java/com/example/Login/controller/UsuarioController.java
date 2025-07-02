@@ -376,6 +376,7 @@ public class UsuarioController {
 		DtoRespuestaCompraPasaje resultado = comprarPasajeService.comprarPasaje(dtoComprarPasaje);
 		EstadoCompra estado = resultado.getEstado();
 		List<Integer> asientos = new ArrayList<>();
+		List<Integer> asientosInexistentes = new ArrayList<>();
 		Map<String, Object> response = new HashMap<>();
 
 		if (resultado.getAsientosComprados() > 5) {
@@ -384,8 +385,15 @@ public class UsuarioController {
 		}
 		try {
 			asientos = resultado.getAsientosOcupados();
+			asientosInexistentes = resultado.getAsientosInexistentes();
 		} catch (Exception e) {
 			// TODO: handle exception
+		}
+		
+		if (asientosInexistentes != null && !asientosInexistentes.isEmpty()) {
+		    response.put("mensaje", "Alguno de el/los asiento/s solicitado/s no existe en este omnibus");
+		    response.put("asientosInexistentes", asientosInexistentes);
+		    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 
 		if (!resultado.getAsientosOcupados().isEmpty()) {
