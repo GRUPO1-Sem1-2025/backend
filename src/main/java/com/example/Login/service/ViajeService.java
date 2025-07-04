@@ -1172,7 +1172,9 @@ public class ViajeService {
 
 	public List<DtoViajesMasCaros> obtenerViajesMasCaros() {
 		Pageable pageable = PageRequest.of(0, 5);
-		List<DtoViajesMasCaros> top10 = viajeRepository.obtenerTop10Dto(pageable);
+//		List<DtoViajesMasCaros> top10 = viajeRepository.obtenerTop10Dto(pageable);
+		List<DtoViajesMasCaros> top10 = viajeRepository.obtenerTop10Dto();
+
 		return top10;
 	}
 
