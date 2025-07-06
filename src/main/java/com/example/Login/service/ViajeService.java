@@ -766,7 +766,7 @@ public class ViajeService {
 					int totalAsientos = (cantAsientos != null) ? cantAsientos : 0;
 					int asientosLibres = asientosDisponibles(v.getId()).size();
 					int asientosOcupados = totalAsientos - asientosLibres;
-
+					nuevo.setAsientosLibres(asientosLibres);
 					nuevo.setAsientosOcupados(asientosOcupados);
 				} else {
 					System.out.println("Error en omnibus del viaje ID: " + v.getId());
