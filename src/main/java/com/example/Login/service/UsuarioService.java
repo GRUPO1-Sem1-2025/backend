@@ -626,6 +626,65 @@ public class UsuarioService {
 	            break;
 	        case RESERVADA:
 	            compra.setEstadoCompra(EstadoCompra.REALIZADA);
+	            
+	            // Agregado para enviar mail
+	            Usuario usuario = new Usuario();
+	            Viaje viaje = new Viaje();
+	            int viajeId = 0;
+	            try{
+	            	Optional<CompraPasaje> Ocomprapasaje = comprapasajerepository.findById(idCompra);
+	            	viajeId = Ocomprapasaje.get().getViaje().getId();
+	            	Optional<Usuario> Ousuario = usuarioRepository.findByEmail(Ocomprapasaje.get().getUsuario().getEmail());// (compraPasaje.getUsuarioId());
+	            	usuario = Ousuario.get();
+	            	Optional<Viaje> Oviaje = viajeRepository.findById(viajeId);
+		    		viaje = Oviaje.get();
+	            }
+	            catch (Exception e) {
+					// TODO: handle exception
+				}
+	            //Usuario 
+	    		String email = usuario.getEmail();
+	    		String destino = viaje.getLocalidadDestino().getNombre();
+	    		Date fechaInicio = viaje.getFechaInicio();
+	    		LocalTime hora = viaje.getHoraInicio();
+	    		String para = email;
+	    		String asunto = "Compra realizada";
+	    		String mensaje = String.format(
+	    				"Usted ha realizado una compra con destino <b>%s</b> para el día <b>%s</b> a la hora <b>%s</b>.",
+	    				destino, fechaInicio, hora);
+	    		emailService.enviarCorreo(para, asunto, mensaje);
+	    		// Hasta aca
+	            
+	    		comprapasajerepository.save(compra);
+	            break;
+	        default:
+	            System.out.println("Estado desconocido: " + estado);
+	    }
+	    return 1;
+	}
+	
+	
+	public int cambiarEstadoCompra_old(int idCompra) {
+	    Optional<CompraPasaje> optionalCompra = comprapasajerepository.findById(idCompra);
+	    
+	    if (!optionalCompra.isPresent()) {
+	        return 0;//throw new IllegalArgumentException("No se encontró la compra con id: " + idCompra);
+	    }
+
+	    CompraPasaje compra = optionalCompra.get();
+	    EstadoCompra estado = compra.getEstadoCompra();
+
+	    if (estado == null) {
+	        return 2;//throw new IllegalStateException("La compra con id " + idCompra + " no tiene un estado definido.");
+	    }
+
+	    switch (estado) {
+	        case REALIZADA:
+	            compra.setEstadoCompra(EstadoCompra.RESERVADA);
+	            comprapasajerepository.save(compra);
+	            break;
+	        case RESERVADA:
+	            compra.setEstadoCompra(EstadoCompra.REALIZADA);
 	            comprapasajerepository.save(compra);
 	            break;
 	        default:
@@ -633,6 +692,9 @@ public class UsuarioService {
 	    }
 	    return 1;
 	}
+	
+	
+	
 
 	public List<DtoMisViajes> obtenerMisViajes(String email) {
 		List<Viaje> viajes = viajeRepository.findAll();
