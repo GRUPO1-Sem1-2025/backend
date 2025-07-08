@@ -405,6 +405,7 @@ public class UsuarioController {
 			switch (estado) {
 			case REALIZADA:
 				response.put("mensaje", "La compra ha sido realizada de forma exitosa");
+				response.put("idCompra", resultado.getIdCompra());
 				response.put("descuento",resultado.getDescuento());
 				usuarioService.enviarMailCompraPasaje(dtoComprarPasaje);
 				return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -649,6 +650,18 @@ public class UsuarioController {
 		List<DtoUsuariosPorCategoria> resultado  = usuarioService.obtenerUsuariosPorCategoria();
 		return resultado;
 	}
+	
+	@PostMapping("/guardarReferenciaPago")
+	public void guardarReferenciaPago(@RequestParam int idCompra, @RequestParam String referencia) {
+		usuarioService.guardarReferenciaPago(idCompra,referencia);
+	}
+	
+	@GetMapping("obtenerReferenciaPago")
+	public String obtenerReferenciaPago(@RequestParam int idCompra) {
+		String referenciaPago = usuarioService.obtenerReferenciaPago(idCompra);
+		return referenciaPago;
+	}
+
 
 
 }

@@ -63,12 +63,15 @@ public class CompraPasaje {
     
     private EstadoCompra estadoCompra;
     
+    @Column(nullable = true)
+    private String referenciaPago = "";
+    
     public CompraPasaje() {
     	
     }
 
 	public CompraPasaje(Long id, EstadoCompra estado, Usuario usuario, Usuario vendedor, Viaje viaje, List<AsientoPorViaje> asientos,
-			LocalDateTime fechaHoraCompra, int cat_pasajes, float total, String tipo_venta, int descuentoAplicado) {
+			LocalDateTime fechaHoraCompra, int cat_pasajes, float total, String tipo_venta, int descuentoAplicado, String referenciaPago) {
 		this.id = id;
 		this.usuario = usuario;
 		this.vendedor = vendedor;
@@ -80,6 +83,7 @@ public class CompraPasaje {
 		this.estadoCompra = estado;
 		this.tipo_venta = tipo_venta;
 		this.descuentoAplicado = descuentoAplicado;
+		this.referenciaPago = referenciaPago;
 	}
 	
 	
@@ -171,6 +175,15 @@ public class CompraPasaje {
 	public void setEstadoCompra(EstadoCompra estadoCompra) {
 		this.estadoCompra = estadoCompra;
 	}
+
+	public String getReferenciaPago() {
+		return referenciaPago;
+	}
+
+	public void setReferenciaPago(String referenciaPago) {
+		this.referenciaPago = referenciaPago;
+	}
+	
 
 	
 }
