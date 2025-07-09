@@ -19,6 +19,7 @@ import com.example.Login.dto.DtoCompraPasaje;
 import com.example.Login.dto.DtoComprasPorTipo;
 import com.example.Login.dto.DtoComprasUsuarios;
 import com.example.Login.dto.DtoRespuestaCompraPasaje;
+import com.example.Login.dto.DtoRespuestaVentaPasaje;
 import com.example.Login.dto.DtoTipoDeCompra;
 import com.example.Login.dto.DtoTotalPorMes;
 import com.example.Login.dto.DtoVenderPasaje;
@@ -229,11 +230,15 @@ public class CompraPasajeService {
 
 		return asientosOcupados;
 	}
+	
+	
 
-	public int venderPasaje(DtoVenderPasaje request) {
+	public DtoRespuestaVentaPasaje venderPasaje(DtoVenderPasaje request) {
+		DtoRespuestaVentaPasaje asientosOcupados = new DtoRespuestaVentaPasaje();
 		Usuario vendedor = new Usuario();
 		Usuario usuario = new Usuario();
 		Viaje viaje = new Viaje();
+		int descuento = 0;
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findByEmail(request.getEmailCliente());// Class(). getClass()
 																									// getClass()
@@ -246,32 +251,45 @@ public class CompraPasajeService {
 			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
 			vendedor = Ovendedor.get();
 			if (vendedor.getRol() != 200) {
-				return 8;
+				asientosOcupados.setCodigoSalida(8);
+				return asientosOcupados;
 			}
 			if (!vendedor.getActivo()) {
-				return 4;
+				asientosOcupados.setCodigoSalida(4);
+				return asientosOcupados;
 			}
 		} catch (Exception e) {
 			vendedor = null;
-			return 1;
+			asientosOcupados.setCodigoSalida(1);
+			return asientosOcupados;
 		}
 		try {
 			Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
 			viaje = Oviaje.get();
 		} catch (Exception e) {
-			return 5;
+			asientosOcupados.setCodigoSalida(5);
+			return asientosOcupados;
+		}
+		try {
+			Optional<Categoria> Ocategoria = categoriaRepository
+					.findBynombreCategoria(usuario.getCategoria().name());
+			System.out.println("Encontre la categoria: " + Ocategoria.get().getNombreCategoria());
+			descuento = Ocategoria.get().getDescuento();
+			asientosOcupados.setDescuento(descuento);
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 
-		CompraPasaje compra = new CompraPasaje();
+		CompraPasaje venta = new CompraPasaje();
 		if (vendedor == null) {
-			compra.setTipo_venta("Online");
+			venta.setTipo_venta("Online");
 		} else {
-			compra.setTipo_venta("Ventanilla");
+			venta.setTipo_venta("Ventanilla");
 		}
-		compra.setUsuario(usuario);
-		compra.setVendedor(vendedor);
-		compra.setViaje(viaje);
-		compra.setFechaHoraCompra(LocalDateTime.now());
+		venta.setUsuario(usuario);
+		venta.setVendedor(vendedor);
+		venta.setViaje(viaje);
+		venta.setFechaHoraCompra(LocalDateTime.now());
 
 		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
 
@@ -284,65 +302,140 @@ public class CompraPasajeService {
 					apv.setReservado(true);
 					asientosReservados.add(apv);
 				} else {
-					return 2;
+					asientosOcupados.setCodigoSalida(2);
+					return asientosOcupados;
 				}
 			}
 		}
 		EstadoCompra estado = EstadoCompra.REALIZADA;
-		compra.setEstadoCompra(estado);
-//		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
-//		switch (estado) {
-//		case REALIZADA:
-//			compra.setEstadoCompra(EstadoCompra.REALIZADA);
-//			break;
-//		case RESERVADA:
-//			compra.setEstadoCompra(EstadoCompra.RESERVADA);
-//			break;
-//		default:
-//			System.out.println("Estado desconocido: " + estado);
-//		}
+		venta.setEstadoCompra(estado);
+		venta.setCat_pasajes(asientosReservados.size());
+		venta.setTotal(venta.getCat_pasajes() * viaje.getPrecio());
+		venta.setAsientos(asientosReservados);
+		
+		// obtengo la última compra
+				Optional<CompraPasaje> ultimoId = compraPasajeRepository.findTopByOrderByIdDesc();
+				CompraPasaje aux = ultimoId.get();
+		// fin
 
-		compra.setCat_pasajes(asientosReservados.size());
-		compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
-		compra.setAsientos(asientosReservados);
-		compraPasajeRepository.save(compra);
+		// cargo el siguiente id de compra para mostrar
+		//asientosOcupados.
+		asientosOcupados.setIdCompra((int) (aux.getId() + 1));
+		// fin
+				
+		venta.setDescuentoAplicado(descuento);
+		System.out.println("Descuento aplicado = " + descuento);
+		compraPasajeRepository.save(venta);
 
 		for (AsientoPorViaje apv : asientosReservados) {
 			asientoPorViajeRepository.save(apv);
 		}
 		switch (estado) {
 		case REALIZADA:
-			return 3;
-		case RESERVADA:
-			return 6;
+			asientosOcupados.setCodigoSalida(3);
+			return asientosOcupados;
+//		case RESERVADA:
+//			asientosOcupados.setCodigoSalida(6);
+//			return asientosOcupados;
 		default:
 			System.out.println("Estado desconocido: " + estado);
 		}
-
-		return 7;
+		asientosOcupados.setCodigoSalida(7);
+		return asientosOcupados;
 	}
 
-//	public int cancelarCompraActual(int idCompra) {
+//	public int venderPasajeFuncionando(DtoVenderPasaje request) {
+//		Usuario vendedor = new Usuario();
+//		Usuario usuario = new Usuario();
+//		Viaje viaje = new Viaje();
 //		try {
-//			Optional<CompraPasaje> Ocompra = compraPasajeRepository.findById(idCompra);
-//			CompraPasaje compra = Ocompra.get();
-//
-//			if (!compra.getEstadoCompra().equals(EstadoCompra.CANCELADA)) { // POR LAS DUDAS REVISAR ESTO
-//
-//				for (AsientoPorViaje asiento : compra.getAsientos()) {
-//					asiento.setReservado(false);
-//					asientoPorViajeRepository.save(asiento); // Suponiendo que tenés este repo
-//				}
-//				compra.setEstadoCompra(EstadoCompra.CANCELADA);
-//				compraPasajeRepository.save(compra);
-//				return 1;
-//			} else {
-//				return 2;
+//			Optional<Usuario> Ousuario = usuarioRepository.findByEmail(request.getEmailCliente());// Class(). getClass()
+//																									// getClass()
+//																									// UsuarioId());
+//			usuario = Ousuario.get();
+//		} catch (Exception e) {
+//			usuario = null;
+//		}
+//		try {
+//			Optional<Usuario> Ovendedor = usuarioRepository.findById(request.getVendedorId());
+//			vendedor = Ovendedor.get();
+//			if (vendedor.getRol() != 200) {
+//				return 8;
+//			}
+//			if (!vendedor.getActivo()) {
+//				return 4;
 //			}
 //		} catch (Exception e) {
-//			return 3;// TODO: handle exception
+//			vendedor = null;
+//			return 1;
 //		}
+//		try {
+//			Optional<Viaje> Oviaje = viajeRepository.findById(request.getViajeId());
+//			viaje = Oviaje.get();
+//		} catch (Exception e) {
+//			return 5;
+//		}
+//
+//		CompraPasaje compra = new CompraPasaje();
+//		if (vendedor == null) {
+//			compra.setTipo_venta("Online");
+//		} else {
+//			compra.setTipo_venta("Ventanilla");
+//		}
+//		compra.setUsuario(usuario);
+//		compra.setVendedor(vendedor);
+//		compra.setViaje(viaje);
+//		compra.setFechaHoraCompra(LocalDateTime.now());
+//
+//		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
+//
+//		for (Integer nroAsiento : request.getNumerosDeAsiento()) {
+//			Optional<AsientoPorViaje> apvOpt = asientoPorViajeRepository.findByViajeIdAndNroAsiento(viaje.getId(),
+//					nroAsiento);
+//			if (apvOpt.isPresent()) {
+//				AsientoPorViaje apv = apvOpt.get();
+//				if (!apv.isReservado()) {
+//					apv.setReservado(true);
+//					asientosReservados.add(apv);
+//				} else {
+//					return 2;
+//				}
+//			}
+//		}
+//		EstadoCompra estado = EstadoCompra.REALIZADA;
+//		compra.setEstadoCompra(estado);
+////		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
+////		switch (estado) {
+////		case REALIZADA:
+////			compra.setEstadoCompra(EstadoCompra.REALIZADA);
+////			break;
+////		case RESERVADA:
+////			compra.setEstadoCompra(EstadoCompra.RESERVADA);
+////			break;
+////		default:
+////			System.out.println("Estado desconocido: " + estado);
+////		}
+//
+//		compra.setCat_pasajes(asientosReservados.size());
+//		compra.setTotal(compra.getCat_pasajes() * viaje.getPrecio());
+//		compra.setAsientos(asientosReservados);
+//		compraPasajeRepository.save(compra);
+//
+//		for (AsientoPorViaje apv : asientosReservados) {
+//			asientoPorViajeRepository.save(apv);
+//		}
+//		switch (estado) {
+//		case REALIZADA:
+//			return 3;
+//		case RESERVADA:
+//			return 6;
+//		default:
+//			System.out.println("Estado desconocido: " + estado);
+//		}
+//
+//		return 7;
 //	}
+
 
 	public int cancelarCompra(int idCompra) {
 		Viaje viaje = new Viaje();
