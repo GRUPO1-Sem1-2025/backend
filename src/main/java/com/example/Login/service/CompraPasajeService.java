@@ -310,7 +310,10 @@ public class CompraPasajeService {
 		EstadoCompra estado = EstadoCompra.REALIZADA;
 		venta.setEstadoCompra(estado);
 		venta.setCat_pasajes(asientosReservados.size());
-		venta.setTotal(venta.getCat_pasajes() * viaje.getPrecio());
+		float total = (venta.getCat_pasajes() * viaje.getPrecio())
+				- (venta.getCat_pasajes() * viaje.getPrecio() * descuento / 100);
+		venta.setTotal(total);
+		//venta.setTotal(venta.getCat_pasajes() * viaje.getPrecio());
 		venta.setAsientos(asientosReservados);
 		
 		// obtengo la última compra
