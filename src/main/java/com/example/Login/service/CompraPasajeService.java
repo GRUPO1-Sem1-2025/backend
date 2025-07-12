@@ -1,5 +1,6 @@
 package com.example.Login.service;
 
+import java.net.Authenticator.RequestorType;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -307,7 +308,9 @@ public class CompraPasajeService {
 				}
 			}
 		}
-		EstadoCompra estado = EstadoCompra.REALIZADA;
+		EstadoCompra estado = request.getEstadoCompra();
+		System.out.println("Estado compre del request: " + estado);
+		//EstadoCompra estado = EstadoCompra.REALIZADA;
 		venta.setEstadoCompra(estado);
 		venta.setCat_pasajes(asientosReservados.size());
 		float total = (venta.getCat_pasajes() * viaje.getPrecio())
@@ -337,9 +340,9 @@ public class CompraPasajeService {
 		case REALIZADA:
 			asientosOcupados.setCodigoSalida(3);
 			return asientosOcupados;
-//		case RESERVADA:
-//			asientosOcupados.setCodigoSalida(6);
-//			return asientosOcupados;
+		case RESERVADA:
+			asientosOcupados.setCodigoSalida(6);
+			return asientosOcupados;
 		default:
 			System.out.println("Estado desconocido: " + estado);
 		}

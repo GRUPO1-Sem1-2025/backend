@@ -453,7 +453,7 @@ public class UsuarioController {
 		// .body("Uno de los asientos solicitados ya se encuentra reservado");
 		case 3:
 			usuarioService.enviarMailVenderPasaje(dtoVenderPasaje);
-			response.put("mensaje", "La venta ha sido reservada de forma correcta");
+			response.put("mensaje", "La venta ha sido relizada de forma correcta");
 			response.put("idCompra", resultadoVenta.getIdCompra());
 			response.put("descuento",resultadoVenta.getDescuento());
 			return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -472,7 +472,7 @@ public class UsuarioController {
 		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje
 		// ingresado no existe");
 		case 6:
-			response.put("mensaje", "La compra ha sido reservada de forma exitosa");
+			response.put("mensaje", "La venta ha sido reservada de forma exitosa");
 			response.put("idCompra", resultadoVenta.getIdCompra());
 			response.put("descuento",resultadoVenta.getDescuento());
 			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);

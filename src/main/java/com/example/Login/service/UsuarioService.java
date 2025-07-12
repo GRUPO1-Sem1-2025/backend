@@ -941,38 +941,6 @@ public class UsuarioService {
 			// TODO: handle exception
 		}
 
-//		if (usuario.isPresent()) {
-//			System.out.println("Rol actual: " + usuario.get().getRol());
-//			if (rol.equals("User")) {
-//				usuario.get().setRol(100);
-//				usuario.get().setCod_empleado(null);
-//				actualizar(usuario.get());
-//			} else if (rol.equals("Vendedor")) {
-//				usuario.get().setRol(200);
-//				if (usuario.get().getCod_empleado() == 0) {
-//					try {
-//						usuario.get().setCod_empleado(usuarioRepository.findMaxCodEmpleado() + 1);
-//					} catch (Exception e) {
-//						usuario.get().setCod_empleado(100);
-//					}
-//				}
-//				actualizar(usuario.get());
-//			} else if (rol.equals("Admin")) {
-//				usuario.get().setRol(300);
-//				if (usuario.get().getCod_empleado() == 0) {
-//					try {
-//						usuario.get().setCod_empleado(usuarioRepository.findMaxCodEmpleado() + 1);
-//					} catch (Exception e) {
-//						usuario.get().setCod_empleado(100);
-//					}
-//				}
-//				actualizar(usuario.get());
-//			} else {
-//				System.out.println("No existe el Rol ingresado");
-//				return 0;
-//			}
-//			return 1;
-//		}
 		if (usuario.isPresent()) {
 		    System.out.println("Rol actual: " + usuario.get().getRol());
 
