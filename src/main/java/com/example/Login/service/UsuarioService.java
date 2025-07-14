@@ -725,7 +725,8 @@ public class UsuarioService {
 //		int descuento = OcategoriaUsuario.get().getDescuento();
 		try {
 			idUsuario = usuarioRepository.findByEmail(email).get().getId();
-		} catch (Exception e) {
+			System.out.println("idUsuario en obtenerMisCompras = " + idUsuario);
+			} catch (Exception e) {
 			// TODO: handle exception
 		}
 
@@ -752,6 +753,9 @@ public class UsuarioService {
 				}
 			}
 		}
+		System.out.println("****");
+		System.out.println("Cantidad de compras encontradas: " + misCompras.size());
+		System.out.println("****");
 		return misCompras;
 	}
 
