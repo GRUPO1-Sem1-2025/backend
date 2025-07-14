@@ -574,7 +574,11 @@ public class UsuarioController {
 		case 4:
 			response.put("mensaje", "No se puede cancelar la compra dado que el viaje comienza en menos de una hora");
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+		case 5:
+			response.put("mensaje", "No se puede cancelar la compra dado que el viaje ya comenzo o esta próximo a salir");
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
 		}
+		
 		response.put("mensaje", "Error desconocido");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error

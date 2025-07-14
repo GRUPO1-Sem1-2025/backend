@@ -1,5 +1,6 @@
 package com.example.Login.service;
 
+import java.io.IOException;
 import java.net.Authenticator.RequestorType;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -28,11 +29,13 @@ import com.example.Login.dto.EstadoCompra;
 import com.example.Login.dto.EstadoViaje;
 import com.example.Login.model.AsientoPorViaje;
 import com.example.Login.model.Categoria;
+import com.example.Login.model.CerrarViaje;
 import com.example.Login.model.CompraPasaje;
 import com.example.Login.model.Usuario;
 import com.example.Login.model.Viaje;
 import com.example.Login.repository.AsientoPorViajeRepository;
 import com.example.Login.repository.CategoriaRepository;
+import com.example.Login.repository.CerrarViajeRepository;
 import com.example.Login.repository.CompraPasajeRepository;
 import com.example.Login.repository.UsuarioRepository;
 import com.example.Login.repository.ViajeRepository;
@@ -50,6 +53,9 @@ public class CompraPasajeService {
 	private UsuarioRepository usuarioRepository;
 
 	@Autowired
+	private CerrarViajeRepository cerrarViajeRepository;
+
+	@Autowired
 	private AsientoPorViajeRepository asientoPorViajeRepository;
 
 	@Autowired
@@ -63,6 +69,9 @@ public class CompraPasajeService {
 
 	@Autowired
 	private CategoriaRepository categoriaRepository;
+	
+	@Autowired
+	private TokenService tokenService;
 
 //    CompraPasajeService(SecurityFilterChain securityFilterChain) {
 //        this.securityFilterChain = securityFilterChain;
@@ -85,7 +94,7 @@ public class CompraPasajeService {
 		EstadoCompra estado = request.getEstadoCompra(); // Ya es un enum
 		DtoRespuestaCompraPasaje asientosOcupados = new DtoRespuestaCompraPasaje();
 		asientosOcupados.setEstado(estado);
-		
+
 		try {
 			Optional<Usuario> Ousuario = usuarioRepository.findById(request.getUsuarioId());
 			usuario = Ousuario.get();
@@ -148,7 +157,7 @@ public class CompraPasajeService {
 		}
 
 		compra.setFechaHoraCompra(LocalDateTime.now());
-		
+
 		List<AsientoPorViaje> asientosReservados = new ArrayList<>();
 
 		for (Integer nroAsiento : request.getNumerosDeAsiento()) {
@@ -163,8 +172,7 @@ public class CompraPasajeService {
 					asientosOcupado.add(nroAsiento);
 					// return 2;
 				}
-			}
-			else {
+			} else {
 				System.out.println("No existe el asiento a comprar nro " + nroAsiento);
 				asientosInexistentes.add(nroAsiento);
 			}
@@ -213,7 +221,7 @@ public class CompraPasajeService {
 		compraPasajeRepository.save(compra);
 
 		// cargo el siguiente id de compra para mostrar
-		//asientosOcupados.
+		// asientosOcupados.
 		asientosOcupados.setIdCompra((int) (aux.getId() + 1));
 		// fin
 
@@ -231,8 +239,6 @@ public class CompraPasajeService {
 
 		return asientosOcupados;
 	}
-	
-	
 
 	public DtoRespuestaVentaPasaje venderPasaje(DtoVenderPasaje request) {
 		DtoRespuestaVentaPasaje asientosOcupados = new DtoRespuestaVentaPasaje();
@@ -272,8 +278,7 @@ public class CompraPasajeService {
 			return asientosOcupados;
 		}
 		try {
-			Optional<Categoria> Ocategoria = categoriaRepository
-					.findBynombreCategoria(usuario.getCategoria().name());
+			Optional<Categoria> Ocategoria = categoriaRepository.findBynombreCategoria(usuario.getCategoria().name());
 			System.out.println("Encontre la categoria: " + Ocategoria.get().getNombreCategoria());
 			descuento = Ocategoria.get().getDescuento();
 			asientosOcupados.setDescuento(descuento);
@@ -310,25 +315,25 @@ public class CompraPasajeService {
 		}
 		EstadoCompra estado = request.getEstadoCompra();
 		System.out.println("Estado compre del request: " + estado);
-		//EstadoCompra estado = EstadoCompra.REALIZADA;
+		// EstadoCompra estado = EstadoCompra.REALIZADA;
 		venta.setEstadoCompra(estado);
 		venta.setCat_pasajes(asientosReservados.size());
 		float total = (venta.getCat_pasajes() * viaje.getPrecio())
 				- (venta.getCat_pasajes() * viaje.getPrecio() * descuento / 100);
 		venta.setTotal(total);
-		//venta.setTotal(venta.getCat_pasajes() * viaje.getPrecio());
+		// venta.setTotal(venta.getCat_pasajes() * viaje.getPrecio());
 		venta.setAsientos(asientosReservados);
-		
+
 		// obtengo la última compra
-				Optional<CompraPasaje> ultimoId = compraPasajeRepository.findTopByOrderByIdDesc();
-				CompraPasaje aux = ultimoId.get();
+		Optional<CompraPasaje> ultimoId = compraPasajeRepository.findTopByOrderByIdDesc();
+		CompraPasaje aux = ultimoId.get();
 		// fin
 
 		// cargo el siguiente id de compra para mostrar
-		//asientosOcupados.
+		// asientosOcupados.
 		asientosOcupados.setIdCompra((int) (aux.getId() + 1));
 		// fin
-				
+
 		venta.setDescuentoAplicado(descuento);
 		System.out.println("Descuento aplicado = " + descuento);
 		compraPasajeRepository.save(venta);
@@ -442,9 +447,74 @@ public class CompraPasajeService {
 //		return 7;
 //	}
 
+//	public int cancelarCompraActual(int idCompra) {
+//		Viaje viaje = new Viaje();
+//
+//		try {
+//			Optional<CompraPasaje> Ocompra = compraPasajeRepository.findById(idCompra);
+//			CompraPasaje compra = Ocompra.get();
+//
+//			try {
+//				int idViaje = compra.getViaje().getId();
+//				Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
+//				viaje = Oviaje.get();
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//			}
+//			// Fecha y hora del viaje
+//			Date fechaViajeActual = compra.getViaje().getFechaInicio();// .valueOf("2025-06-20");
+//			LocalTime horaViaje = compra.getViaje().getHoraInicio();// .of(14, 0); // 14:00
+//
+//			// Fecha y hora que queremos comparar
+//			LocalDate fechaConsulta = LocalDate.now();
+//			LocalTime horaConsulta = LocalTime.now();// of(12, 59); // 12:59
+//
+//			// Convertir la fecha SQL a LocalDate
+//			LocalDate fechaViaje = fechaViajeActual.toLocalDate();
+//
+//			// Combinar fecha y hora del viaje
+//			LocalDateTime fechaHoraViaje = LocalDateTime.of(fechaViaje, horaViaje);
+//
+//			// Restar una hora
+//			LocalDateTime fechaHoraViajeMenosUnaHora = fechaHoraViaje.minusHours(1);
+//
+//			// Combinar fecha y hora de consulta
+//			LocalDateTime fechaHoraConsulta = LocalDateTime.of(fechaConsulta, horaConsulta);
+//
+//			// Comparar
+//			boolean esMayor = fechaHoraConsulta.isBefore(fechaHoraViajeMenosUnaHora);
+//			
+//			if (esMayor == true) {
+//
+//				if (!compra.getEstadoCompra().equals(EstadoCompra.CANCELADA)) { // POR LAS DUDAS REVISAR ESTO
+//
+//					for (AsientoPorViaje asiento : compra.getAsientos()) {
+//						asiento.setReservado(false);
+//						asientoPorViajeRepository.save(asiento); // Suponiendo que tenés este repo
+//					}
+//					compra.setEstadoCompra(EstadoCompra.CANCELADA);
+//					compraPasajeRepository.save(compra);
+//					return 1;
+//				} else {
+//					return 2;
+//				}
+//			} else {
+//				System.out.println("No se puede cancelar la compra dado que el viaje comienza en menos de una hora");
+//				return 4;
+//			}
+//
+//		} catch (Exception e) {
+//			return 3;// TODO: handle exception
+//		}
+//
+//	}
 
 	public int cancelarCompra(int idCompra) {
 		Viaje viaje = new Viaje();
+		CerrarViaje cerrarViaje = cerrarViajeRepository.getById(1);
+		String tiempo = cerrarViaje.getTiempo();
+		int minutos = Integer.parseInt(tiempo);
+		System.out.println("Tiempo para el cierre de ventas de pasajes: " + tiempo);
 
 		try {
 			Optional<CompraPasaje> Ocompra = compraPasajeRepository.findById(idCompra);
@@ -472,14 +542,15 @@ public class CompraPasajeService {
 			LocalDateTime fechaHoraViaje = LocalDateTime.of(fechaViaje, horaViaje);
 
 			// Restar una hora
-			LocalDateTime fechaHoraViajeMenosUnaHora = fechaHoraViaje.minusHours(1);
-
+			//LocalDateTime fechaHoraViajeMenosUnaHora = fechaHoraViaje.minusHours(minutos);
+			LocalDateTime fechaHoraViajeMenosUnaHora = fechaHoraViaje.minusMinutes(minutos);
+			
 			// Combinar fecha y hora de consulta
 			LocalDateTime fechaHoraConsulta = LocalDateTime.of(fechaConsulta, horaConsulta);
 
 			// Comparar
 			boolean esMayor = fechaHoraConsulta.isBefore(fechaHoraViajeMenosUnaHora);
-			
+
 			if (esMayor == true) {
 
 				if (!compra.getEstadoCompra().equals(EstadoCompra.CANCELADA)) { // POR LAS DUDAS REVISAR ESTO
@@ -490,10 +561,29 @@ public class CompraPasajeService {
 					}
 					compra.setEstadoCompra(EstadoCompra.CANCELADA);
 					compraPasajeRepository.save(compra);
+					
+					//enviar push notifications
+					String idUsuario = String.valueOf(usuarioRepository.findById(compra.getUsuario().getId()));// cp.getUsuario().getId());
+					String titulo = "Cancelación de compra";
+					String mensaje = "La compra del pasaje con destino a "
+							+ viaje.getLocalidadDestino().getNombre() + " que sale en " + minutos+ "minutos aproximadamente a sido cancelada";
+					try {
+						tokenService.enviarPushNotification(idUsuario, titulo, mensaje);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//hasta aca					
 					return 1;
 				} else {
 					return 2;
 				}
+			} else if (esMayor == false) {
+				System.out.println("No se puede cancelar la compra dado que el mismo ya salió o esta próximo a salir");
+				return 5;
 			} else {
 				System.out.println("No se puede cancelar la compra dado que el viaje comienza en menos de una hora");
 				return 4;

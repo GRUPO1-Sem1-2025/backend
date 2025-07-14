@@ -524,7 +524,8 @@ public class ViajeService {
 
 		// Agregado para modificar el tiempo de cerrar viajes mediante endpoint
 
-		CerrarViaje cerrarViaje = new CerrarViaje();
+		//CerrarViaje cerrarViaje = new CerrarViaje();
+		CerrarViaje cerrarViaje = cerrarViajeRepository.getById(1);
 		try {
 			Optional<CerrarViaje> OcerrarViaje = cerrarViajeRepository.findAllById(1);
 			cerrarViaje = OcerrarViaje.get();
@@ -533,7 +534,7 @@ public class ViajeService {
 		}
 
 		String tiempo = cerrarViaje.getTiempo() + " minutes";
-		//System.out.println("Tiempo para cerrar el viaje: " + tiempo);
+		System.out.println("Tiempo para cerrar el viaje: " + tiempo);
 		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximosMinutos(tiempo);
 
 		// hasta aca
