@@ -350,9 +350,9 @@ public class ViajeService {
 		Localidad localidadOrigen = viaje.getLocalidadOrigen();
 		Optional<Localidad> loc = localidadRepository.findByNombre(localidadOrigen.getNombre());
 		int cantidaAsientosVendidos = cantidadAsientosVendidos((long) (viaje.getId()));
-		System.out.println("asientosVendidos " + cantidaAsientosVendidos);
 		int asientosDelBus = omnibus.getCant_asientos();
-		System.out.println("asientosDelBus " + asientosDelBus);
+		int asientosDisponiblesEnElBus = asientosDelBus-cantidaAsientosVendidos;
+		System.out.println("Cantidad de asientos Disponibles: " + asientosDisponiblesEnElBus);
 
 		try {
 			Optional<Omnibus> busOpt = omnibusRepository.findById(omnibus.getId());
@@ -373,10 +373,6 @@ public class ViajeService {
 					return resultado;
 				}
 
-//				if(!busOpt.get().isSePuedeUtilizar()) {
-//					
-//				}
-
 				if (!busOpt.get().isActivo()) {
 					System.out.println("No se le puede asigar el bus, porque el mismo esta inactivo");
 					resultado = 5;
@@ -392,8 +388,15 @@ public class ViajeService {
 					// Asignar el ómnibus al viaje
 					viaje.setOmnibus(bus);
 
-					// Crear relación asiento/viaje (modelo AsientoPorViaje, si estás usando ambos
-					// modelos)
+					//corrección GPT
+					// NUEVO: Limpiar los asientos anteriores del viaje
+	                viaje.getAsientosPorViaje().clear(); // NUEVO
+
+	                //* NUEVO: Opcional - actualizar el límite de pasajes vendibles si usás este campo*
+	                // viaje.setCantidadMaximaPasajesVendibles(bus.getCant_asientos()); // 
+	                
+					//Hasta aca la corrección de GPT
+					
 					for (OmnibusAsiento asiento : bus.getAsientos()) {
 						AsientoPorViaje apv = new AsientoPorViaje();
 						apv.setOmnibusAsiento(asiento);
@@ -534,7 +537,7 @@ public class ViajeService {
 		}
 
 		String tiempo = cerrarViaje.getTiempo() + " minutes";
-		System.out.println("Tiempo para cerrar el viaje: " + tiempo);
+		//System.out.println("Tiempo para cerrar el viaje: " + tiempo);
 		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximosMinutos(tiempo);
 
 		// hasta aca
