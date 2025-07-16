@@ -564,16 +564,20 @@ public class CompraPasajeService {
 					
 					//enviar push notifications
 					String idUsuario = String.valueOf(usuarioRepository.findById(compra.getUsuario().getId()));// cp.getUsuario().getId());
+					System.out.println("*** id usuario: " + idUsuario);
 					String titulo = "Cancelación de compra";
+					System.out.println("*** titulo: " + titulo);
 					String mensaje = "La compra del pasaje con destino a "
 							+ viaje.getLocalidadDestino().getNombre() + " que sale en " + minutos+ "minutos aproximadamente a sido cancelada";
+					System.out.println("*** mensaje: " + mensaje);
 					try {
 						tokenService.enviarPushNotification(idUsuario, titulo, mensaje);
+						System.out.println("se envio la push notification al dispositivo");
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						System.out.println("*** NO se envio la push notification al dispositivo***");
 						e.printStackTrace();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						System.out.println("*** NO se envio la push notification al dispositivo***");
 						e.printStackTrace();
 					}
 					//hasta aca					
