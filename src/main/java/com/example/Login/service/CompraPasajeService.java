@@ -563,7 +563,9 @@ public class CompraPasajeService {
 					compraPasajeRepository.save(compra);
 					
 					//enviar push notifications
-					String idUsuario = String.valueOf(usuarioRepository.findById(compra.getUsuario().getId()));// cp.getUsuario().getId());
+					Optional<Usuario> Ousuario  = usuarioRepository.findById(compra.getUsuario().getId());// getId();
+					//String idUsuario = String.valueOf(usuarioRepository.findById(compra.getUsuario().getId()));// cp.getUsuario().getId());
+					String idUsuario = String.valueOf(Ousuario.get().getId());// usuarioRepository.findById(compra.getUsuario().getId()));// cp.getUsuario().getId());
 					System.out.println("*** id usuario: " + idUsuario);
 					String titulo = "Cancelación de compra";
 					System.out.println("*** titulo: " + titulo);
