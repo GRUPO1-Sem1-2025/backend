@@ -63,7 +63,8 @@ public class TokenService {
 	}
 	
 	public void enviarPushNotification(String idUsuario, String title, String body) throws IOException, InterruptedException {
-	    JsonObject json = new JsonObject();
+		System.out.println("--- entre para enviar push notifications ---");
+		JsonObject json = new JsonObject();
 	    json.addProperty("titulo", title);
 	    json.addProperty("mensaje", body);
 
