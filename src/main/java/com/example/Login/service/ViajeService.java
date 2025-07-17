@@ -1060,8 +1060,10 @@ public class ViajeService {
 				if (cantidadCompras != 0) {
 					DtoViajeIdDestino nuevo = new DtoViajeIdDestino();
 					nuevo.setId(v.getId());
+//					nuevo.setOrigenDestino(v.getLocalidadOrigen().getNombre() + "-"
+//							+ v.getLocalidadDestino().getNombre() + " " + v.getHoraInicio() + "-" + v.getHoraFin());
 					nuevo.setOrigenDestino(v.getLocalidadOrigen().getNombre() + "-"
-							+ v.getLocalidadDestino().getNombre() + " " + v.getHoraInicio() + "-" + v.getHoraFin());
+							+ v.getLocalidadDestino().getNombre() + " " + v.getFechaInicio() + " " + v.getHoraInicio());// + "-" + v.getHoraFin());
 					viajes.add(nuevo);
 				}
 
