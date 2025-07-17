@@ -494,59 +494,7 @@ public class UsuarioController {
 		// desconocido");
 	}
 	
-//	@PostMapping("/venderPasaje")
-//	public ResponseEntity<Map<String, String>> venderPasajeActual(@RequestBody DtoVenderPasaje dtoVenderPasaje) {
-//		Map<String, String> response = new HashMap<>();
-//		int resultadoCompra = comprarPasajeService.venderPasaje(dtoVenderPasaje);
-//		switch (resultadoCompra) {
-//		case 1:
-//			response.put("mensaje", "El vendedor ingresado no existe");
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-//		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El
-//		// Vendedor ingresado no existe");
-//		case 2:
-//			response.put("mensaje", "Uno de los asientos solicitados ya se encuentra reservado");
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//		// return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//		// .body("Uno de los asientos solicitados ya se encuentra reservado");
-//		case 3:
-//			usuarioService.enviarMailVenderPasaje(dtoVenderPasaje);
-//			response.put("mensaje", "La venta ha sido realizada de forma correcta");
-//			return ResponseEntity.status(HttpStatus.OK).body(response);
-//		// return ResponseEntity.status(HttpStatus.OK).body("La venta ha sido realizada
-//		// de forma correcta");
-//		case 4:
-//			response.put("mensaje",
-//					"El vendedor ingresado no se encuentra habilitado, por lo tanto no puede realizar ventas");
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//		/// .body("El vendedor ingresado no se encuentra habilitado, por lo tanto no
-//		// puede realizar ventas");
-//		case 5:
-//			response.put("mensaje", "El viaje ingresado no existe");
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-//		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("El viaje
-//		// ingresado no existe");
-//		case 6:
-//			response.put("mensaje", "La compra ha sido reservada de forma exitosa");
-//			// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
-//			return ResponseEntity.status(HttpStatus.OK).body(response);
-//
-//		// return ResponseEntity.status(HttpStatus.OK).body("La compra ha sido reservada
-//		// de forma correcta");
-//		case 8:
-//			response.put("mensaje", "Solo los vendedores pueden vender pasajes");
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-//		// usuarioService.enviarMailReservarPasaje(dtoVenderPasaje);
-//		// return ResponseEntity.status(HttpStatus.OK).body("Solo los vendedores pueden
-//		// vender pasajes");
-//
-//		}
-//		response.put("mensaje", "Error desconosido");
-//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//		// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(//"Error
-//		// desconocido");
-//	}
+
 
 	@PostMapping("/cancelarCompra")
 	public ResponseEntity<Map<String, String>> cancelarCompra(@RequestParam int idCompra) {

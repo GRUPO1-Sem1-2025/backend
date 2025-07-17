@@ -153,81 +153,6 @@ public class ViajeService {
 		return 4;
 	}
 
-//	public int crearViajeConBus(DtoViaje dtoViaje) {
-//
-//		Viaje nuevoViaje = new Viaje();
-//
-//		Optional<Localidad> locOri = localidadRepository.findById(dtoViaje.getIdLocalidadOrigen());
-//		Optional<Localidad> locDest = localidadRepository.findById(dtoViaje.getIdLocalidadDestino());
-//
-//		if (locOri.isPresent() && locDest.isPresent()) {
-//			if (locOri.get().getId() == locDest.get().getId()) {
-//				System.out.println("La ciudad de origen y destino no pueden ser las mismas");
-//				return 1;
-//			}
-//
-//			if (!locOri.get().isActivo() || !locDest.get().isActivo()) {
-//				System.out.println("Una de las ciudades no se encuentra disponible");
-//				return 2;
-//			}
-//
-//			nuevoViaje.setFechaFin(dtoViaje.getFechaFin());
-//			nuevoViaje.setFechaInicio(dtoViaje.getFechaInicio());
-//			nuevoViaje.setHoraInicio(dtoViaje.getHoraInicio());
-//			nuevoViaje.setHoraFin(dtoViaje.getHoraFin());
-//			nuevoViaje.setLocalidadOrigen(locOri.get());
-//			nuevoViaje.setLocalidadDestino(locDest.get());
-//			nuevoViaje.setPrecio(dtoViaje.getPrecio());
-//			nuevoViaje.setEstadoViaje(EstadoViaje.NUEVO);
-//			nuevoViaje.setAsientosPorViaje(new ArrayList<>());
-//			viajeRepository.save(nuevoViaje);
-//
-//			// buscar omnibus
-//			Omnibus bus = new Omnibus();
-//			try {
-//				Optional<Omnibus> Obus = omnibusRepository.findById(dtoViaje.getIdOmnibus());
-//				bus = Obus.get();
-////				if (!bus.isSePuedeUtilizar()) {
-////					System.out.println(
-////							"No se le puede asigar el bus, porque el mismo ya esta asignado a un viaje en proceso");
-////					return 6;
-////				}
-//
-//				if (omnibusDisponible(bus.getId(), nuevoViaje.getFechaInicio(), nuevoViaje.getHoraInicio()) == false) {
-//					System.out.println(
-//							"No se le puede asigar el bus, porque el viaje coincide con otro que ya tiene el bus asignado");
-//					return 6;
-//				}
-//
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
-//
-//			// obtener id del ultimo viaje
-//			Viaje viaje = new Viaje();
-//			int ultimoId = viajeRepository.findUltimoId();
-//			System.out.println("UltimoIdIngresado: " + ultimoId);
-//
-//			try {
-//				Optional<Viaje> Oviaje = viajeRepository.findById(ultimoId);
-//				viaje = Oviaje.get();
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
-//			try {
-//				if (asignarOmnibusAViaje(bus, viaje) == 1) {
-//					;
-//					return 3;
-//				}
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
-//			return 5;
-//		}
-//
-//		System.out.println("Una de las ciudades ingresadas no existe");
-//		return 4;
-//	}
 
 	public int crearViajeConBus(DtoViaje dtoViaje) {
 		int resultado = 0;
@@ -269,12 +194,6 @@ public class ViajeService {
 				// TODO: handle exception
 			}
 
-//			if (omnibusDisponible(bus.getId(), nuevoViaje.getFechaInicio(), nuevoViaje.getHoraInicio()) == false) {
-//				System.out.println(
-//						"***No se le puede asigar el bus, porque el viaje coincide con otro que ya tiene el bus asignado");
-//				resultado = 6;
-//				return resultado;
-//			}
 
 			// obtener id del ultimo viaje
 			Viaje viaje = new Viaje();
@@ -587,43 +506,6 @@ public class ViajeService {
 		}
 	}
 
-//	@Scheduled(fixedRate = 60000) // cada 60 segundos
-//	public void enviarMailAvisandoDeViaje() {
-//
-//		String tiempo = "60 minutes";
-//		System.out.println("Tiempo para enviar mails y push notifications: " + tiempo);
-//		//List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximosMinutos(tiempo);
-//		List<Viaje> viajesACerrar = viajeRepository.findViajesConInicioEnLosProximos60Minutos();// ProximosMinutos(tiempo);
-//		List<String> tokenAEnviar = new ArrayList<>();
-//		for (Viaje v : viajesACerrar) {
-//
-//			// enviar mail a los compradores de pasajes para ese viaje
-//			List<CompraPasaje> comprapasaje = new ArrayList<>();
-//			comprapasaje = compraPasajeRepository.findByViajeId((long) v.getId());
-//			System.out.println("El viaje de id " + v.getId() + " ha sido cerrado");
-//			for (CompraPasaje cp : comprapasaje) {
-//				usuarioService.enviarMailAvisandoDeViaje(cp.getId().intValue());
-//				String idUsuario = String.valueOf(cp.getUsuario().getId());
-//				String titulo = "Recordatorio de viaje proximo";
-//				String mensaje = "Recuerde que usted tiene un viaje con destino a "
-//						+ cp.getViaje().getLocalidadDestino().getNombre() + " que sale en 1 hora aproximadamente";
-//				try {
-//
-//					// Enviar push notifications
-//					try {
-//						tokenService.enviarPushNotification(idUsuario, titulo, mensaje);
-//					} catch (InterruptedException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//	}
-
 	public List<DtoViaje> obtenerViajesPorBus(int idBus) {
 		List<DtoViaje> dtoViajes = new ArrayList<>();
 		List<Viaje> viajes = new ArrayList<>();
@@ -827,12 +709,7 @@ public class ViajeService {
 		Date fechaInicio = null;
 		Date fechaFin = null;
 		int idOmnibus = 0;
-//
-//		// datos de la compra
-//		int cantidadAsientos;
-//		float precio;
-//		int descuento;
-//		
+		
 		try {
 			Optional<Viaje> Oviaje = viajeRepository.findById(idViaje);
 			localidadDestinoDepartamento = Oviaje.get().getLocalidadDestino().getDepartamento();
@@ -1028,26 +905,6 @@ public class ViajeService {
 		return cantidadAsientos;
 	}
 
-//	public List<DtoViajeIdDestino> obtenerViajesIdDestino() {
-//		List<DtoViajeIdDestino> viajes = new ArrayList<>();
-//		List<Viaje> total = viajeRepository.findAll();
-//
-//		for (Viaje v : total) {
-//
-//			try {
-//				DtoViajeIdDestino nuevo = new DtoViajeIdDestino();
-//				nuevo.setId(v.getId());
-//				nuevo.setOrigenDestino(v.getLocalidadOrigen().getNombre() + "-" + v.getLocalidadDestino().getNombre()
-//						+ " " + v.getHoraInicio() + "-" + v.getHoraFin());
-//				viajes.add(nuevo);
-//			} catch (Exception e) {
-//			}
-//
-//		}
-//	    System.out.println("Cantida de resultados: "+ viajes.size());
-//		return viajes;
-//	}
-
 	public List<DtoViajeIdDestino> obtenerViajesIdDestino() {
 		List<DtoViajeIdDestino> viajes = new ArrayList<>();
 		List<Viaje> total = viajeRepository.findAll();
@@ -1061,7 +918,7 @@ public class ViajeService {
 					DtoViajeIdDestino nuevo = new DtoViajeIdDestino();
 					nuevo.setId(v.getId());
 					nuevo.setOrigenDestino(v.getLocalidadOrigen().getNombre() + "-"
-							+ v.getLocalidadDestino().getNombre() + " " + v.getHoraInicio() + "-" + v.getHoraFin());
+							+ v.getLocalidadDestino().getNombre() + " " + v.getFechaInicio() + " " + v.getHoraInicio());// + "-" + v.getHoraFin());
 					viajes.add(nuevo);
 				}
 

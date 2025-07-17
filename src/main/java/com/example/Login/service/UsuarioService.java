@@ -125,9 +125,6 @@ public class UsuarioService {
 		usuarioRepository.save(usuario); // esto hace un UPDATE si el usuario existe
 	}
 
-//	public List<Usuario> obtenerUsuarios() {
-//		return usuarioRepository.findAll();
-//	}
 
 	public List<DtoUsuario> obtenerUsuarios() {
 		List<DtoUsuario> resultado = new ArrayList<>();
@@ -374,12 +371,6 @@ public class UsuarioService {
 					cuenta.setRol(values[4]);//user.getRol());
 					crearCuenta(cuenta);
 					
-					//enviarMailCrearCuenta(user);
-					//enviarMailRegistrarse(null);
-					// Guardo el usuario nuevo
-					
-					
-					//usuarioRepository.save(user);
 					System.out.println("El usuario fue registrado");
 				} else {
 					Map<String, String> usuarioExistente = new HashMap<>();
@@ -691,10 +682,7 @@ public class UsuarioService {
 	            System.out.println("Estado desconocido: " + estado);
 	    }
 	    return 1;
-	}
-	
-	
-	
+	}	
 
 	public List<DtoMisViajes> obtenerMisViajes(String email) {
 		List<Viaje> viajes = viajeRepository.findAll();
@@ -802,20 +790,6 @@ public class UsuarioService {
 		}
 		usuario.setActivo(user.getActivo());
 		usuario.setApellido(user.getApellido());
-
-		// categoriaUsuario categoria = user.getCategoria();
-//		switch (categoria){
-//		case "GENERAL":
-//			user.setCategoria(categoriaUsuario.GENERAL);
-//			break;
-//		case "JUBILADO":
-//			user.setCategoria(categoriaUsuario.JUBILADO);
-//			break;
-//		case "ESTUDIANTE":
-//			user.setCategoria(categoriaUsuario.ESTUDIANTE);
-//			break;
-//		}
-
 		usuario.setCategoria(user.getCategoria());
 		usuario.setCi(user.getCi());
 		usuario.setCod_empleado(user.getCod_empleado());
