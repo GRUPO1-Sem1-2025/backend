@@ -720,8 +720,18 @@ public class UsuarioController {
 	}
 	
 	@PostMapping("/guardarReferenciaPago")
-	public void guardarReferenciaPago(@RequestParam int idCompra, @RequestParam String referencia) {
-		usuarioService.guardarReferenciaPago(idCompra,referencia);
+	public ResponseEntity<Map<String, String>> guardarReferenciaPago(@RequestParam int idCompra, @RequestParam String referencia) {
+		int resultado = usuarioService.guardarReferenciaPago(idCompra,referencia);
+		Map<String, String> response = new HashMap<>();
+		if(resultado == 1) {
+			System.out.println("se agregó la referencia de forma correcta");			
+			response.put("mensaje", "se agregó la referencia de forma correcta");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}else {
+			System.out.println("No se encontor la compra, por lo que la referencia no se guardó");
+			response.put("error", "No se encontor la compra, por lo que la referencia no se guardó");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}
 	}
 	
 	@GetMapping("obtenerReferenciaPago")

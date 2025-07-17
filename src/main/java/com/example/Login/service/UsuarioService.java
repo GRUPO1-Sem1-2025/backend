@@ -1126,16 +1126,18 @@ public class UsuarioService {
 		return resultado;
 	}
 
-	public void guardarReferenciaPago(int idCompra, String referencia) {
+	public int guardarReferenciaPago(int idCompra, String referencia) {
 		CompraPasaje compra = new CompraPasaje();
 		try{
 			Optional<CompraPasaje> Ocomprapasaje = comprapasajerepository.findById(idCompra);// TODO Auto-generated method stub
 			compra = Ocomprapasaje.get();
+			compra.setReferenciaPago(referencia);
+			comprapasajerepository.save(compra);
+			return 1;
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
-		compra.setReferenciaPago(referencia);
-		comprapasajerepository.save(compra);
+		return 0;
 	}
 
 	public String obtenerReferenciaPago(int idCompra) {
