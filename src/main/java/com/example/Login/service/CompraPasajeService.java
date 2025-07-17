@@ -569,8 +569,7 @@ public class CompraPasajeService {
 					System.out.println("*** id usuario: " + idUsuario);
 					String titulo = "Cancelación de compra";
 					System.out.println("*** titulo: " + titulo);
-					String mensaje = "La compra del pasaje con destino a "
-							+ viaje.getLocalidadDestino().getNombre() + " que sale en " + minutos+ "minutos aproximadamente a sido cancelada";
+					String mensaje = "La compra del pasaje con destino a " + viaje.getLocalidadDestino().getNombre() + " a sido cancelada";
 					System.out.println("*** mensaje: " + mensaje);
 					try {
 						tokenService.enviarPushNotification(idUsuario, titulo, mensaje);
