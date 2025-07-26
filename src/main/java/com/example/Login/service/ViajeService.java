@@ -415,6 +415,9 @@ public class ViajeService {
 			try {
 				viaje.getOmnibus().setSePuedeUtilizar(true);
 				System.out.println("id del bus a habilitar: " + viaje.getOmnibus().getId());
+				System.out.println("****************************");
+				System.out.println("El omnibus se puede utilizar");
+				System.out.println("****************************");
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -850,6 +853,23 @@ public class ViajeService {
 		System.out.println("Entre a omnibusDisponible");
 		List<Viaje> viajes = new ArrayList<>();
 		int viajesEncontrados = 0;
+		
+		//Cambio para poder agregar omnibus si el viaje fue cancelado
+		
+		Omnibus omnibus = new Omnibus();
+				
+		try {
+			Optional<Omnibus> Oomnibus = omnibusRepository.findById(idBus);
+			omnibus = Oomnibus.get();
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		if(omnibus.isSePuedeUtilizar() == true) {
+			return true;
+		}
+		
+		//Hasta aca
 
 		try {
 			viajes = viajeRepository.findByOmnibusId(idBus);
@@ -880,7 +900,7 @@ public class ViajeService {
 		} catch (Exception e) {
 			e.printStackTrace(); // Para ver qué sucede si hay un error
 		}
-
+		
 		if (viajesEncontrados == 0) {
 			System.out.println("Viajes encontrados: " + viajesEncontrados);
 			return true;
