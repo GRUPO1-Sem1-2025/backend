@@ -29,8 +29,8 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/usuarios/login").permitAll()  // Permitir acceso al login sin JWT
-                .anyRequest().permitAll() // 💥 Permite acceso a todo sin token
-                   // .anyRequest().authenticated()  // Requiere JWT para el resto de los endpoints
+                //.anyRequest().permitAll() // Permite acceso a todo sin token
+                .anyRequest().authenticated()  // Requiere JWT para el resto de los endpoints
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Agregar filtro de autenticación JWT
                 .formLogin().disable()
